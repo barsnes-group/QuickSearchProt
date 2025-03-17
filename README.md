@@ -1,1 +1,1 @@
-# QuickProt
+# QuickSearchProt
