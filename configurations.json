@@ -1,0 +1,59 @@
+{
+  "supportedSearchEngine": [
+    "Sage",
+    "X!Tandem"
+  ],
+  "paramOrderMap": {
+    "Sage": [],
+    "X!Tandem": []
+  },
+  "datasets": [
+    "PXD028427",
+    "PXD000561",
+    "PXD001468",
+    "PXD047036",
+    "PXD009340",
+    "PXD001250"
+  ],
+  "cleanAll": false,
+  "searchOpParameter": {
+    "optimizeAllParameters": true,
+    "optimizeDigestionParameter": true,
+    "optimizeCleavageParameter": false,
+    "optimizeEnzymeParameter": false,
+    "optimizeMaxMissCleavagesParameter": true,
+    "optimizeSpecificityParameter": false,
+    "optimizeFragmentIonTypesParameter": true,
+    "optimizePrecursorToleranceParameter": true,
+    "optimizeFragmentToleranceParameter": true,
+    "optimizePrecursorChargeParameter": true,
+    "optimizeIsotopsParameter": true,
+    "optimizeModificationParameter": true,
+    "optimizeSageAdvancedParameter": true,
+    "optimizeXtandemAdvancedParameter": true
+  },
+  "useFullDataMode": false,
+  "datasetFolderURL": "D:\\Apps\\OptProt\\data\\",
+  "X!TandemParamOrder": [
+    "XtandemAdvancedParameter",
+    "DigestionParameter",
+    "PrecursorToleranceParameter",
+    "FragmentToleranceParameter",
+    "PrecursorChargeParameter",
+    "FragmentIonTypesParameter",
+    "XtandemAdvancedParameter_A",
+    "ModificationParameter",
+    "XtandemAdvancedParameter_B"
+  ],
+  "SageParamOrder": [
+    "DigestionParameter",
+    "FragmentIonTypesParameter",
+    "PrecursorChargeParameter",
+    "IsotopParameter",
+    "PrecursorToleranceParameter",
+    "FragmentToleranceParameter",
+    "SageAdvancedParameter_A",
+    "ModificationParameter",
+    "SageAdvancedParameter_B"
+  ]
+}
