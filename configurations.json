@@ -33,7 +33,7 @@
     "optimizeXtandemAdvancedParameter": true
   },
   "useFullDataMode": false,
-  "datasetFolderURL": "D:\\Apps\\OptProt\\data\\",
+  "datasetFolderURL": "PATH\\TO\\FOLDER\\data\\",
   "X!TandemParamOrder": [
     "XtandemAdvancedParameter",
     "DigestionParameter",
