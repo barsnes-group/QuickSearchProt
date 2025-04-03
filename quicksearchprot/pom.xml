@@ -83,6 +83,7 @@
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                     <archive>
+                   
                         <manifest>
                             <mainClass>${exec.mainClass}</mainClass>
                         </manifest>
