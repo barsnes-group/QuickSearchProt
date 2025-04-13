@@ -10,9 +10,9 @@
         <maven.compiler.source>19</maven.compiler.source>
         <maven.compiler.target>19</maven.compiler.target>
         <exec.mainClass>no.uib.probe.quicksearchprot.QuickSearchProt</exec.mainClass>
-        <utilities.version>5.1.12</utilities.version>
-        <searchgui.version>4.3.10-beta</searchgui.version>
-        <peptideshaker.version>3.0.9-beta</peptideshaker.version>
+        <utilities.version>5.1.12_quicksprot</utilities.version>
+        <searchgui.version>4.3.11_quicksprot</searchgui.version>
+        <peptideshaker.version>3.0.9-beta_quicksprot</peptideshaker.version>
     </properties>
     <dependencies>
         <dependency>

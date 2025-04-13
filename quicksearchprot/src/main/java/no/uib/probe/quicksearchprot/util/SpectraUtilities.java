@@ -876,19 +876,19 @@ public class SpectraUtilities {
         if (!rawScore.isSameData()) {
             boolean senstive = rawScore.getRawFinalScore() > 0;
             if (rawScore.getRawFinalScore() == 0 && matches.size() > (optProtDataset.getVaildatedPsmMaches().size()) && !potintialFP) {
-                System.out.println("****** new senstive measurment applied *******");
+//                System.out.println("****** new senstive measurment applied *******");
                 senstive = true;
             }
             rawScore.setAcceptedChange(senstive);
             if (rawScore.getRawFinalScore() > 0) {
                 senstive = true;
-                System.out.println("senstive 1");
+//                System.out.println("senstive 1");
             } else if (optProtDataset.getCurrentScoreModel() != null && (rawScore.getRawFinalScore() == 0 && matches.size() > optProtDataset.getIdentifiedPSMsNumber())) {
                 senstive = true;
-                System.out.println("senstive 2 " + rawScore.getRawFinalScore() + "  " +  "  " + matches.size() + "  " + optProtDataset.getIdentifiedPSMsNumber());
+//                System.out.println("senstive 2 " + rawScore.getRawFinalScore() + "  " +  "  " + matches.size() + "  " + optProtDataset.getIdentifiedPSMsNumber());
             } else if (optProtDataset.getCurrentScoreModel() != null && (rawScore.getRawFinalScore() >= (0) && matches.size() > (double) optProtDataset.getIdentifiedPSMsNumber())) {
                 senstive = true;
-                System.out.println("senstive 3 were to apply " + rawScore.getRawFinalScore() + "  ");
+//                System.out.println("senstive 3 were to apply " + rawScore.getRawFinalScore() + "  ");
             }
 //            else if ((rawScore.getFinalScore() >= (-1.0 * optProtDataset.getBasicComparisonThreshold()) && matches.size() > (double) optProtDataset.getIdentifiedPSMsNumber())) {
 //                System.out.println("senstive 3");
@@ -1949,7 +1949,7 @@ public class SpectraUtilities {
     }
 
     public static String compareScoresSet(Map<String, RawScoreModel> resultsMap, double fullDataSize, boolean PFP, boolean applyFDR) {
-        System.out.println("compare score set " + resultsMap.keySet());
+//        System.out.println("compare score set " + resultsMap.keySet());
 
         List<RawScoreModel> scoreModelSorter = new ArrayList<>();
 
@@ -1978,17 +1978,17 @@ public class SpectraUtilities {
                     continue;
                 }
                 double comparisonScore = compareDataScores(resultsMap.get(referenceKey).getSpectrumMatchResult(), resultsMap.get(testKey).getSpectrumMatchResult(), fullDataSize, PFP, applyFDR);
-                System.out.println(testKey + " better " + referenceKey + "  " + comparisonScore + "  roundComparisonScore" + comparisonScore);
+//                System.out.println(testKey + " better " + referenceKey + "  " + comparisonScore + "  roundComparisonScore" + comparisonScore);
                 if (comparisonScore == -1) {
                 } else if ((comparisonScore > 0) || Double.isNaN(comparisonScore)) {// && (resultsMap.get(rs1Key).getFinalScore() > resultsMap.get(rs2Key).getFinalScore())
                     topScoreSet.remove(referenceKey);
-                    System.out.println("-----------------------------------remove 2" + referenceKey + "-------------------------------" + comparisonScore + "   " + (comparisonScore < -0.05));
+//                    System.out.println("-----------------------------------remove 2" + referenceKey + "-------------------------------" + comparisonScore + "   " + (comparisonScore < -0.05));
                 } else if (comparisonScore < 0) {
-                    System.out.println("-----------------------------------remove1 " + testKey + "-------------------------------" + comparisonScore + "   " + (comparisonScore < -0.05));
+//                    System.out.println("-----------------------------------remove1 " + testKey + "-------------------------------" + comparisonScore + "   " + (comparisonScore < -0.05));
                     topScoreSet.remove(testKey);
                     break;
                 } else {
-                    System.out.println(PFP + "-- comparison score was zero --> " + testKey + "  " + resultsMap.get(testKey) + "   " + referenceKey + "  " + resultsMap.get(referenceKey));
+//                    System.out.println(PFP + "-- comparison score was zero --> " + testKey + "  " + resultsMap.get(testKey) + "   " + referenceKey + "  " + resultsMap.get(referenceKey));
                     if (PFP) {
                         double ref = Double.parseDouble(referenceKey);
                         double tes = Double.parseDouble(testKey);
@@ -1997,7 +1997,7 @@ public class SpectraUtilities {
                         } else {
                             topScoreSet.remove(testKey);
                         }
-                        System.out.println("ref is " + ref + "  " + tes + "  " + ((ref > tes)) + "  " + topScoreSet);
+//                        System.out.println("ref is " + ref + "  " + tes + "  " + ((ref > tes)) + "  " + topScoreSet);
 //                        if (score2.getRawFinalScore() > score1.getRawFinalScore()) {
 //                            topScoreSet.remove(testKey);
 //                            break;
@@ -2050,10 +2050,10 @@ public class SpectraUtilities {
             }
         }
         String topSelection = topScoreSet.get(0);
-        System.out.println("top selection is " + topSelection + "   " + topScoreSet);
+//        System.out.println("top selection is " + topSelection + "   " + topScoreSet);
 
         if (topScoreSet.size() > 1) {
-            System.out.println("§§§§ error should be only one value " + topScoreSet);
+//            System.out.println("§§§§ error should be only one value " + topScoreSet);
             List<String> adjustedScore = new ArrayList<>(topScoreSet);
 
             for (int i = 0; i < topScoreSet.size(); i++) {
@@ -2070,7 +2070,7 @@ public class SpectraUtilities {
                     }
                 }
             }
-            System.out.println("final adjust score " + adjustedScore);
+//            System.out.println("final adjust score " + adjustedScore);
 
 //            for (String topScore : topScoreSet) {
 //                RawScoreModel score1 = resultsMap.get(topScore);
@@ -2092,7 +2092,7 @@ public class SpectraUtilities {
 
             topSelection = adjustedScore.get(0);
         } else if (topScoreSet.isEmpty()) {
-            System.out.println("2error should be only one value " + topScoreSet);
+//            System.out.println("2error should be only one value " + topScoreSet);
             return "";
         }
 
@@ -2185,14 +2185,14 @@ public class SpectraUtilities {
                 Set<String> total = new HashSet<>(resultsMap.get(rs1Key).getSpecTitles());
                 total.addAll(resultsMap.get(rs2Key).getSpecTitles());
                 double key1Better = compareDataScores(resultsMap.get(rs2Key).getSpectrumMatchResult(), resultsMap.get(rs1Key).getSpectrumMatchResult(), fullDataSize, false, applyFDR);
-                System.out.println(rs1Key + " better " + rs2Key + "  " + key1Better);
-                System.out.println("resultsMap.get(rs1Key) " + resultsMap.get(rs1Key).getIdPSMNumber() + "(" + resultsMap.get(rs1Key).getFinalScore() + ")   vs " + resultsMap.get(rs2Key).getIdPSMNumber() + "(" + resultsMap.get(rs2Key).getFinalScore() + ")" + "   " + key1Better);
+//                System.out.println(rs1Key + " better " + rs2Key + "  " + key1Better);
+//                System.out.println("resultsMap.get(rs1Key) " + resultsMap.get(rs1Key).getIdPSMNumber() + "(" + resultsMap.get(rs1Key).getFinalScore() + ")   vs " + resultsMap.get(rs2Key).getIdPSMNumber() + "(" + resultsMap.get(rs2Key).getFinalScore() + ")" + "   " + key1Better);
 
                 if ((key1Better > 0) || Double.isNaN(key1Better)) {// && (resultsMap.get(rs1Key).getFinalScore() > resultsMap.get(rs2Key).getFinalScore())
-                    System.out.println("-----------------------------------remove " + rs2Key + "-------------------------------");
+//                    System.out.println("-----------------------------------remove " + rs2Key + "-------------------------------");
                     topScoreSet.remove(rs2Key);
                 } else if ((key1Better < 0)) {
-                    System.out.println("-----------------------------------remove " + rs1Key + "-------------------------------");
+//                    System.out.println("-----------------------------------remove " + rs1Key + "-------------------------------");
                     topScoreSet.remove(rs1Key);
                     break;
                 } else {
@@ -2208,27 +2208,27 @@ public class SpectraUtilities {
                     } else {
                         topScoreSet.remove(rs2Key);
                     }
-                    System.out.println("1<<<>>>>comparison was even what should we do with " + rs1Key + " and " + rs2Key + "  " + topScoreSet);
+//                    System.out.println("1<<<>>>>comparison was even what should we do with " + rs1Key + " and " + rs2Key + "  " + topScoreSet);
                 }
             }
         }
         if (topScoreSet.size() > 1) {
-            System.out.println("error should be only oine ---->> value " + topScoreSet);
+//            System.out.println("error should be only oine ---->> value " + topScoreSet);
 
         } else if (topScoreSet.isEmpty()) {
-            System.out.println("error should be only oine value " + topScoreSet);
+//            System.out.println("error should be only oine value " + topScoreSet);
             return "";
         }
         String topSelection = topScoreSet.get(0);
         if (!scoreModelSorter.get(0).getParameterId().equalsIgnoreCase(topSelection)) {
             topSelection = topSelection + "_-_" + scoreModelSorter.get(0).getParameterId();
-            System.out.println("---------------3----------------->> disagree with both methods " + scoreModelSorter.get(0).getParameterId() + "  " + topSelection);
+//            System.out.println("---------------3----------------->> disagree with both methods " + scoreModelSorter.get(0).getParameterId() + "  " + topSelection);
         }
         return topSelection;
     }
 
     public static void checkScoreForParam(String paramName) {
-        System.out.println("Param is " + paramName);
+//        System.out.println("Param is " + paramName);
         //estimate scores now to compare 
         DescriptiveStatistics ds = new DescriptiveStatistics();
         for (double zSc : MainUtilities.getParamScoreSet()) {
@@ -2236,8 +2236,8 @@ public class SpectraUtilities {
 
         }
         MainUtilities.getParamScoreSet().clear();
-        System.out.println("----------------------------------------Scores ------------------------------------------");
-        System.out.println(" quartiles ds 5% " + ds.getPercentile(5) + "    ds 25% " + ds.getPercentile(25) + "   median " + ds.getPercentile(50) + "  large change " + ds.getPercentile(75) + "  max " + ds.getMax() + "   Range " + (ds.getMax() - ds.getMin()));
+//        System.out.println("----------------------------------------Scores ------------------------------------------");
+//        System.out.println(" quartiles ds 5% " + ds.getPercentile(5) + "    ds 25% " + ds.getPercentile(25) + "   median " + ds.getPercentile(50) + "  large change " + ds.getPercentile(75) + "  max " + ds.getMax() + "   Range " + (ds.getMax() - ds.getMin()));
 //        MainUtilities.paramScoreRange.put((ds.getMax() - ds.getMin()), paramName);
 
     }
@@ -2560,12 +2560,12 @@ public class SpectraUtilities {
         double[] testUniqueData = new double[]{32.7, 44.8, 55.0, 42.4, 46.8, 45.5, 40.2, 44.7, 37.6};
         double score2 = SpectraUtilities.performcomparison(referenceUniqueData, testUniqueData, false);
 //        double value = isBetterScore(to, to, false);
-        System.out.println("value is " + score2);
+//        System.out.println("value is " + score2);
     }
 
     public static int findMainDrop(int[] numbers) {
         if (numbers.length < 2) {
-            System.out.println("Not enough data points to detect a drop.");
+//            System.out.println("Not enough data points to detect a drop.");
             return 0;
         }
 
@@ -2585,9 +2585,9 @@ public class SpectraUtilities {
         }
 
         if (maxDrop > 0) {
-            System.out.println("The main drop is from " + previous + " to " + next + " with a drop of " + maxDrop + "  " + selectedIndex);
+//            System.out.println("The main drop is from " + previous + " to " + next + " with a drop of " + maxDrop + "  " + selectedIndex);
         } else {
-            System.out.println("No drop detected.");
+//            System.out.println("No drop detected.");
         }
 //        System.exit(0);
         return selectedIndex;

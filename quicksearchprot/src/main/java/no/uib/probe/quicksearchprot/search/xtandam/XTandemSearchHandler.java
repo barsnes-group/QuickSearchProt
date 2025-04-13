@@ -1319,7 +1319,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             try {
                 RawScoreModel scoreModel = f.get();
                 boolean oversenstive = scoreModel.getFinalScore() > (0) && scoreModel.getIdPSMNumber() >= optProtDataset.getIdentifiedPSMsNumber();
-                System.out.println("Simi enzymatic " + scoreModel.getRawFinalScore() + "    ----   " + oversenstive + "  " + scoreModel);
+//                System.out.println("Simi enzymatic " + scoreModel.getRawFinalScore() + "    ----   " + oversenstive + "  " + scoreModel);
                 if (scoreModel.getFinalScore() >= 0 || (oversenstive)) {
                     resultsMap.put(j, scoreModel);
                     paramScore.setComments("Cause slow searching");

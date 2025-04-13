@@ -471,7 +471,7 @@ public class StatisticsTests {
         Collections.sort(psms);
         double decoyHits = 0;
         double targetHits = 0;
-        double fdr;
+        double fdr=0;
 
         for (PSM psm : psms) {
 //            if (psm.getScore() < threshold) break;
@@ -481,16 +481,13 @@ public class StatisticsTests {
             if (!psm.isIsTarget()) {
                 decoyHits++;
             }
+
             fdr = (double) decoyHits / (targetHits + decoyHits);
             if (fdr >= targtedFDR) {
-//                System.out.println("---------------->>> thr is  " + psm.getScore());
                 return psm.getScore();
-
             }
         }
-        return -1;
+        return fdr;
     }
-
-   
 
 }
