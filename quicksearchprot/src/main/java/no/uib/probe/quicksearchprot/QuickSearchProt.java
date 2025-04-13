@@ -2,6 +2,8 @@ package no.uib.probe.quicksearchprot;
 
 import com.compomics.util.experiment.identification.Advocate;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,47 +24,68 @@ public class QuickSearchProt {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
+//
+            ConfigurationsUtility.initConfig();
             try {
-                // Get the current working directory
-                String currentDir = System.getProperty("user.dir");
+//                // Get the current working directory
+//
+              
+//
+////                System.exit(0);
+//
+//                File container = new File(jarPath.toUri()).getParentFile();
+//                File configurationsFile = new File(container, "configurations.json");
+//                // Print the directory path
+//                ConfigurationsUtility configUtil = new ConfigurationsUtility(configurationsFile);
 
-                File container = new File(currentDir).getParentFile();
-                File configurationsFile = new File(container, "configurations.json");
-                // Print the directory path
-                ConfigurationsUtility configUtil = new ConfigurationsUtility(configurationsFile);
-      
+                Map<Advocate, List<String>> paramOrderMap = ConfigurationsUtility.paramOrderMap;
 
-                Map<Advocate, List<String>> paramOrderMap = configUtil.getParamOrderMap();
+                Set<Advocate> supportedSearchEngine = ConfigurationsUtility.supportedSearchEngine;//.getSupportedSearchEngine();
 
-                Set<Advocate> supportedSearchEngine = configUtil.getSupportedSearchEngine();
+                Set<String> datasettoTestSet = ConfigurationsUtility.datasettoTestSet;//.getDatasettoTestSet();
 
-                Set<String> datasettoTestSet = configUtil.getDatasettoTestSet();
-
-                boolean cleanAll = configUtil.isCleanAll();
+                boolean cleanAll =ConfigurationsUtility.cleanAll;// configUtil.isCleanAll();
                 SearchInputSetting searchOpParameter = new SearchInputSetting();
-               
-                boolean useFullFasta = configUtil.isUseFullDataMode();
-                boolean useOreginalInputs = configUtil.isUseFullDataMode();
-                System.out.println("configUtil.getSearchOperationParameters() "+configUtil.getSearchOperationParameters());
-                boolean all = configUtil.getSearchOperationParameters().get("optimizeAllParameters");
+
+                boolean useFullFasta =ConfigurationsUtility.useFullDataMode;// configUtil.isUseFullDataMode();
+                boolean useOreginalInputs = ConfigurationsUtility.useFullDataMode;//configUtil.isUseFullDataMode();
+//                System.out.println("configUtil.getSearchOperationParameters() " + configUtil.getSearchOperationParameters());
+                boolean all = ConfigurationsUtility.searchOperationParameters.get("optimizeAllParameters");//configUtil.getSearchOperationParameters().get("optimizeAllParameters");
                 searchOpParameter.setOptimizeAllParameters(all);
-               
-                searchOpParameter.setOptimizeDigestionParameter(configUtil.getSearchOperationParameters().get("optimizeDigestionParameter") || all);
-                searchOpParameter.setOptimizeCleavageParameter(configUtil.getSearchOperationParameters().get("optimizeCleavageParameter"));
-                searchOpParameter.setOptimizeEnzymeParameter(configUtil.getSearchOperationParameters().get("optimizeEnzymeParameter"));
-                searchOpParameter.setOptimizeMaxMissCleavagesParameter(configUtil.getSearchOperationParameters().get("optimizeMaxMissCleavagesParameter") || all);
-                searchOpParameter.setOptimizeSpecificityParameter(configUtil.getSearchOperationParameters().get("optimizeSpecificityParameter"));
-                searchOpParameter.setOptimizeFragmentIonTypesParameter(configUtil.getSearchOperationParameters().get("optimizeFragmentIonTypesParameter") || all);
-                searchOpParameter.setOptimizePrecursorToleranceParameter(configUtil.getSearchOperationParameters().get("optimizePrecursorToleranceParameter") || all);
-                searchOpParameter.setOptimizeFragmentToleranceParameter(configUtil.getSearchOperationParameters().get("optimizeFragmentToleranceParameter") || all);
-                searchOpParameter.setOptimizePrecursorChargeParameter(configUtil.getSearchOperationParameters().get("optimizePrecursorChargeParameter") || all);
-                searchOpParameter.setOptimizeIsotopsParameter(configUtil.getSearchOperationParameters().get("optimizeIsotopsParameter") || all);
-                searchOpParameter.setOptimizeModificationParameter(configUtil.getSearchOperationParameters().get("optimizeModificationParameter") || all);
-                searchOpParameter.setOptimizeSageAdvancedParameter(configUtil.getSearchOperationParameters().get("optimizeSageAdvancedParameter") || all);
-                searchOpParameter.setOptimizeXtandemAdvancedParameter(configUtil.getSearchOperationParameters().get("optimizeXtandemAdvancedParameter") || all);
-//            searchOpParameter.setRecalibrateSpectraParameter(false);
-                boolean sub = !configUtil.isUseFullDataMode();
-                boolean full = configUtil.isUseFullDataMode();
+                
+                
+                searchOpParameter.setOptimizeDigestionParameter(ConfigurationsUtility.searchOperationParameters.get("optimizeDigestionParameter") || all);
+                searchOpParameter.setOptimizeCleavageParameter(ConfigurationsUtility.searchOperationParameters.get("optimizeCleavageParameter"));
+                searchOpParameter.setOptimizeEnzymeParameter(ConfigurationsUtility.searchOperationParameters.get("optimizeEnzymeParameter"));
+                searchOpParameter.setOptimizeMaxMissCleavagesParameter(ConfigurationsUtility.searchOperationParameters.get("optimizeMaxMissCleavagesParameter") || all);
+                searchOpParameter.setOptimizeSpecificityParameter(ConfigurationsUtility.searchOperationParameters.get("optimizeSpecificityParameter"));
+                searchOpParameter.setOptimizeFragmentIonTypesParameter(ConfigurationsUtility.searchOperationParameters.get("optimizeFragmentIonTypesParameter") || all);
+                searchOpParameter.setOptimizePrecursorToleranceParameter(ConfigurationsUtility.searchOperationParameters.get("optimizePrecursorToleranceParameter") || all);
+                searchOpParameter.setOptimizeFragmentToleranceParameter(ConfigurationsUtility.searchOperationParameters.get("optimizeFragmentToleranceParameter") || all);
+                searchOpParameter.setOptimizePrecursorChargeParameter(ConfigurationsUtility.searchOperationParameters.get("optimizePrecursorChargeParameter") || all);
+                searchOpParameter.setOptimizeIsotopsParameter(ConfigurationsUtility.searchOperationParameters.get("optimizeIsotopsParameter") || all);
+                searchOpParameter.setOptimizeModificationParameter(ConfigurationsUtility.searchOperationParameters.get("optimizeModificationParameter") || all);
+                searchOpParameter.setOptimizeSageAdvancedParameter(ConfigurationsUtility.searchOperationParameters.get("optimizeSageAdvancedParameter") || all);
+                searchOpParameter.setOptimizeXtandemAdvancedParameter(ConfigurationsUtility.searchOperationParameters.get("optimizeXtandemAdvancedParameter") || all);
+//            
+                
+
+//                searchOpParameter.setOptimizeDigestionParameter(configUtil.getSearchOperationParameters().get("optimizeDigestionParameter") || all);
+//                searchOpParameter.setOptimizeCleavageParameter(configUtil.getSearchOperationParameters().get("optimizeCleavageParameter"));
+//                searchOpParameter.setOptimizeEnzymeParameter(configUtil.getSearchOperationParameters().get("optimizeEnzymeParameter"));
+//                searchOpParameter.setOptimizeMaxMissCleavagesParameter(configUtil.getSearchOperationParameters().get("optimizeMaxMissCleavagesParameter") || all);
+//                searchOpParameter.setOptimizeSpecificityParameter(configUtil.getSearchOperationParameters().get("optimizeSpecificityParameter"));
+//                searchOpParameter.setOptimizeFragmentIonTypesParameter(configUtil.getSearchOperationParameters().get("optimizeFragmentIonTypesParameter") || all);
+//                searchOpParameter.setOptimizePrecursorToleranceParameter(configUtil.getSearchOperationParameters().get("optimizePrecursorToleranceParameter") || all);
+//                searchOpParameter.setOptimizeFragmentToleranceParameter(configUtil.getSearchOperationParameters().get("optimizeFragmentToleranceParameter") || all);
+//                searchOpParameter.setOptimizePrecursorChargeParameter(configUtil.getSearchOperationParameters().get("optimizePrecursorChargeParameter") || all);
+//                searchOpParameter.setOptimizeIsotopsParameter(configUtil.getSearchOperationParameters().get("optimizeIsotopsParameter") || all);
+//                searchOpParameter.setOptimizeModificationParameter(configUtil.getSearchOperationParameters().get("optimizeModificationParameter") || all);
+//                searchOpParameter.setOptimizeSageAdvancedParameter(configUtil.getSearchOperationParameters().get("optimizeSageAdvancedParameter") || all);
+//                searchOpParameter.setOptimizeXtandemAdvancedParameter(configUtil.getSearchOperationParameters().get("optimizeXtandemAdvancedParameter") || all);
+////            searchOpParameter.setRecalibrateSpectraParameter(false);
+                boolean sub = !ConfigurationsUtility.useFullDataMode;//configUtil.isUseFullDataMode();
+                boolean full =ConfigurationsUtility.useFullDataMode;// configUtil.isUseFullDataMode();
 ////////       
                 for (Advocate se : supportedSearchEngine) {
                     MainUtilities.getParamScoreSet().clear();
@@ -93,17 +116,18 @@ public class QuickSearchProt {
                 MainUtilities.cleanOutputFolder("");
                 System.exit(0);
             }
-        }
-        );
+        });
     }
 
     private static void runDataset(String datasetId, boolean cleanAll, List<String> paramOrder, SearchInputSetting searchOpParameter, boolean wholeDataTest, boolean fullFasta, boolean useOreginalInputs) {
         ArrayList<File> msFiles = new ArrayList<>();
-        File datasetFolder = new File(Configurations.GET_DATA_FOLDER() + datasetId);//  
+        System.out.println("dataset file "+Configurations.GET_DATA_FOLDER() +"\\" + datasetId);
+        File datasetFolder = new File(ConfigurationsUtility.DATA_FOLDER+ datasetId);//  
         File searchParamFile = null;
-        File fastaFile = null; 
+        File fastaFile = null;
+        System.out.println("no.uib.probe.quicksearchprot.QuickSearchProt.runDataset()");
         for (File f : datasetFolder.listFiles()) {
-           
+
             if (cleanAll) {
                 if (f.isDirectory() && f.getName().equals(searchOpParameter.getSelectedSearchEngine().getName())) {
                     for (File ff : f.listFiles()) {

@@ -39,6 +39,17 @@
        
     </dependencies>
     <build>  
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/extra</directory> <!-- Your additional resource folder -->
+            </resource>
+        </resources>
+
+        
         <plugins>  
             <plugin>  
                 <!-- Build an executable JAR -->  
@@ -53,54 +64,61 @@
                     </archive>  
                 </configuration>  
             </plugin>  
-        </plugins>  
-    </build> 
-    
-    <!--  <build>
-        <plugins>
-            <!- - This plugin packages the JAR with the main class - ->
+       
+            <!-- any other plugins -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <! - - Specify the main class here - ->
-                            <mainClass>${exec.mainClass}</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <!- - Optional: Maven Assembly Plugin to create a fat JAR with dependencies - ->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                   
-                        <manifest>
-                            <mainClass>${exec.mainClass}</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
                 <executions>
                     <execution>
-                        <id>make-assembly</id> <!- - this is used for inheritance merges - ->
-                        <phase>package</phase> <!- - bind to the packaging phase - ->
+                        <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+          
+                    <archive>  
+                        <manifest>  
+                            <mainClass>${exec.mainClass}</mainClass>  
+                        </manifest>  
+                    </archive>
+                </configuration>
             </plugin>
+    
+           
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <copy file="D:\Apps\QuickSearchProt\quicksearchprot\configurations.json" tofile="${project.build.directory}/configurations.json"/>                      
+                                <copy  todir="${project.build.directory}/searchengines">
+                                    <fileset dir="D:\Apps\QuickSearchProt\searchengines"/>
+                                </copy>
+                                 <copy  todir="${project.build.directory}/testdata">
+                                    <fileset dir="D:\Apps\QuickSearchProt\testdata"/>
+                                </copy>
+
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            
         </plugins>
-    </build>-->
+    </build>
     
       
 </project>
