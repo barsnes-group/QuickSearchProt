@@ -43,7 +43,7 @@ public class Configurations {
      * The default search param file.
      */
 //    f
-    public static final String DEFAULT_OPTPROT_SEARCH_SETTINGS_FILE = "D:\\Apps\\OptProt\\data\\default_optprot_search_settings.par";
+    public static final String DEFAULT_OPTPROT_SEARCH_SETTINGS_FILE = "default_optprot_search_settings.par";
     /**
      * The active search param file.
      */

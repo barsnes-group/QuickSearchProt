@@ -15,7 +15,7 @@
     "PXD009340",
     "PXD001250"
   ],
-  "cleanAll": false,
+  "cleanAll": true,
   "searchOpParameter": {
     "optimizeAllParameters": true,
     "optimizeDigestionParameter": true,

@@ -69,7 +69,7 @@ public class ConfigurationsUtility {
                 DATA_FOLDER = jsonObject.get("datasetFolderURL").getAsString();
                 boolean testdataoption = false;
                 if (DATA_FOLDER.equalsIgnoreCase("PATH\\TO\\DATA\\FOLDER\\")) {
-                    DATA_FOLDER = container.getAbsolutePath() + "\\testdata\\";
+                    DATA_FOLDER = new File(container.getAbsolutePath(), "testdata").getAbsolutePath();
                     testdataoption = true;
                 }
 

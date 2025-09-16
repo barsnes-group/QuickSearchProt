@@ -112,7 +112,9 @@ public class OptProtDatasetHandler {
             if (fullFasta) {
                 subFastaFile = fastaFile;
             }
+            System.out.println("sub folder "+subDataFolder.getAbsolutePath());
             for (File f : subDataFolder.listFiles()) {
+                System.out.println("file name "+f.getAbsolutePath());
                 if (f.getName().toLowerCase().endsWith(".par") || f.getName().toLowerCase().endsWith(".mgf") || f.getName().toLowerCase().endsWith(".fasta") || f.getName().toLowerCase().endsWith(".txt")) {
                     subFilesMap.put(f.getName().toLowerCase(), f);
                 } else {
@@ -139,6 +141,7 @@ public class OptProtDatasetHandler {
                     direcTagParameters.setDuplicateSpectra(false);
                     direcTagParameters.setUseChargeStateFromMS(false);
                     IdentificationParameters.saveIdentificationParameters(identificationParameters, new File(Configurations.DEFAULT_OPTPROT_SEARCH_SETTINGS_FILE));
+                   
                     //generate subset of spectra 
                     //init Q1
                     int subSize;
@@ -353,13 +356,16 @@ public class OptProtDatasetHandler {
             arrayList.clear();
             arrayList.addAll(SpectraUtilities.getTagSectionRatios(subMsFileHandler.getSpectrumTitles(IoUtil.removeExtension(msFile.getName())), matches));
         } catch (IOException ex) {
-            Logger.getLogger(OptProtDatasetHandler.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         return arrayList;
     }
 
     private Map<String, Spectrum> generatFilteredData(File msFile, MsFileHandler msFileHandler, List<Double> ratios, boolean full, int seIndex) {
 
+         System.out.println("new identification file path "+msFile.getAbsolutePath()+"  ----  "+ratios+"   -----   "+full+"  ------  "+seIndex);
+             
+        
         final String fileNameWithoutExtension = IoUtil.removeExtension(msFile.getName());
         String[] fullSpectrumTitiles = msFileHandler.getSpectrumTitles(fileNameWithoutExtension);
         int initStartIndex = 0;
@@ -424,6 +430,9 @@ public class OptProtDatasetHandler {
             String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + msFileNameWithoutExtension + Configurations.get_current_file_fingerprent();
             File tempResultsFolder = SearchExecuter.executeSearch(updatedName, searchInputSetting, destinationFile, fastaFile, identificationParameters, identificationParametersFile);
             File direcTagFile = new File(tempResultsFolder, IoUtil.removeExtension(destinationFile.getName()) + ".tags");
+            System.out.println("direct tag file "+tempResultsFolder.getAbsolutePath());
+           
+            
             if (!direcTagFile.exists()) {
                 System.out.println("there is no tags in the file ...very poor data " + msFileNameWithoutExtension);
                 return new ArrayList<>();
@@ -437,7 +446,7 @@ public class OptProtDatasetHandler {
             return matches;
         } catch (IOException | SQLException | ClassNotFoundException | InterruptedException | JAXBException | XmlPullParserException | XMLStreamException ex) {
             Logger.getLogger(OptProtDatasetHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } 
         return new ArrayList<>();
 
     }

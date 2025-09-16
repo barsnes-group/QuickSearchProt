@@ -204,21 +204,21 @@ public class OptProtWaitingHandler extends WaitingHandlerCLIImpl {
 
             progressMutex.acquire();
 //
-//            int progress = 10 * progress2;
-//            if (progress1 == 0) {
-//                if (needNewLine) {
-//                    System.out.append(lineBreak);
-//                }
-//                System.out.print("10%");
-//                needNewLine = true;
-//            } else if (progress2 > 99) {
-//                System.out.print(" " + progress + "%");
-//                System.out.append(lineBreak);
-//                needNewLine = false;
-//            } else {
-//                System.out.print(" " + progress + "%");
-//                needNewLine = true;
-//            }
+            int progress = 10 * progress2;
+            if (progress1 == 0) {
+                if (needNewLine) {
+                    System.out.append(lineBreak);
+                }
+                System.out.print("10%");
+                needNewLine = true;
+            } else if (progress2 > 99) {
+                System.out.print(" " + progress + "%");
+                System.out.append(lineBreak);
+                needNewLine = false;
+            } else {
+                System.out.print(" " + progress + "%");
+                needNewLine = true;
+            }
 
             progressMutex.release();
 

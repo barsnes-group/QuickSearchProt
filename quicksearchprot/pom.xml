@@ -102,12 +102,13 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <copy file="D:\Apps\QuickSearchProt\quicksearchprot\configurations.json" tofile="${project.build.directory}/configurations.json"/>                      
+                                <copy file="configurations.json" tofile="${project.build.directory}/configurations.json"/>    
+                                  <copy file="default_optprot_search_settings.par" tofile="${project.build.directory}/default_optprot_search_settings.par"/>                      
                                 <copy  todir="${project.build.directory}/searchengines">
-                                    <fileset dir="D:\Apps\QuickSearchProt\searchengines"/>
+                                    <fileset dir="resources"/>
                                 </copy>
                                  <copy  todir="${project.build.directory}/testdata">
-                                    <fileset dir="D:\Apps\QuickSearchProt\testdata"/>
+                                    <fileset dir="../testdata"/>
                                 </copy>
 
                             </tasks>

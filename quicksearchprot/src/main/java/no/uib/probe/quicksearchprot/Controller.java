@@ -24,7 +24,7 @@ public class Controller {
     }
 
     public void processDataset( File oreginalMsFile, File oreginalFastaFile, File identificationParametersFile, boolean wholeDataTest, boolean fullFasta, List<String> paramOrder, boolean useOreginalInputs) {
-        File subDataFolder = new File(Configurations.GET_DATA_FOLDER() + optProtDatasetHandler.getSearchInputSetting().getDatasetId(), optProtDatasetHandler.getSearchInputSetting().getSelectedSearchEngine().getName());
+        File subDataFolder = new File(Configurations.GET_DATA_FOLDER() +"\\"+ optProtDatasetHandler.getSearchInputSetting().getDatasetId(), optProtDatasetHandler.getSearchInputSetting().getSelectedSearchEngine().getName());
         if (subDataFolder.exists()) {
             for (File f : subDataFolder.listFiles()) {
                 System.out.println("File found  " + f.getName());

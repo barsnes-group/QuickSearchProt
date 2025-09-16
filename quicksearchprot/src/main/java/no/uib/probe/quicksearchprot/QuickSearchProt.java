@@ -122,15 +122,16 @@ public class QuickSearchProt {
     private static void runDataset(String datasetId, boolean cleanAll, List<String> paramOrder, SearchInputSetting searchOpParameter, boolean wholeDataTest, boolean fullFasta, boolean useOreginalInputs) {
         ArrayList<File> msFiles = new ArrayList<>();
         System.out.println("dataset file "+Configurations.GET_DATA_FOLDER() +"\\" + datasetId);
-        File datasetFolder = new File(ConfigurationsUtility.DATA_FOLDER+ datasetId);//  
+        File datasetFolder = new File(ConfigurationsUtility.DATA_FOLDER,datasetId);//  
         File searchParamFile = null;
         File fastaFile = null;
-        System.out.println("no.uib.probe.quicksearchprot.QuickSearchProt.runDataset()");
+        System.out.println("no.uib.probe.quicksearchprot.QuickSearchProt.runDataset()"+datasetFolder.getAbsolutePath());
         for (File f : datasetFolder.listFiles()) {
 
             if (cleanAll) {
                 if (f.isDirectory() && f.getName().equals(searchOpParameter.getSelectedSearchEngine().getName())) {
                     for (File ff : f.listFiles()) {
+                        System.out.println("to be deleted files " + f.getAbsolutePath());
                         if (ff.getName().startsWith(Configurations.DEFAULT_RESULT_NAME) && !ff.getName().endsWith(".txt")) {
                             System.out.println("to be deleted files " + ff.getAbsolutePath());
                             ff.delete();
