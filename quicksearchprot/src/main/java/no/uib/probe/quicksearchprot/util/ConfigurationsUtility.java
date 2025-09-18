@@ -16,13 +16,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import no.uib.probe.quicksearchprot.QuickSearchProt;
+import no.uib.probe.quicksearchprot.QuickSearchProtApp;
+import no.uib.probe.quicksearchprot.model.QSProtInputsEntity;
 
 /**
  *
@@ -31,51 +28,47 @@ import no.uib.probe.quicksearchprot.QuickSearchProt;
 public class ConfigurationsUtility {
 
     public static Map<Advocate, List<String>> paramOrderMap = new HashMap<>();
-    public static Set<Advocate> supportedSearchEngine = new LinkedHashSet<>();
-    public static Set<String> datasettoTestSet = new LinkedHashSet<>();
-    public static boolean cleanAll = false;
     public static Map<String, Boolean> searchOperationParameters = new LinkedHashMap<>();
     public static boolean useFullDataMode = false;
+    public static String DATASET_MAIN_OUTPUT_FOLDER_PATH;
+    public static String SUBSET_DATA_FOLDER;
+      /**
+     * The default search param file.
+     */
+    public static final String DEFAULT_QSPROT_SEARCH_PARAM_FILE = "default_optprot_search_settings.par";
 
-    public static void initConfig() {
-
+    public static void initConfig(QSProtInputsEntity projectEntity) {
         Path jarPath;
         try {
-            jarPath = Paths.get(QuickSearchProt.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-            System.out.println(" container " + jarPath + "  ");
+            jarPath = Paths.get(QuickSearchProtApp.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+
             File container = new File(jarPath.toUri()).getParentFile();
             configurationsFile = new File(container, "configurations.json");
-          
             XTANDEM_FOLDER = container.getAbsolutePath() + "\\searchengines\\XTandem\\windows\\windows_64bit";
             NOVOR_FOLDER = container.getAbsolutePath() + "\\searchengines\\Novor";
             DIRECTAG_FOLDER = container.getAbsolutePath() + "\\searchengines\\DirecTag\\windows\\windows_64bit";
             SAGE_FOLDER = container.getAbsolutePath() + "\\searchengines\\Sage\\windows\\";
 
-            File workingfolder = new File(configurationsFile.getParentFile(), "workingfolder");
+            //create output folder structure
+           File datasetMainOutputFolder = new File(projectEntity.getOutputFolderPath(), projectEntity.getDatasetId());
+            datasetMainOutputFolder.mkdir();
+          File subDatafolder = new File(datasetMainOutputFolder, "subsetFiles");
+            subDatafolder.mkdir();
+            File workingfolder = new File(datasetMainOutputFolder, "workingfolder");
             workingfolder.mkdir();
-
-            OUTPUT_FOLDER_PATH = workingfolder.getAbsolutePath();
+            DATASET_MAIN_OUTPUT_FOLDER_PATH=datasetMainOutputFolder.getAbsolutePath();
+            SUBSET_DATA_FOLDER=subDatafolder.getAbsolutePath();
+            WORKING_FOLDER_PATH = workingfolder.getAbsolutePath();
             try (FileReader reader = new FileReader(configurationsFile)) {
                 JsonObject jsonObject = JsonParser.parseReader(reader).getAsJsonObject();
-                // Accessing elements in the JSON object
-                Iterator<JsonElement> searchEngines = jsonObject.getAsJsonArray("supportedSearchEngine").iterator();
-
-                while (searchEngines.hasNext()) {
-                    String searchEngineName = searchEngines.next().getAsString();
-                    supportedSearchEngine.add(Advocate.getAdvocate(searchEngineName));
-                }
-                cleanAll = jsonObject.get("cleanAll").getAsBoolean();
-                System.out.println("Clean All: " + cleanAll);
-                DATA_FOLDER = jsonObject.get("datasetFolderURL").getAsString();
-                boolean testdataoption = false;
-                if (DATA_FOLDER.equalsIgnoreCase("PATH\\TO\\DATA\\FOLDER\\")) {
-                    DATA_FOLDER = new File(container.getAbsolutePath(), "testdata").getAbsolutePath();
-                    testdataoption = true;
-                }
 
                 searchOperationParameters = new Gson().fromJson(jsonObject.getAsJsonObject("searchOpParameter"), new TypeToken<Map<String, Boolean>>() {
                 }.getType());
-                for (Advocate se : supportedSearchEngine) {
+                for (String seName : projectEntity.getSearchEngineList()) {
+                    Advocate se = Advocate.xtandem;
+                    if (seName.equalsIgnoreCase("Sage")) {
+                        se = Advocate.sage;
+                    }
                     String paramName = se.getName() + "ParamOrder";
                     Iterator<JsonElement> parameters = jsonObject.getAsJsonArray(paramName).iterator();
                     List<String> paramOrderList = new ArrayList<>();
@@ -87,15 +80,6 @@ public class ConfigurationsUtility {
 
                 }
                 useFullDataMode = jsonObject.get("useFullDataMode").getAsBoolean();
-
-                Iterator<JsonElement> datasets = jsonObject.getAsJsonArray("datasets").iterator();
-                while (datasets.hasNext()) {
-                    String param = datasets.next().getAsString();
-                    datasettoTestSet.add(param);
-                    if (testdataoption) {
-                        break;
-                    }
-                }
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -120,77 +104,10 @@ public class ConfigurationsUtility {
 
     }
 
-    /**
-     * The resources folder.
-     */
-    public static String DATA_FOLDER = "D:\\Apps\\OptProt\\data\\";
-    /**
-     * The output folder.
-     */
-    public static String OUTPUT_FOLDER_PATH = "D:\\Apps\\OptProt\\data\\output";
+    public static String WORKING_FOLDER_PATH = "";
 
-//    public ConfigurationsUtility(File configurationsFile) {
-//        File workingfolder = new File(configurationsFile.getParentFile(), "workingfolder");
-//        workingfolder.mkdir();
-//
-//        OUTPUT_FOLDER_PATH = workingfolder.getAbsolutePath();
-//        try (FileReader reader = new FileReader(configurationsFile)) {
-//            JsonObject jsonObject = JsonParser.parseReader(reader).getAsJsonObject();
-//
-//            // Accessing elements in the JSON object
-//            System.out.println("Supported Search Engines: " + jsonObject.get("supportedSearchEngine"));
-//            Iterator<JsonElement> searchEngines = jsonObject.getAsJsonArray("supportedSearchEngine").iterator();
-//
-//            while (searchEngines.hasNext()) {
-//                String searchEngineName = searchEngines.next().getAsString();
-//                supportedSearchEngine.add(Advocate.getAdvocate(searchEngineName));
-//            }
-//            cleanAll = jsonObject.get("cleanAll").getAsBoolean();
-//            System.out.println("Clean All: " + cleanAll);
-//            DATA_FOLDER = jsonObject.get("datasetFolderURL").getAsString();
-//            System.out.println("data folder "+DATA_FOLDER);
-//            System.exit(0);
-//            searchOperationParameters = new Gson().fromJson(jsonObject.getAsJsonObject("searchOpParameter"), new TypeToken<Map<String, Boolean>>() {
-//            }.getType());
-//            System.out.println("DATA_FOLDER " + DATA_FOLDER);
-//            for (Advocate se : supportedSearchEngine) {
-//                String paramName = se.getName() + "ParamOrder";
-//                Iterator<JsonElement> parameters = jsonObject.getAsJsonArray(paramName).iterator();
-//                List<String> paramOrderList = new ArrayList<>();
-//                while (parameters.hasNext()) {
-//                    String param = parameters.next().getAsString();
-//                    paramOrderList.add(param);
-//                }
-//                paramOrderMap.put(se, paramOrderList);
-//
-//            }
-//            System.out.println("Parameter Order: " + paramOrderMap);
-//            useFullDataMode = jsonObject.get("useFullDataMode").getAsBoolean();
-//
-//            Iterator<JsonElement> datasets = jsonObject.getAsJsonArray("datasets").iterator();
-//            while (datasets.hasNext()) {
-//                String param = datasets.next().getAsString();
-//                datasettoTestSet.add(param);
-//            }
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
     public Map<Advocate, List<String>> getParamOrderMap() {
         return paramOrderMap;
-    }
-
-    public Set<Advocate> getSupportedSearchEngine() {
-        return supportedSearchEngine;
-    }
-
-    public Set<String> getDatasettoTestSet() {
-        return datasettoTestSet;
-    }
-
-    public boolean isCleanAll() {
-        return cleanAll;
     }
 
     public Map<String, Boolean> getSearchOperationParameters() {

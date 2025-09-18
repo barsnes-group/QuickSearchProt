@@ -1,25 +1,24 @@
 package no.uib.probe.quicksearchprot.gui;
 
-import com.compomics.util.gui.UtilitiesGUIDefaults;
+import com.compomics.util.experiment.identification.Advocate;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.io.File;
 import javax.swing.ButtonGroup;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.LookAndFeel;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.DefaultCaret;
+import no.uib.probe.quicksearchprot.model.QSProtInputsEntity;
+import no.uib.probe.quicksearchprot.util.MainUtilities;
 
 /**
  *
  * @author Yehia Farag
  */
-public class QSPROTGUI extends javax.swing.JFrame {
-
+public abstract class QSPROTGUI extends javax.swing.JFrame {
+    
     private String lastSelectedDirectory = "/";
+    private final QSProtInputsEntity inputEntity = new QSProtInputsEntity();
 
     /**
      * Creates new form QSPROTGUI
@@ -35,6 +34,7 @@ public class QSPROTGUI extends javax.swing.JFrame {
         jLabel5.setText(jSlider1.getValue() + "");
         jSlider1.addChangeListener((ChangeEvent e) -> {
             jLabel5.setText(jSlider1.getValue() + "");
+            inputEntity.setSubSetSize(jSlider1.getValue());
         });
         ButtonGroup group = new ButtonGroup();
         group.add(jRadioButton1);
@@ -42,7 +42,14 @@ public class QSPROTGUI extends javax.swing.JFrame {
         jRadioButton1.setSelected(true);
         jCheckBox5.setSelected(true);
         jCheckBox5ActionPerformed(null);
-
+        jRadioButton1ActionPerformed(null);
+        MainUtilities.QSProtWaitingHandler.setMainPrgressBar(jProgressBar1);
+        MainUtilities.QSProtWaitingHandler.setLogTextArea(logTextArea);
+        logTextArea.setEditable(false);
+  
+         // Get the caret and set its update policy
+        DefaultCaret caret = (DefaultCaret) logTextArea.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
     }
 
     /**
@@ -62,20 +69,20 @@ public class QSPROTGUI extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         welcomeLabel = new javax.swing.JLabel();
         inputOutputPanel = new javax.swing.JPanel();
-        searchSettingsLbl = new javax.swing.JLabel();
-        spectrumFilesLabel = new javax.swing.JLabel();
-        databaseSettingsLbl = new javax.swing.JLabel();
-        resultFolderLbl = new javax.swing.JLabel();
+        searchSettingsLabel = new javax.swing.JLabel();
+        spectrumLabel = new javax.swing.JLabel();
+        databaseLabel = new javax.swing.JLabel();
+        outputLabel = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         searchSettingsFileLabel = new javax.swing.JLabel();
         mgfFileLable = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
-        fastaFileLabel = new javax.swing.JLabel();
+        fastaLabel = new javax.swing.JLabel();
         outputFolderLabel = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        searchSettingsFileLabel2 = new javax.swing.JLabel();
+        projectNameLabel = new javax.swing.JLabel();
         inputOutputPanel1 = new javax.swing.JPanel();
         searchSettingsFileLabel1 = new javax.swing.JLabel();
         jCheckBox4 = new javax.swing.JCheckBox();
@@ -92,12 +99,20 @@ public class QSPROTGUI extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         inputOutputPanel2 = new javax.swing.JPanel();
         searchSettingsFileLabel3 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        searchEnginesLabel = new javax.swing.JLabel();
         jCheckBox2 = new javax.swing.JCheckBox();
         jCheckBox3 = new javax.swing.JCheckBox();
         jProgressBar1 = new javax.swing.JProgressBar();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        logTextArea = new javax.swing.JTextArea();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextPane1 = new javax.swing.JTextPane();
+        jPanel4 = new javax.swing.JPanel();
+        searchSettingsLabel1 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -105,8 +120,8 @@ public class QSPROTGUI extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel1.setAutoscrolls(true);
-        jPanel1.setMaximumSize(new java.awt.Dimension(1049, 560));
-        jPanel1.setMinimumSize(new java.awt.Dimension(1049, 560));
+        jPanel1.setMaximumSize(new java.awt.Dimension(823, 670));
+        jPanel1.setMinimumSize(new java.awt.Dimension(823, 670));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/QS_icon_141_125.png"))); // NOI18N
 
@@ -116,15 +131,16 @@ public class QSPROTGUI extends javax.swing.JFrame {
         inputOutputPanel.setBackground(new java.awt.Color(255, 255, 255));
         inputOutputPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
 
-        searchSettingsLbl.setText("Search Settings");
+        searchSettingsLabel.setText("Search Settings");
 
-        spectrumFilesLabel.setText("Spectrum File");
+        spectrumLabel.setText("Spectrum File");
 
-        databaseSettingsLbl.setText("Database File");
+        databaseLabel.setText("Database File");
 
-        resultFolderLbl.setText("Output Folder");
+        outputLabel.setText("Output Folder");
 
         jButton1.setText("Add");
+        jButton1.setToolTipText("To enable select (Selected parameters to adjust option) from adjustment mode panel)");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -155,11 +171,11 @@ public class QSPROTGUI extends javax.swing.JFrame {
             }
         });
 
-        fastaFileLabel.setText("     FASTA file formate");
-        fastaFileLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        fastaFileLabel.setMaximumSize(new java.awt.Dimension(201, 18));
-        fastaFileLabel.setMinimumSize(new java.awt.Dimension(201, 18));
-        fastaFileLabel.setPreferredSize(new java.awt.Dimension(201, 18));
+        fastaLabel.setText("     FASTA file formate");
+        fastaLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        fastaLabel.setMaximumSize(new java.awt.Dimension(201, 18));
+        fastaLabel.setMinimumSize(new java.awt.Dimension(201, 18));
+        fastaLabel.setPreferredSize(new java.awt.Dimension(201, 18));
 
         outputFolderLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         outputFolderLabel.setLabelFor(jButton4);
@@ -171,11 +187,11 @@ public class QSPROTGUI extends javax.swing.JFrame {
 
         jLabel2.setText("<html><b style=\"color: black\">Input/Output</b></html>");
 
-        searchSettingsFileLabel2.setText("     Search settings file generated by SearchGUI tool (.par)");
-        searchSettingsFileLabel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        searchSettingsFileLabel2.setMaximumSize(new java.awt.Dimension(201, 18));
-        searchSettingsFileLabel2.setMinimumSize(new java.awt.Dimension(201, 18));
-        searchSettingsFileLabel2.setPreferredSize(new java.awt.Dimension(201, 18));
+        projectNameLabel.setText("     Search settings file generated by SearchGUI tool (.par)");
+        projectNameLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        projectNameLabel.setMaximumSize(new java.awt.Dimension(201, 18));
+        projectNameLabel.setMinimumSize(new java.awt.Dimension(201, 18));
+        projectNameLabel.setPreferredSize(new java.awt.Dimension(201, 18));
 
         javax.swing.GroupLayout inputOutputPanelLayout = new javax.swing.GroupLayout(inputOutputPanel);
         inputOutputPanel.setLayout(inputOutputPanelLayout);
@@ -186,10 +202,10 @@ public class QSPROTGUI extends javax.swing.JFrame {
                 .addGroup(inputOutputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(inputOutputPanelLayout.createSequentialGroup()
                         .addGroup(inputOutputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(searchSettingsLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(spectrumFilesLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(databaseSettingsLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(resultFolderLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(searchSettingsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(spectrumLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(databaseLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(outputLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(inputOutputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButton1)
@@ -198,9 +214,9 @@ public class QSPROTGUI extends javax.swing.JFrame {
                             .addComponent(jButton4))
                         .addGap(18, 18, 18)
                         .addGroup(inputOutputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(fastaFileLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 564, Short.MAX_VALUE)
+                            .addComponent(fastaLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 564, Short.MAX_VALUE)
                             .addComponent(mgfFileLable, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(searchSettingsFileLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(projectNameLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(outputFolderLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
             .addGroup(inputOutputPanelLayout.createSequentialGroup()
@@ -214,23 +230,24 @@ public class QSPROTGUI extends javax.swing.JFrame {
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(inputOutputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(searchSettingsLbl)
+                    .addComponent(searchSettingsLabel)
                     .addComponent(jButton1)
                     .addComponent(searchSettingsFileLabel)
-                    .addComponent(searchSettingsFileLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(projectNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(inputOutputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(spectrumFilesLabel)
+                    .addComponent(spectrumLabel)
                     .addComponent(mgfFileLable)
                     .addComponent(jButton2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(inputOutputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(databaseSettingsLbl)
-                    .addComponent(fastaFileLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3))
+                .addGroup(inputOutputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(databaseLabel)
+                    .addGroup(inputOutputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(fastaLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton3)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(inputOutputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(resultFolderLbl)
+                    .addComponent(outputLabel)
                     .addComponent(jButton4)
                     .addComponent(outputFolderLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(10, 10, 10))
@@ -272,7 +289,7 @@ public class QSPROTGUI extends javax.swing.JFrame {
                         .addGroup(inputOutputPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(inputOutputPanel1Layout.createSequentialGroup()
                                 .addComponent(jCheckBox4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(61, 61, 61)
                                 .addComponent(jCheckBox5))
                             .addGroup(inputOutputPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel4)
@@ -354,17 +371,20 @@ public class QSPROTGUI extends javax.swing.JFrame {
         inputOutputPanel3Layout.setVerticalGroup(
             inputOutputPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(inputOutputPanel3Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(searchSettingsFileLabel4)
-                .addGap(20, 20, 20))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, inputOutputPanel3Layout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(2, 2, 2)
-                .addComponent(jRadioButton2)
-                .addContainerGap())
+                .addGroup(inputOutputPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(inputOutputPanel3Layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addComponent(searchSettingsFileLabel4)
+                        .addGap(20, 20, 20))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, inputOutputPanel3Layout.createSequentialGroup()
+                        .addGap(5, 5, 5)
+                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jRadioButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(2, 2, 2)
+                        .addComponent(jRadioButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         inputOutputPanel2.setBackground(new java.awt.Color(255, 255, 255));
@@ -373,7 +393,7 @@ public class QSPROTGUI extends javax.swing.JFrame {
         inputOutputPanel2.setMinimumSize(new java.awt.Dimension(858, 81));
         inputOutputPanel2.setPreferredSize(new java.awt.Dimension(858, 81));
 
-        jLabel3.setText("<html><b>Search Engine</b></html>");
+        searchEnginesLabel.setText("<html><b>Search Engine</b></html>");
 
         jCheckBox2.setText("Sage");
         jCheckBox2.addActionListener(new java.awt.event.ActionListener() {
@@ -399,7 +419,7 @@ public class QSPROTGUI extends javax.swing.JFrame {
                     .addGroup(inputOutputPanel2Layout.createSequentialGroup()
                         .addGap(86, 86, 86)
                         .addComponent(searchSettingsFileLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 758, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchEnginesLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jCheckBox2)
                     .addComponent(jCheckBox3))
                 .addContainerGap())
@@ -408,7 +428,7 @@ public class QSPROTGUI extends javax.swing.JFrame {
             inputOutputPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(inputOutputPanel2Layout.createSequentialGroup()
                 .addGap(5, 5, 5)
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(searchEnginesLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(inputOutputPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(searchSettingsFileLabel3)
@@ -419,9 +439,73 @@ public class QSPROTGUI extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        jTabbedPane1.setBackground(new java.awt.Color(255, 255, 255));
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+
+        logTextArea.setColumns(20);
+        logTextArea.setLineWrap(true);
+        logTextArea.setRows(5);
+        logTextArea.setWrapStyleWord(true);
+        jScrollPane1.setViewportView(logTextArea);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Log ", jPanel2);
+
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+
+        jScrollPane2.setViewportView(jTextPane1);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Output", jPanel3);
+
+        jPanel4.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+
+        searchSettingsLabel1.setText("<html><b style=\"color: black\">Project name</b></html></b></html>");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(searchSettingsLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 653, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(searchSettingsLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -430,6 +514,7 @@ public class QSPROTGUI extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(10, 10, 10)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(28, 28, 28)
@@ -444,7 +529,7 @@ public class QSPROTGUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(inputOutputPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 805, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1))
+                    .addComponent(jTabbedPane1))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -458,17 +543,19 @@ public class QSPROTGUI extends javax.swing.JFrame {
                         .addGap(40, 40, 40)
                         .addComponent(welcomeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(inputOutputPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(inputOutputPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(inputOutputPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(inputOutputPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(inputOutputPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(inputOutputPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(inputOutputPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 319, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -477,8 +564,8 @@ public class QSPROTGUI extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 834, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -493,19 +580,33 @@ public class QSPROTGUI extends javax.swing.JFrame {
 
     private void jCheckBox4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox4ActionPerformed
         // TODO add your handling code here:
+        inputEntity.setReGenerateSubset(jCheckBox4.isSelected());
     }//GEN-LAST:event_jCheckBox4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
+        if (this.validateInputs()) {
+            MainUtilities.QSProtWaitingHandler.addLogMassage("Process started");           
+            processData(inputEntity);
+        }
+
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jCheckBox5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox5ActionPerformed
         jSlider1.setEnabled(!jCheckBox5.isSelected());
         this.jLabel5.setEnabled(!jCheckBox5.isSelected());
+        this.inputEntity.setAdjustAllSearchParameters(jCheckBox5.isSelected());
+        if (!jCheckBox5.isSelected()) {
+            jCheckBox4.setSelected(true);
+            jCheckBox4.setEnabled(false);
+        } else {
+            jCheckBox4.setEnabled(true);
+        }
+        
+
     }//GEN-LAST:event_jCheckBox5ActionPerformed
 
     private void jCheckBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox3ActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_jCheckBox3ActionPerformed
 
     private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox2ActionPerformed
@@ -522,8 +623,10 @@ public class QSPROTGUI extends javax.swing.JFrame {
             File selectedFile = fileChooser.getSelectedFile();
             this.outputFolderLabel.setText("     " + selectedFile.getAbsolutePath());
             lastSelectedDirectory = selectedFile.getPath();
+            inputEntity.setOutputFolderPath(lastSelectedDirectory);
         } else {
-            this.mgfFileLable.setText("     Generated data location");
+            this.outputFolderLabel.setText("     Generated data location");
+            inputEntity.setOutputFolderPath(null);
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -537,10 +640,12 @@ public class QSPROTGUI extends javax.swing.JFrame {
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-            this.fastaFileLabel.setText("     " + selectedFile.getAbsolutePath());
+            this.fastaLabel.setText("     " + selectedFile.getAbsolutePath());
             lastSelectedDirectory = selectedFile.getPath();
+            inputEntity.setInputFastaFilePath(lastSelectedDirectory);
         } else {
-            this.fastaFileLabel.setText("     FASTA file formate");
+            this.fastaLabel.setText("     FASTA file formate");
+            inputEntity.setInputFastaFilePath(null);
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -556,8 +661,11 @@ public class QSPROTGUI extends javax.swing.JFrame {
             File selectedFile = fileChooser.getSelectedFile();
             this.mgfFileLable.setText("     " + selectedFile.getAbsolutePath());
             lastSelectedDirectory = selectedFile.getPath();
+            inputEntity.setInputSpectrumFilePath(lastSelectedDirectory);
+            System.out.println("selected file was null " + selectedFile.getName());
         } else {
             this.mgfFileLable.setText("     Currently only MGF files supported");
+            inputEntity.setInputSpectrumFilePath(null);            
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -572,9 +680,11 @@ public class QSPROTGUI extends javax.swing.JFrame {
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             lastSelectedDirectory = selectedFile.getPath();
-            this.searchSettingsFileLabel2.setText("     " + selectedFile.getAbsolutePath());
+            this.projectNameLabel.setText("     " + selectedFile.getAbsolutePath());
+            inputEntity.setSearchParameterFilePath(lastSelectedDirectory);
         } else {
-            this.searchSettingsFileLabel2.setText("     Search settings file generated by SearchGUI tool (.par)");
+            this.projectNameLabel.setText("     Search settings file generated by SearchGUI tool (.par)");
+            inputEntity.setSearchParameterFilePath(null);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -583,78 +693,139 @@ public class QSPROTGUI extends javax.swing.JFrame {
         searchSettingsFileLabel.setEnabled(!jRadioButton1.isSelected());
         jButton1.setEnabled(!jRadioButton1.isSelected());
         searchSettingsFileLabel.setEnabled(!jRadioButton1.isSelected());
+        inputEntity.setAdjustAllSearchParameters(jRadioButton1.isSelected());
+
     }//GEN-LAST:event_jRadioButton1ActionPerformed
 
     private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
-          searchSettingsFileLabel.setEnabled(!jRadioButton1.isSelected());
+        searchSettingsFileLabel.setEnabled(!jRadioButton1.isSelected());
         jButton1.setEnabled(!jRadioButton1.isSelected());
         searchSettingsFileLabel.setEnabled(!jRadioButton1.isSelected());
+        inputEntity.setAdjustAllSearchParameters(jRadioButton1.isSelected());
     }//GEN-LAST:event_jRadioButton2ActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(QSPROTGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(QSPROTGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(QSPROTGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(QSPROTGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(QSPROTGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(QSPROTGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(QSPROTGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(QSPROTGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(() -> {
+//            
+//            boolean numbusLookAndFeelSet = false;
+//            try {
+//                
+//                numbusLookAndFeelSet = UtilitiesGUIDefaults.setLookAndFeel();
+//
+//                // fix for the scroll bar thumb disappearing...
+//                LookAndFeel lookAndFeel = UIManager.getLookAndFeel();
+//                UIDefaults defaults = lookAndFeel.getDefaults();
+//                defaults.put("ScrollBar.minimumThumbSize", new Dimension(30, 30));
+//                
+//            } catch (Exception e) {
+//            }
+//            
+//            if (!numbusLookAndFeelSet) {
+//                
+//                JOptionPane.showMessageDialog(null, """
+//                                                    Failed to set the default look and feel. Using backup look and feel.
+//                                                    QSProt will work but not look as good as it should...""", "Look and Feel",
+//                        JOptionPane.WARNING_MESSAGE
+//                );
+//            }
+//            
+//            new QSPROTGUI().setVisible(true);
+//        });
+//    }
+//    
+    private boolean validateInputs() {
+        projectNameLabel.setForeground(Color.BLACK);
+        searchSettingsLabel.setForeground(Color.BLACK);
+        spectrumLabel.setForeground(Color.BLACK);
+        fastaLabel.setForeground(Color.BLACK);
+        databaseLabel.setForeground(Color.BLACK);
+        outputLabel.setForeground(Color.BLACK);
+        searchEnginesLabel.setForeground(Color.BLACK);
+        boolean test = true;
+        if (jTextField1.getText() == null || jTextField1.getText().trim().isEmpty()) {            
+            projectNameLabel.setForeground(Color.RED);
+            MainUtilities.QSProtWaitingHandler.addLogMassage("Error : The project name is missing!");
+            test = false;
+            inputEntity.setDatasetId(null);
+        } else {
+            inputEntity.setDatasetId(jTextField1.getText().replace(" ", "_"));
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-
-            boolean numbusLookAndFeelSet = false;
-            try {
-
-                numbusLookAndFeelSet = UtilitiesGUIDefaults.setLookAndFeel();
-
-                // fix for the scroll bar thumb disappearing...
-                LookAndFeel lookAndFeel = UIManager.getLookAndFeel();
-                UIDefaults defaults = lookAndFeel.getDefaults();
-                defaults.put("ScrollBar.minimumThumbSize", new Dimension(30, 30));
-
-            } catch (Exception e) {
-            }
-
-            if (!numbusLookAndFeelSet) {
-
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Failed to set the default look and feel. Using backup look and feel.\n"
-                        + "SearchGUI will work but not look as good as it should...", "Look and Feel",
-                        JOptionPane.WARNING_MESSAGE
-                );
-            }
-
-            new QSPROTGUI().setVisible(true);
-        });
+        if (inputEntity.getSearchParameterFilePath() == null && !inputEntity.isAdjustAllSearchParameters()) {
+            searchSettingsLabel.setForeground(Color.RED);
+            MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Search Parameter File (.par) is required!");
+            test = false;
+        }
+        
+        if (inputEntity.getInputSpectrumFilePath() == null) {
+            spectrumLabel.setForeground(Color.RED);
+            MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Input MGF file (.mgf) is required!");
+            test = false;
+        }
+        
+        if (inputEntity.getInputFastaFilePath() == null) {
+            
+            databaseLabel.setForeground(Color.RED);
+            MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Input Sequence database file (.fasta) is required!");
+            test = false;
+        }
+        if (inputEntity.getOutputFolderPath() == null) {
+            MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Select output folder!");
+            outputLabel.setForeground(Color.RED);
+            test = false;
+        }
+        
+        if (jCheckBox2.isSelected()) {
+            inputEntity.addSearchEngine(Advocate.sage.getName());
+        }
+        if (jCheckBox3.isSelected()) {
+            inputEntity.addSearchEngine(Advocate.xtandem.getName());
+        }
+        if (!jCheckBox2.isSelected() && !jCheckBox3.isSelected()) {
+            searchEnginesLabel.setForeground(Color.RED);
+            MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Select at least 1 search engine!");
+            test = false;
+        }
+        MainUtilities.QSProtWaitingHandler.addLogMassage(" ");
+        
+        return test;
     }
+    
+    public abstract void processData(QSProtInputsEntity projectEntity);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.ButtonGroup buttonGroup3;
     private javax.swing.ButtonGroup buttonGroup4;
-    private javax.swing.JLabel databaseSettingsLbl;
-    private javax.swing.JLabel fastaFileLabel;
+    private javax.swing.JLabel databaseLabel;
+    private javax.swing.JLabel fastaLabel;
     private javax.swing.JPanel inputOutputPanel;
     private javax.swing.JPanel inputOutputPanel1;
     private javax.swing.JPanel inputOutputPanel2;
@@ -670,28 +841,36 @@ public class QSPROTGUI extends javax.swing.JFrame {
     private javax.swing.JCheckBox jCheckBox5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSlider jSlider1;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JTextArea logTextArea;
     private javax.swing.JLabel mgfFileLable;
     private javax.swing.JLabel outputFolderLabel;
-    private javax.swing.JLabel resultFolderLbl;
+    private javax.swing.JLabel outputLabel;
+    private javax.swing.JLabel projectNameLabel;
+    private javax.swing.JLabel searchEnginesLabel;
     private javax.swing.JLabel searchSettingsFileLabel;
     private javax.swing.JLabel searchSettingsFileLabel1;
-    private javax.swing.JLabel searchSettingsFileLabel2;
     private javax.swing.JLabel searchSettingsFileLabel3;
     private javax.swing.JLabel searchSettingsFileLabel4;
-    private javax.swing.JLabel searchSettingsLbl;
-    private javax.swing.JLabel spectrumFilesLabel;
+    private javax.swing.JLabel searchSettingsLabel;
+    private javax.swing.JLabel searchSettingsLabel1;
+    private javax.swing.JLabel spectrumLabel;
     private javax.swing.JLabel welcomeLabel;
     // End of variables declaration//GEN-END:variables
 }

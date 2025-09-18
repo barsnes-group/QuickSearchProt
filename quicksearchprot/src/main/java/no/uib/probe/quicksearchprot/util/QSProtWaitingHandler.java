@@ -2,15 +2,18 @@
 package no.uib.probe.quicksearchprot.util;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
 import com.compomics.util.threading.SimpleSemaphore;
+import java.util.Date;
+import javax.swing.JProgressBar;
+import javax.swing.JTextArea;
 /**
  *
  * @author yfa041
  */
-public class OptProtWaitingHandler extends WaitingHandlerCLIImpl {
+public class QSProtWaitingHandler extends WaitingHandlerCLIImpl {
   /**
      * Empty default constructor
      */
-    public OptProtWaitingHandler() {
+    public QSProtWaitingHandler() {
     }
 
     /**
@@ -72,6 +75,15 @@ public class OptProtWaitingHandler extends WaitingHandlerCLIImpl {
      * Mutex to synchronize multiple threads writing text.
      */
     private final SimpleSemaphore textMutex = new SimpleSemaphore(1);
+    
+    
+    private  JProgressBar mainPrgressBar =new JProgressBar();
+    
+    private JTextArea logTextArea = new JTextArea();
+
+    public void setMainPrgressBar(JProgressBar mainPrgressBar) {
+        this.mainPrgressBar = mainPrgressBar;
+    }
 
     @Override
     public void setMaxPrimaryProgressCounter(int maxProgressValue) {
@@ -207,13 +219,13 @@ public class OptProtWaitingHandler extends WaitingHandlerCLIImpl {
             int progress = 10 * progress2;
             if (progress1 == 0) {
                 if (needNewLine) {
-                    System.out.append(lineBreak);
+                    printToLog(lineBreak);
                 }
                 System.out.print("10%");
                 needNewLine = true;
             } else if (progress2 > 99) {
                 System.out.print(" " + progress + "%");
-                System.out.append(lineBreak);
+                printToLog(lineBreak);
                 needNewLine = false;
             } else {
                 System.out.print(" " + progress + "%");
@@ -255,29 +267,29 @@ public class OptProtWaitingHandler extends WaitingHandlerCLIImpl {
     ) {
         if (displayProgress) {
 
-//            String tempReport = report;
-//
-//            if (includeDate) {
-//                Date date = new Date();
-//                tempReport = date + " " + report;
-//            }
-//
-//            if (addNewLine) {
-//                tempReport = tempReport + lineBreak;
-//            }
+            String tempReport = report;
+
+            if (includeDate) {
+                Date date = new Date();
+                tempReport = date + " " + report;
+            }
+
+            if (addNewLine) {
+                tempReport = tempReport + lineBreak;
+            }
 
             textMutex.acquire();
-//            iReport = iReport + tempReport;
+            iReport = iReport + tempReport;
             textMutex.release();
 
-//            if (needNewLine) {
-//
-//                System.out.append(lineBreak);
-//                needNewLine = false;
-//
-//            }
-//
-//            System.out.append(tempReport);
+            if (needNewLine) {
+
+                printToLog(lineBreak);
+                needNewLine = false;
+
+            }
+
+            printToLog(tempReport);
 
         }
     }
@@ -287,18 +299,18 @@ public class OptProtWaitingHandler extends WaitingHandlerCLIImpl {
 
         if (displayProgress) {
 
-//            if (needNewLine) {
-//
-//                System.out.append(lineBreak);
-//                needNewLine = false;
-//
-//            }
+            if (needNewLine) {
+
+                printToLog(lineBreak);
+                needNewLine = false;
+
+            }
 
             textMutex.acquire();
-//            iReport = iReport + lineBreak;
+            iReport = iReport + lineBreak;
             textMutex.release();
 
-//            System.out.append(lineBreak);
+            printToLog(lineBreak);
 
         }
     }
@@ -308,18 +320,18 @@ public class OptProtWaitingHandler extends WaitingHandlerCLIImpl {
 
         if (displayProgress) {
 
-//            if (needNewLine) {
-//
-//                System.out.append(lineBreak);
-//                needNewLine = false;
-//
-//            }
+            if (needNewLine) {
+
+                printToLog(lineBreak);
+                needNewLine = false;
+
+            }
 
             textMutex.acquire();
-//            iReport = iReport + lineBreak;
+            iReport = iReport + lineBreak;
             textMutex.release();
 
-//            System.out.append(lineBreak);
+            printToLog(lineBreak);
         }
     }
 
@@ -406,4 +418,23 @@ public class OptProtWaitingHandler extends WaitingHandlerCLIImpl {
     public boolean getDisplayProgress() {
         return displayProgress;
     }
+
+    public void setLogTextArea(JTextArea logTextArea) {
+        this.logTextArea = logTextArea;
+    }
+    
+    public void addLogMassage(String massage){
+    logTextArea.append(massage+lineBreak);
+    }
+     public void printToLog(String massage){
+    logTextArea.append(massage);
+    }
+     
+     public void startProgress(){
+      
+     this.mainPrgressBar.setIndeterminate(true);
+     }
+      public void endProgress(){
+     this.mainPrgressBar.setIndeterminate(false);
+     }
 }

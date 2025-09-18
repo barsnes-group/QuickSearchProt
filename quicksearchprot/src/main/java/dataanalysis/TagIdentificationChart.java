@@ -73,8 +73,8 @@ public class TagIdentificationChart {
                 //get spec with confident tag
                 IdfileReader idReader = readerFactory.getFileReader(tagFile);
                 MsFileHandler msFileHandler = new MsFileHandler();
-                msFileHandler.register(msFile, MainUtilities.OptProt_Waiting_Handler);
-                ArrayList<SpectrumMatch> tagMatches = idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.OptProt_Waiting_Handler, deNovo_searchParameters);
+                msFileHandler.register(msFile, MainUtilities.QSProtWaitingHandler);
+                ArrayList<SpectrumMatch> tagMatches = idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.QSProtWaitingHandler, deNovo_searchParameters);
                 Set<SpectrumMatch> matches = new LinkedHashSet<>();
                 for (SpectrumMatch sm : tagMatches) {
                     TagAssumption tag = sm.getAllTagAssumptions().toList().get(0);
@@ -87,7 +87,7 @@ public class TagIdentificationChart {
                 IdentificationParameters identificationParam = IdentificationParameters.getIdentificationParameters(searchParamXtan);
                 SearchParameters searchParameters = identificationParam.getSearchParameters();
                 idReader = readerFactory.getFileReader(xTandemFile);
-                List<SpectrumMatch> spematches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.OptProt_Waiting_Handler, searchParameters));
+                List<SpectrumMatch> spematches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.QSProtWaitingHandler, searchParameters));
                 Map<String, SpectrumMatch> mapIds = new LinkedHashMap<>();
                 for (SpectrumMatch sm : spematches) {
                     PeptideAssumption peptide = sm.getAllPeptideAssumptions().toList().get(0);
@@ -119,7 +119,7 @@ public class TagIdentificationChart {
                 identificationParam = IdentificationParameters.getIdentificationParameters(searchParamSage);
                 searchParameters = identificationParam.getSearchParameters();
                 idReader = readerFactory.getFileReader(sageFile);
-                spematches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.OptProt_Waiting_Handler, searchParameters));
+                spematches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.QSProtWaitingHandler, searchParameters));
                 mapIds = new LinkedHashMap<>();
                 for (SpectrumMatch sm : spematches) {
                     PeptideAssumption peptide = sm.getAllPeptideAssumptions().toList().get(0);

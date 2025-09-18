@@ -65,7 +65,7 @@ public class SageSearchHandler extends CommonSearchHandler {
         this.optimisedSearchResults = new OptimisedSearchResults();
         this.parameterScoreMap = new LinkedHashMap<>();
         optProtDataset.setParameterScoreMap(parameterScoreMap);
-        MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+        MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
         if (searchInputSetting.isOptimizeAllParameters()) {
             SageParameters sageParameters = (SageParameters) identificationParameters.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.sage.getIndex());
             sageParameters.setMaxVariableMods(2);
@@ -102,7 +102,7 @@ public class SageSearchHandler extends CommonSearchHandler {
 //        System.out.println(" identificationParameters.getFastaParameters().getDecoyFlag() " + identificationParameters.getFastaParameters().getDecoyFlag() + "  oreginal size  " + optProtDataset.getOreginalDatasize() + "  total subsize " + optProtDataset.getTotalSpectraNumber());
 //        sageParameters.setMinFragmentMz(150.0);
 //        sageParameters.setMaxFragmentMz(1500.0);
-        MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+        MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
         parameterScoreMap.put("DigestionParameter", new TreeSet<>(Collections.reverseOrder()));
         parameterScoreMap.put("EnzymeParameter", new TreeSet<>(Collections.reverseOrder()));
         parameterScoreMap.put("SpecificityParameter", new TreeSet<>(Collections.reverseOrder()));
@@ -141,7 +141,7 @@ public class SageSearchHandler extends CommonSearchHandler {
     public void startProcess(List<String> paramOrder) throws IOException {
         digestionParameterOpt = identificationParameters.getSearchParameters().getDigestionParameters().getCleavageParameter().name();
         searchInputSetting.setDigestionParameterOpt(digestionParameterOpt);
-        MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+        MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
 //        String bestEnzyme = CalculateEnzymeComparisonsBasedThreshold(optProtDataset, generatedIdentificationParametersFile, searchInputSetting);
 ////        if (!searchInputSetting.isOptimizeAllParameters()) {
 //        //run refrence search 
@@ -165,7 +165,7 @@ public class SageSearchHandler extends CommonSearchHandler {
 //
 //            optProtDataset.updateMaxScore(MainUtilities.getParamScoreSet().last());
             System.out.println("-------------------------------------------param " + param + "-------------------------------------------  last max ");
-            MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+            MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
             if (param.equalsIgnoreCase("DigestionParameter") && searchInputSetting.isOptimizeDigestionParameter()) {
                 String[] values = this.optimizeEnzymeParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("EnzymeParameter"));
 

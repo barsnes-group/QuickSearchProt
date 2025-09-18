@@ -67,7 +67,7 @@ public class MyrimatchSearchHandler extends CommonSearchHandler {
         this.optimisedSearchResults = new OptimisedSearchResults();
         this.parameterScoreMap = new LinkedHashMap<>();
         optProtDataset.setParameterScoreMap(parameterScoreMap);
-        MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+        MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
           potintialFalsePostiveParamSet.add("precursorAccuracy");
         potintialFalsePostiveParamSet.add("fragmentAccuracy");
 //        potintialFalsePostiveParamSet.addAll(ptmFactory.getModifications(ModificationCategory.Common));

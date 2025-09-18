@@ -40,7 +40,7 @@ public class GenerateIdentifiedSpectraListAsFiles {
             try {
                 MsFileHandler msFileHandler = new MsFileHandler();
                 File msFile = new File(dsFolder, "ms.mgf");
-                msFileHandler.register(msFile, MainUtilities.OptProt_Waiting_Handler);
+                msFileHandler.register(msFile, MainUtilities.QSProtWaitingHandler);
                 for (String type : dsTypes) {
                     Map<String, Double> spectraIdScore = readResults(dsFolder, Advocate.xtandem, type, msFileHandler);
                     System.out.println("filnal spec size " + dsFolder.getName() + "   " + type + "  " + spectraIdScore.size());
@@ -69,7 +69,7 @@ public class GenerateIdentifiedSpectraListAsFiles {
             }
 
             IdfileReader idReader = readerFactory.getFileReader(searchOutput);
-            final List<SpectrumMatch> spematches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.OptProt_Waiting_Handler, searchParameters));
+            final List<SpectrumMatch> spematches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.QSProtWaitingHandler, searchParameters));
 
             for (SpectrumMatch sm : spematches) {
                 PeptideAssumption peptide = sm.getAllPeptideAssumptions().toList().get(0);

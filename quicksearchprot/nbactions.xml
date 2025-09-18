@@ -13,7 +13,7 @@
                 <exec.vmArgs>-Xmx32g -Xms1g -XX:+UseG1GC -Xss1g</exec.vmArgs>
                 <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
                 <exec.appArgs></exec.appArgs>
-                <exec.mainClass>no.uib.probe.quicksearchprot.QuickSearchProt</exec.mainClass>
+                <exec.mainClass>no.uib.probe.quicksearchprot.QuickSearchProtApp</exec.mainClass>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>

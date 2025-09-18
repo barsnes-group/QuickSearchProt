@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>no.uib.probe</groupId>
     <artifactId>QuickSearchProt</artifactId>
-    <version>2.0</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>19</maven.compiler.source>
         <maven.compiler.target>19</maven.compiler.target>
-        <exec.mainClass>no.uib.probe.quicksearchprot.QuickSearchProt</exec.mainClass>
+        <exec.mainClass>no.uib.probe.quicksearchprot.QuickSearchProtApp</exec.mainClass>
         <utilities.version>5.1.12_quicksprot</utilities.version>
         <searchgui.version>4.3.11_quicksprot</searchgui.version>
         <peptideshaker.version>3.0.9-beta_quicksprot</peptideshaker.version>

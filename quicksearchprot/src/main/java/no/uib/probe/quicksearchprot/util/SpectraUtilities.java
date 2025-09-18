@@ -109,7 +109,7 @@ public class SpectraUtilities {
                  * ***
                  */
                 MsFileHandler msFileHandler = new MsFileHandler();
-                msFileHandler.register(msFile, new OptProtWaitingHandler());
+                msFileHandler.register(msFile, new QSProtWaitingHandler());
                 String fileNameWithoutExtension = IoUtil.removeExtension(msFile.getName());
                 String[] spectrumTitles = msFileHandler.getSpectrumTitles(fileNameWithoutExtension);
 
@@ -158,14 +158,14 @@ public class SpectraUtilities {
 //                    File cms = new File(unfilteredSubMsFile.getParent(), unfilteredSubMsFile.getName().replace(".mgf", ".cms"));
 //                    cms.delete();
 //                    Configurations.EXTRACT_MAX_MS_SIZE += 1000;
-//                    MainUtilities.cleanOutputFolder();
+//                    MainUtilities.cleanFolder();
 //                    return initInputSubSetFiles(msFile, fastaFile, identificationParametersFile);
 //                }
 //
 //                IdfileReader idReader = IdfileReaderFactory.getInstance().getFileReader(direcTagFile);
 //                MsFileHandler msFileHandler = new MsFileHandler();
-//                msFileHandler.register(unfilteredSubMsFile, MainUtilities.OptProt_Waiting_Handler);
-//                ArrayList<SpectrumMatch> matches = idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.OptProt_Waiting_Handler, searchParameters);
+//                msFileHandler.register(unfilteredSubMsFile, MainUtilities.QSProtWaitingHandler);
+//                ArrayList<SpectrumMatch> matches = idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.QSProtWaitingHandler, searchParameters);
 //                Map<String, String> specTagMap = new LinkedHashMap<>();
 //                for (SpectrumMatch sm : matches) {
 //                    TagAssumption tag = sm.getAllTagAssumptions().toList().get(0);
@@ -185,7 +185,7 @@ public class SpectraUtilities {
 //                    if (Configurations.EXTRACT_MAX_MS_SIZE <= Configurations.EXTRACT_MIN_MS_SIZE) {
 //                        Configurations.EXTRACT_MAX_MS_SIZE = Configurations.EXTRACT_MIN_MS_SIZE + 500;
 //                    }
-//                    MainUtilities.cleanOutputFolder();
+//                    MainUtilities.cleanFolder();
 //                    return initInputSubSetFiles(msFile, fastaFile, identificationParametersFile);
 //
 //                }
@@ -235,7 +235,7 @@ public class SpectraUtilities {
             return new File[]{filteredSubMsFile, subFasta};
         } catch (IOException ex) {  //ex) {//
             ex.printStackTrace();
-            MainUtilities.cleanOutputFolder(searchOptimizerParameters.getDatasetId());
+            MainUtilities.cleanFolder(searchOptimizerParameters.getDatasetId());
 //            System.exit(0);
         }
         return null;
@@ -248,7 +248,7 @@ public class SpectraUtilities {
 
             String fileNameWithoutExtension = IoUtil.removeExtension(msFile.getName());
             MsFileHandler msFileHandler = new MsFileHandler();
-            msFileHandler.register(msFile, new OptProtWaitingHandler());
+            msFileHandler.register(msFile, new QSProtWaitingHandler());
             String[] spectrumTitles = msFileHandler.getSpectrumTitles(fileNameWithoutExtension);
             for (int i = 0; i < spectrumTitles.length; i++) {
                 spectraIndexMap.put(spectrumTitles[i], i);
@@ -330,7 +330,7 @@ public class SpectraUtilities {
         try {
             String fileNameWithoutExtension = IoUtil.removeExtension(mgfFile.getName());
             MsFileHandler msFileHandler = new MsFileHandler();
-            msFileHandler.register(mgfFile, new OptProtWaitingHandler());
+            msFileHandler.register(mgfFile, new QSProtWaitingHandler());
             String[] spectrumTitles = msFileHandler.getSpectrumTitles(fileNameWithoutExtension);
 
             int initiSize = Math.min((int) maxSpectNum, (int) Math.round(spectrumTitles.length * 20 / 100));
@@ -373,7 +373,7 @@ public class SpectraUtilities {
         try {
             String fileNameWithoutExtension = IoUtil.removeExtension(mgfFile.getName());
             MsFileHandler msFileHandler = new MsFileHandler();
-            msFileHandler.register(mgfFile, new OptProtWaitingHandler());
+            msFileHandler.register(mgfFile, new QSProtWaitingHandler());
             int counter = 0;
             String[] spectrumTitles = msFileHandler.getSpectrumTitles(fileNameWithoutExtension);
 
@@ -417,7 +417,7 @@ public class SpectraUtilities {
         try {
             String fileNameWithoutExtension = IoUtil.removeExtension(mgfFile.getName());
             MsFileHandler msFileHandler = new MsFileHandler();
-            msFileHandler.register(mgfFile, new OptProtWaitingHandler());
+            msFileHandler.register(mgfFile, new QSProtWaitingHandler());
 
             String[] spectrumTitles = msFileHandler.getSpectrumTitles(fileNameWithoutExtension);
             int targetedAreaStep = spectrumTitles.length / 4;
@@ -678,10 +678,10 @@ public class SpectraUtilities {
         try {
             final File selectedFolder = new File(sourceMgfFile.getParent());
             MsFileHandler spectrumProvider = new MsFileHandler();
-            spectrumProvider.register(sourceMgfFile, new OptProtWaitingHandler());
+            spectrumProvider.register(sourceMgfFile, new QSProtWaitingHandler());
             final boolean precursors = true;
             final boolean fragments = true;
-            FMIndex sequenceProvider = new FMIndex(fastaFile, null, new OptProtWaitingHandler(), false, identificationParameters);
+            FMIndex sequenceProvider = new FMIndex(fastaFile, null, new QSProtWaitingHandler(), false, identificationParameters);
             try {
                 return SpectralRecalibrationUtilitiy.writeRecalibratedSpectra(
                         precursors,
@@ -736,8 +736,8 @@ public class SpectraUtilities {
 
             IdfileReader idReader = IdfileReaderFactory.getInstance().getFileReader(direcTagFile);
             MsFileHandler subMsFileHandler = new MsFileHandler();
-            subMsFileHandler.register(destinationFile, MainUtilities.OptProt_Waiting_Handler);
-            ArrayList<SpectrumMatch> matches = idReader.getAllSpectrumMatches(subMsFileHandler, MainUtilities.OptProt_Waiting_Handler, identificationParameters.getSearchParameters());
+            subMsFileHandler.register(destinationFile, MainUtilities.QSProtWaitingHandler);
+            ArrayList<SpectrumMatch> matches = idReader.getAllSpectrumMatches(subMsFileHandler, MainUtilities.QSProtWaitingHandler, identificationParameters.getSearchParameters());
             for (SpectrumMatch sm : matches) {
                 TagAssumption tag = sm.getAllTagAssumptions().toList().get(0);
                 if (tag.getScore() > 0.01) {
@@ -1850,8 +1850,8 @@ public class SpectraUtilities {
             }
             IdfileReader idReader = IdfileReaderFactory.getInstance().getFileReader(idResultsFile);
             MsFileHandler subMsFileHandler = new MsFileHandler();
-            subMsFileHandler.register(msFile, MainUtilities.OptProt_Waiting_Handler);
-            ArrayList<SpectrumMatch> matches = idReader.getAllSpectrumMatches(subMsFileHandler, MainUtilities.OptProt_Waiting_Handler, identificationParameters.getSearchParameters());
+            subMsFileHandler.register(msFile, MainUtilities.QSProtWaitingHandler);
+            ArrayList<SpectrumMatch> matches = idReader.getAllSpectrumMatches(subMsFileHandler, MainUtilities.QSProtWaitingHandler, identificationParameters.getSearchParameters());
 
             List<PSM> targetDecoyMaches = Collections.synchronizedList(new ArrayList<>());
 //            System.out.println("maches size "+matches.size());
@@ -2227,21 +2227,7 @@ public class SpectraUtilities {
         return topSelection;
     }
 
-    public static void checkScoreForParam(String paramName) {
-//        System.out.println("Param is " + paramName);
-        //estimate scores now to compare 
-        DescriptiveStatistics ds = new DescriptiveStatistics();
-        for (double zSc : MainUtilities.getParamScoreSet()) {
-            ds.addValue(zSc);
-
-        }
-        MainUtilities.getParamScoreSet().clear();
-//        System.out.println("----------------------------------------Scores ------------------------------------------");
-//        System.out.println(" quartiles ds 5% " + ds.getPercentile(5) + "    ds 25% " + ds.getPercentile(25) + "   median " + ds.getPercentile(50) + "  large change " + ds.getPercentile(75) + "  max " + ds.getMax() + "   Range " + (ds.getMax() - ds.getMin()));
-//        MainUtilities.paramScoreRange.put((ds.getMax() - ds.getMin()), paramName);
-
-    }
-//
+  //
 //    public static double isBetterScore1(List<SpectrumMatch> referenceData, List<SpectrumMatch> toData, double totalSize) {
 //        List<Double> sharedTestData = new ArrayList<>();
 //        List<Double> sharedReferenceData = new ArrayList<>();

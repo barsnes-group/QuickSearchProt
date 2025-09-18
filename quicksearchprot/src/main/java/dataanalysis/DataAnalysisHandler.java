@@ -79,8 +79,8 @@ public class DataAnalysisHandler {
 //                //get spec with confident tag
 //                IdfileReader idReader = readerFactory.getFileReader(tagFile);
 //                MsFileHandler msFileHandler = new MsFileHandler();
-//                msFileHandler.register(msFile, MainUtilities.OptProt_Waiting_Handler);
-//                ArrayList<SpectrumMatch> tagMatches = idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.OptProt_Waiting_Handler, deNovo_searchParameters);
+//                msFileHandler.register(msFile, MainUtilities.QSProtWaitingHandler);
+//                ArrayList<SpectrumMatch> tagMatches = idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.QSProtWaitingHandler, deNovo_searchParameters);
 //                Set<SpectrumMatch> matches = new LinkedHashSet<>();
 //                for (SpectrumMatch sm : tagMatches) {
 //                    TagAssumption tag = sm.getAllTagAssumptions().toList().get(0);
@@ -93,7 +93,7 @@ public class DataAnalysisHandler {
 //                IdentificationParameters identificationParam = IdentificationParameters.getIdentificationParameters(searchParam);
 //                SearchParameters searchParameters = identificationParam.getSearchParameters();
 //                idReader = readerFactory.getFileReader(xTandemFile);
-//                final List<SpectrumMatch> spematches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.OptProt_Waiting_Handler, searchParameters));
+//                final List<SpectrumMatch> spematches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.QSProtWaitingHandler, searchParameters));
 //                Map<String, SpectrumMatch> mapIds = new LinkedHashMap<>();
 //                for (SpectrumMatch sm : spematches) {
 //                    PeptideAssumption peptide = sm.getAllPeptideAssumptions().toList().get(0);
@@ -365,7 +365,7 @@ public class DataAnalysisHandler {
             SearchParameters searchParameters = identificationParam.getSearchParameters();
             IdfileReader idReader = readerFactory.getFileReader(idFile);
             MsFileHandler msFileHandler = new MsFileHandler();
-            msFileHandler.register(msFile, MainUtilities.OptProt_Waiting_Handler);
+            msFileHandler.register(msFile, MainUtilities.QSProtWaitingHandler);
 
             Map<String, Double> fullSpectraMap = new LinkedHashMap<>();
             String[] titiles = msFileHandler.getSpectrumTitles(IoUtil.removeExtension(msFile.getName()));
@@ -374,7 +374,7 @@ public class DataAnalysisHandler {
                 fullSpectraMap.put(titel, 0.0);
             }
 
-            final List<SpectrumMatch> matches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.OptProt_Waiting_Handler, searchParameters));
+            final List<SpectrumMatch> matches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.QSProtWaitingHandler, searchParameters));
             int index = 0;
             for (SpectrumMatch sm : matches) {
                 PeptideAssumption peptide = sm.getAllPeptideAssumptions().toList().get(0);
@@ -432,7 +432,7 @@ public class DataAnalysisHandler {
             System.out.println("id file exist " + idFile.exists() + "  " + idFile.getAbsolutePath());
             IdfileReader idReader = readerFactory.getFileReader(idFile);
             MsFileHandler msFileHandler = new MsFileHandler();
-            msFileHandler.register(msFile, MainUtilities.OptProt_Waiting_Handler);
+            msFileHandler.register(msFile, MainUtilities.QSProtWaitingHandler);
 
             Map<String, Double> fullSpectraMap = new LinkedHashMap<>();
             String[] titiles = msFileHandler.getSpectrumTitles(IoUtil.removeExtension(msFile.getName()));
@@ -441,7 +441,7 @@ public class DataAnalysisHandler {
                 fullSpectraMap.put(titel, 100.0);
             }
 
-            ArrayList<SpectrumMatch> tagMatches = idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.OptProt_Waiting_Handler, searchParameters);
+            ArrayList<SpectrumMatch> tagMatches = idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.QSProtWaitingHandler, searchParameters);
 
             for (SpectrumMatch sm : tagMatches) {
                 TagAssumption tag = sm.getAllTagAssumptions().toList().get(0);
@@ -553,10 +553,10 @@ public class DataAnalysisHandler {
                 IdentificationParameters identificationParam = IdentificationParameters.getIdentificationParameters(searchParamXtand);
                 SearchParameters searchParameters = identificationParam.getSearchParameters();
                 MsFileHandler msFileHandler = new MsFileHandler();
-                msFileHandler.register(msFile, MainUtilities.OptProt_Waiting_Handler);
+                msFileHandler.register(msFile, MainUtilities.QSProtWaitingHandler);
                 //get spec with confident tag
                 IdfileReader idReader = readerFactory.getFileReader(subXTandemFileFullFasta);
-                List<SpectrumMatch> fullFastaSpematches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.OptProt_Waiting_Handler, searchParameters));
+                List<SpectrumMatch> fullFastaSpematches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.QSProtWaitingHandler, searchParameters));
                 Map<String, SpectrumMatch> fullFIds = new LinkedHashMap<>();
                 for (SpectrumMatch sm : fullFastaSpematches) {
 
@@ -570,7 +570,7 @@ public class DataAnalysisHandler {
                 System.out.println("for ds " + datasetId + "  size of full " + fullFIds.size());
 
                 idReader = readerFactory.getFileReader(subXTandemFile);
-                List<SpectrumMatch> spematches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.OptProt_Waiting_Handler, searchParameters));
+                List<SpectrumMatch> spematches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.QSProtWaitingHandler, searchParameters));
                 Map<String, SpectrumMatch> subFastaIds = new LinkedHashMap<>();
                 for (SpectrumMatch sm : spematches) {
                     PeptideAssumption peptide = sm.getAllPeptideAssumptions().toList().get(0);
@@ -616,7 +616,7 @@ public class DataAnalysisHandler {
                  */
                 File sageMsFile = new File(dataFolder, datasetId + "_sage.mgf");
                 msFileHandler = new MsFileHandler();
-                msFileHandler.register(sageMsFile, MainUtilities.OptProt_Waiting_Handler);
+                msFileHandler.register(sageMsFile, MainUtilities.QSProtWaitingHandler);
                 /**
                  * *FASTA files *
                  */
@@ -637,7 +637,7 @@ public class DataAnalysisHandler {
                 identificationParam = IdentificationParameters.getIdentificationParameters(searchParamSage);
                 searchParameters = identificationParam.getSearchParameters();
                 idReader = readerFactory.getFileReader(subSageFileFullFasta);
-                fullFastaSpematches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.OptProt_Waiting_Handler, searchParameters));
+                fullFastaSpematches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.QSProtWaitingHandler, searchParameters));
                 fullFIds = new LinkedHashMap<>();
                 Map<String, Double> specMap = new LinkedHashMap<>();
                 for (SpectrumMatch sm : fullFastaSpematches) {
@@ -653,7 +653,7 @@ public class DataAnalysisHandler {
                 System.out.println("for ds " + datasetId + "  size of full " + fullFIds.size());
 
                 idReader = readerFactory.getFileReader(subSageFile);
-                spematches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.OptProt_Waiting_Handler, searchParameters));
+                spematches = Collections.synchronizedList(idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.QSProtWaitingHandler, searchParameters));
                 subFastaIds = new LinkedHashMap<>();
                 Map<String, Double> specMap2 = new LinkedHashMap<>();
                 for (SpectrumMatch sm : spematches) {

@@ -25,6 +25,7 @@ import javax.xml.stream.XMLStreamException;
 import no.uib.probe.quicksearchprot.configurations.Configurations;
 import no.uib.probe.quicksearchprot.dataset.OptProtDatasetHandler;
 import no.uib.probe.quicksearchprot.model.SearchInputSetting;
+import no.uib.probe.quicksearchprot.util.ConfigurationsUtility;
 import no.uib.probe.quicksearchprot.util.MainUtilities;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -65,9 +66,9 @@ public class SearchExecuter {
             }
         }
 
-        File resultOutput = new File(MainUtilities.GET_WORKING_FOLDER_PATH(searchInputSetting.getDatasetId()), processId);
+        File resultOutput = new File(ConfigurationsUtility.WORKING_FOLDER_PATH, processId);
         resultOutput.mkdir();
-        File tempSearchEngineFolder = new File(MainUtilities.GET_WORKING_FOLDER_PATH(searchInputSetting.getDatasetId()), processId + "_temp");
+        File tempSearchEngineFolder = new File(ConfigurationsUtility.WORKING_FOLDER_PATH, processId + "_temp");
         tempSearchEngineFolder.mkdir();
 
         ArrayList<File> msFileInList = new ArrayList<>();
@@ -107,7 +108,7 @@ public class SearchExecuter {
         );
 
         try {
-            searchHandler.startSearch(MainUtilities.OptProt_Waiting_Handler);
+            searchHandler.startSearch(MainUtilities.QSProtWaitingHandler);
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
@@ -138,8 +139,8 @@ public class SearchExecuter {
             IdfileReader idReader = IdfileReaderFactory.getInstance().getFileReader(direcTagFile);
             System.out.println("file name " + msFileNameWithoutExtension + "   " + IoUtil.removeExtension(destinationFile.getName()));
             MsFileHandler subMsFileHandler = new MsFileHandler();
-            subMsFileHandler.register(destinationFile, MainUtilities.OptProt_Waiting_Handler);
-            ArrayList<SpectrumMatch> matches = idReader.getAllSpectrumMatches(subMsFileHandler, MainUtilities.OptProt_Waiting_Handler, identificationParameters.getSearchParameters());
+            subMsFileHandler.register(destinationFile, MainUtilities.QSProtWaitingHandler);
+            ArrayList<SpectrumMatch> matches = idReader.getAllSpectrumMatches(subMsFileHandler, MainUtilities.QSProtWaitingHandler, identificationParameters.getSearchParameters());
             if (validOnly) {
                 ArrayList<SpectrumMatch> vmatches = new ArrayList<>();
                 for (SpectrumMatch sm : matches) {

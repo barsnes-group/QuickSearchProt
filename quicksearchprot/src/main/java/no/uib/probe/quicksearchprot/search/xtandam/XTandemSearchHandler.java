@@ -65,7 +65,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         this.optimisedSearchResults = new OptimisedSearchResults();
         this.parameterScoreMap = new LinkedHashMap<>();
         optProtDataset.setParameterScoreMap(parameterScoreMap);
-        MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+        MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
         potintialFalsePostiveParamSet.add("precursorAccuracy");
         potintialFalsePostiveParamSet.add("fragmentAccuracy");
 //        potintialFalsePostiveParamSet.add("usePotintialModification");
@@ -137,7 +137,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
     public void startProcess(List<String> paramOrder) throws IOException {
         digestionParameterOpt = identificationParameters.getSearchParameters().getDigestionParameters().getCleavageParameter().name();
         searchInputSetting.setDigestionParameterOpt(digestionParameterOpt);
-        MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+        MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
 //        MainUtilities.paramScoreSet.clear();
 
 //          XtandemParameters xtandemParameters = (XtandemParameters) identificationParameters.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
@@ -162,9 +162,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 
 //        System.out.println("at refrence run " + bestEnzyme + "  " + optProtDataset.getCurrentScoreModel());
         for (String param : paramOrder) {
-            if (!MainUtilities.getParamScoreSet().isEmpty()) {
-                optProtDataset.updateMaxScore(MainUtilities.getParamScoreSet().last());
-            }
+//            if (!MainUtilities.getParamScoreSet().isEmpty()) {
+//                optProtDataset.updateMaxScore(MainUtilities.getParamScoreSet().last());
+//            }
             //empty param score list
             System.out.println("-------------------------------------------param " + param + "-------------------------------------------");
             if (param.equalsIgnoreCase("DigestionParameter") && searchInputSetting.isOptimizeDigestionParameter()) {
@@ -179,7 +179,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                     identificationParameters.getSearchParameters().getDigestionParameters().setnMissedCleavages(values[0], nMissesCleavages);
                     IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
                 }
-                MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+                MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
 
                 System.out.println("Current #PSM " + optProtDataset.getIdentifiedPSMsNumber());
 
@@ -188,7 +188,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             if (param.equalsIgnoreCase("DigestionTypeParameter") && searchInputSetting.isOptimizeDigestionParameter() && searchInputSetting.isOptimizeCleavageParameter()) {
                 digestionParameterOpt = this.optimizeDigestionCleavageParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("DigestionParameter"));
                 searchInputSetting.setDigestionParameterOpt(digestionParameterOpt);
-                MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+                MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
 
                 System.out.println("Current #PSM " + optProtDataset.getIdentifiedPSMsNumber());
                 continue;
@@ -214,7 +214,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                 if (update) {
                     IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
                 }
-                MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+                MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
 
                 System.out.println("Current #PSM " + optProtDataset.getIdentifiedPSMsNumber());
                 continue;
@@ -228,7 +228,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                     identificationParameters.getSearchParameters().setFragmentIonAccuracy(value);
                     IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
                 }
-                MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+                MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
 
                 System.out.println("Current #PSM " + optProtDataset.getIdentifiedPSMsNumber());
                 continue;
@@ -242,7 +242,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                     identificationParameters.getSearchParameters().setMaxChargeSearched(values[1]);
                     IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
                 }
-                MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+                MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
 
                 System.out.println("Current #PSM " + optProtDataset.getIdentifiedPSMsNumber());
                 continue;
@@ -267,7 +267,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                 }
                 System.out.println("is Quick pyro " + xtandemParameters.isQuickPyrolidone() + "   is quick acytil " + xtandemParameters.isProteinQuickAcetyl());
                 IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
-                MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+                MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
 
                 System.out.println("Current #PSM " + optProtDataset.getIdentifiedPSMsNumber());
                 continue;
@@ -307,7 +307,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 
                 IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
 
-                MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+                MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
 
                 System.out.println("Current #PSM " + optProtDataset.getIdentifiedPSMsNumber());
 
@@ -359,7 +359,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                 }
                 IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
                 MainUtilities.resetExecutorService();
-                MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+                MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
 
                 System.out.println("Current #PSM " + optProtDataset.getIdentifiedPSMsNumber());
                 continue;
@@ -388,7 +388,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 
                 IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
 //              
-                MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+                MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
 
                 System.out.println("Current #PSM " + optProtDataset.getIdentifiedPSMsNumber());
                 continue;
@@ -831,7 +831,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
     }
 
     public boolean optimizeParentIsotopExpansion(SearchingSubDataset optProtDataset, IdentificationParameters oreginaltempIdParam, XtandemParameters xtandemParameters, SearchInputSetting optimisedSearchParameter, TreeSet<ParameterScoreModel> parameterScoreSet) throws IOException {
-        MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+        MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
         final ParameterScoreModel paramScore = new ParameterScoreModel();
         paramScore.setParamId("parentMonoisotopicMassIsotopeError");
         Map<Integer, RawScoreModel> resultsMap = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -1080,7 +1080,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 
         TreeSet<RawScoreModel> sorterSet = new TreeSet<>(Collections.reverseOrder());
 
-        MainUtilities.cleanOutputFolder(searchInputSetting.getDatasetId());
+        MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
         paramScore.setParamId("refineVariableModifications");//    
 
         Set<String> potintialVariableMod = new LinkedHashSet<>(oreginaltempIdParam.getSearchParameters().getModificationParameters().getVariableModifications());

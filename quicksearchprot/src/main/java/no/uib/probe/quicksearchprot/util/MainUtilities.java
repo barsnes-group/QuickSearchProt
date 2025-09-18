@@ -10,16 +10,13 @@ import com.compomics.util.parameters.searchgui.OutputParameters;
 import com.compomics.util.parameters.tools.ProcessingParameters;
 import eu.isas.searchgui.SearchHandler;
 import java.io.File;
-import java.util.Collections;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import no.uib.probe.quicksearchprot.configurations.Configurations;
 
 /**
  *
@@ -27,10 +24,11 @@ import no.uib.probe.quicksearchprot.configurations.Configurations;
  */
 public class MainUtilities {
 
+     private static ExecutorService displayExecuter;// = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private static ExecutorService executor2;// = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors() / 2;
     private static ExecutorService executor;// = new ThreadPoolExecutor(AVAILABLE_PROCESSORS, AVAILABLE_PROCESSORS, 5, TimeUnit.SECONDS, new ArrayBlockingQueue<>(10));
-    private static final TreeSet<Double> paramScoreSet = new TreeSet<>();
+//    private static final TreeSet<Double> paramScoreSet = new TreeSet<>();
 
 
     static {
@@ -41,22 +39,19 @@ public class MainUtilities {
         userParameters.setRenameXTandemFile(true);
         UtilitiesUserParameters.saveUserParameters(userParameters);
         SearchHandler.setCloseProcessWhenDone(false);
-        File resultsOutput = new File(MainUtilities.GET_WORKING_FOLDER_PATH(""));
-//        if (resultsOutput.exists()) {
-////            cleanFolder(resultsOutput);
-//        }
+        File resultsOutput = new File(ConfigurationsUtility.WORKING_FOLDER_PATH);
         resultsOutput.mkdir();
     }
 
-    public static synchronized TreeSet<Double> getParamScoreSet() {
-        return paramScoreSet;
-    }
-
-    public static synchronized void addToParamScoreSet(double score) {
-        paramScoreSet.add(score);
-    }
+//    public static synchronized TreeSet<Double> getParamScoreSet() {
+//        return paramScoreSet;
+//    }
+//
+//    public static synchronized void addToParamScoreSet(double score) {
+//        paramScoreSet.add(score);
+//    }
     private static final ProcessingParameters Processing_Parameters = new ProcessingParameters();
-    public static final OptProtWaitingHandler OptProt_Waiting_Handler = new OptProtWaitingHandler();
+    public static final QSProtWaitingHandler QSProtWaitingHandler = new QSProtWaitingHandler();
 
     public static ProcessingParameters getProcessingParameter() {
         if (Processing_Parameters == null) {
@@ -68,12 +63,19 @@ public class MainUtilities {
         return Processing_Parameters;
     }
 
+    public static ExecutorService getDisplayExecuter() {
+         if (displayExecuter != null) {
+            displayExecuter.shutdownNow();
+        }
+        displayExecuter =Executors.newFixedThreadPool(2) ;
+        return displayExecuter;
+    }
+
     public static void resetLongExecutorService() {
         if (executor2 != null) {
             executor2.shutdownNow();
         }
         executor2 = new ThreadPoolExecutor(AVAILABLE_PROCESSORS, AVAILABLE_PROCESSORS, 5, TimeUnit.SECONDS, new ArrayBlockingQueue<>(AVAILABLE_PROCESSORS));
-//        executor = Executors.newFixedThreadPool(AVAILABLE_PROCESSORS);
     }
 
     public static void resetExecutorService() {
@@ -106,26 +108,14 @@ public class MainUtilities {
         return executor2;
     }
 
-    public static void cleanOutputFolder(String datasetId) {
-
-        File outputFolder = new File(GET_WORKING_FOLDER_PATH(datasetId));
+    public static void cleanFolder(String folderPath) {
+        File outputFolder = new File(folderPath);
         deleteFolder(outputFolder);
         outputFolder.mkdir();
         System.gc();
     }
 
-    public static String GET_WORKING_FOLDER_PATH(String datasetId) {
-        if (datasetId.equalsIgnoreCase("")) {
-            return Configurations.GET_OUTPUT_FOLDER_PATH();
-        } else {
-            File f = new File(Configurations.GET_OUTPUT_FOLDER_PATH(), datasetId);
-            if (!f.exists()) {
-                f.mkdir();
-            }
-            return f.getAbsolutePath();
-        }
-
-    }
+    
 
     public static void deleteFolder(File folder) {
         if (folder.exists() && folder.isDirectory()) {
