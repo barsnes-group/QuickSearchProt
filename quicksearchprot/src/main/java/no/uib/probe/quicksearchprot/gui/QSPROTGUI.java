@@ -8,6 +8,7 @@ import javax.swing.JFileChooser;
 import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.DefaultCaret;
+import no.uib.probe.quicksearchprot.dataset.QSPDatasetHandler;
 import no.uib.probe.quicksearchprot.model.QSProtInputsEntity;
 import no.uib.probe.quicksearchprot.util.MainUtilities;
 
@@ -16,7 +17,7 @@ import no.uib.probe.quicksearchprot.util.MainUtilities;
  * @author Yehia Farag
  */
 public abstract class QSPROTGUI extends javax.swing.JFrame {
-    
+
     private String lastSelectedDirectory = "/";
     private final QSProtInputsEntity inputEntity = new QSProtInputsEntity();
 
@@ -41,15 +42,44 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         group.add(jRadioButton2);
         jRadioButton1.setSelected(true);
         jCheckBox5.setSelected(true);
-        jCheckBox5ActionPerformed(null);
+//        jCheckBox5ActionPerformed(null);
+
+        spectrumLabel.setForeground(Color.BLACK);
+        jSlider1.setEnabled(!jCheckBox5.isSelected());
+        this.jLabel5.setEnabled(!jCheckBox5.isSelected());
+        this.inputEntity.setReGenerateSubset(!jCheckBox5.isSelected());
+        if (!jCheckBox5.isSelected()) {
+            jCheckBox4.setSelected(true);
+            jCheckBox4.setEnabled(false);
+        } else {
+            jCheckBox4.setEnabled(true);
+        }
+
         jRadioButton1ActionPerformed(null);
         MainUtilities.QSProtWaitingHandler.setMainPrgressBar(jProgressBar1);
-        MainUtilities.QSProtWaitingHandler.setLogTextArea(logTextArea);
+        MainUtilities.QSProtWaitingHandler.setMainLogTextPanel(logTextArea);
+        MainUtilities.QSProtWaitingHandler.setMainOutputTextPanel(outputTextArea);
+        MainUtilities.QSProtWaitingHandler.setMainProcessesTextPanel(mainProcessTextArea);
         logTextArea.setEditable(false);
-  
-         // Get the caret and set its update policy
+
+        // Get the caret and set its update policy
         DefaultCaret caret = (DefaultCaret) logTextArea.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
+        // Get the caret and set its update policy
+        DefaultCaret caret2 = (DefaultCaret) outputTextArea.getCaret();
+        caret2.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
+        // Get the caret and set its update policy
+        DefaultCaret caret3 = (DefaultCaret) mainProcessTextArea.getCaret();
+        caret3.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
+        jTabbedPane1.setSelectedIndex(0);
+
+    }
+
+    public void updatePanelView(int viewIndex) {
+        jTabbedPane1.setSelectedIndex(viewIndex);
     }
 
     /**
@@ -108,8 +138,11 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         logTextArea = new javax.swing.JTextArea();
         jPanel3 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        mainProcessTextArea = new javax.swing.JTextArea();
+        jPanel5 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        outputTextArea = new javax.swing.JTextArea();
         jPanel4 = new javax.swing.JPanel();
         searchSettingsLabel1 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
@@ -382,8 +415,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jRadioButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(2, 2, 2)
-                        .addComponent(jRadioButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                        .addComponent(jRadioButton2)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -453,7 +485,9 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 800, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 5, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -466,20 +500,44 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
-        jScrollPane2.setViewportView(jTextPane1);
+        jScrollPane3.setMaximumSize(new java.awt.Dimension(232, 84));
+        jScrollPane3.setMinimumSize(new java.awt.Dimension(232, 84));
+        jScrollPane3.setName(""); // NOI18N
+        jScrollPane3.setPreferredSize(new java.awt.Dimension(232, 84));
+
+        mainProcessTextArea.setColumns(20);
+        mainProcessTextArea.setRows(5);
+        jScrollPane3.setViewportView(mainProcessTextArea);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("Output", jPanel3);
+        jTabbedPane1.addTab("Main steps", jPanel3);
+
+        outputTextArea.setColumns(20);
+        outputTextArea.setRows(5);
+        jScrollPane4.setViewportView(outputTextArea);
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE)
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Output", jPanel5);
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
@@ -495,7 +553,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
                 .addComponent(searchSettingsLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 653, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -513,14 +571,13 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(10, 10, 10)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(28, 28, 28)
                         .addComponent(welcomeLabel))
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addComponent(jProgressBar1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addComponent(inputOutputPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 351, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(inputOutputPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -528,9 +585,10 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
                         .addComponent(inputOutputPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(inputOutputPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 805, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(inputOutputPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 805, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTabbedPane1))
-                .addContainerGap())
+                .addGap(10, 10, 10))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -556,7 +614,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
                 .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 319, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(10, 10, 10))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -565,14 +623,14 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 0, 0))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(0, 0, 0)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(0, 0, 0))
         );
 
         pack();
@@ -585,23 +643,38 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         if (this.validateInputs()) {
-            MainUtilities.QSProtWaitingHandler.addLogMassage("Process started");           
+            MainUtilities.QSProtWaitingHandler.addLogMassage("Process started");
+            jTabbedPane1.setSelectedIndex(1);
             processData(inputEntity);
         }
 
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jCheckBox5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox5ActionPerformed
+        spectrumLabel.setForeground(Color.BLACK);
+        if (!jCheckBox5.isSelected() && inputEntity.getInputSpectrumFilePath() != null) {
+
+            MainUtilities.getDisplayExecuter().submit(() -> {
+                int count = QSPDatasetHandler.countTotalSpectra(inputEntity.getInputSpectrumFilePath());
+                jSlider1.setMaximum(count);
+            });
+
+        } else if (inputEntity.getInputSpectrumFilePath() == null) {
+            spectrumLabel.setForeground(Color.RED);
+            MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Input MGF file (.mgf) is required to enable subset size selection!");
+            jCheckBox5.setSelected(true);
+
+        }
+
         jSlider1.setEnabled(!jCheckBox5.isSelected());
         this.jLabel5.setEnabled(!jCheckBox5.isSelected());
-        this.inputEntity.setAdjustAllSearchParameters(jCheckBox5.isSelected());
+        this.inputEntity.setReGenerateSubset(!jCheckBox5.isSelected());
         if (!jCheckBox5.isSelected()) {
             jCheckBox4.setSelected(true);
             jCheckBox4.setEnabled(false);
         } else {
             jCheckBox4.setEnabled(true);
         }
-        
 
     }//GEN-LAST:event_jCheckBox5ActionPerformed
 
@@ -665,7 +738,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
             System.out.println("selected file was null " + selectedFile.getName());
         } else {
             this.mgfFileLable.setText("     Currently only MGF files supported");
-            inputEntity.setInputSpectrumFilePath(null);            
+            inputEntity.setInputSpectrumFilePath(null);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -689,7 +762,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
-        
+
         searchSettingsFileLabel.setEnabled(!jRadioButton1.isSelected());
         jButton1.setEnabled(!jRadioButton1.isSelected());
         searchSettingsFileLabel.setEnabled(!jRadioButton1.isSelected());
@@ -704,62 +777,6 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         inputEntity.setAdjustAllSearchParameters(jRadioButton1.isSelected());
     }//GEN-LAST:event_jRadioButton2ActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-//    public static void main(String args[]) {
-//        /* Set the Nimbus look and feel */
-//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-//         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(QSPROTGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(QSPROTGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(QSPROTGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(QSPROTGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-//        //</editor-fold>
-//
-//        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(() -> {
-//            
-//            boolean numbusLookAndFeelSet = false;
-//            try {
-//                
-//                numbusLookAndFeelSet = UtilitiesGUIDefaults.setLookAndFeel();
-//
-//                // fix for the scroll bar thumb disappearing...
-//                LookAndFeel lookAndFeel = UIManager.getLookAndFeel();
-//                UIDefaults defaults = lookAndFeel.getDefaults();
-//                defaults.put("ScrollBar.minimumThumbSize", new Dimension(30, 30));
-//                
-//            } catch (Exception e) {
-//            }
-//            
-//            if (!numbusLookAndFeelSet) {
-//                
-//                JOptionPane.showMessageDialog(null, """
-//                                                    Failed to set the default look and feel. Using backup look and feel.
-//                                                    QSProt will work but not look as good as it should...""", "Look and Feel",
-//                        JOptionPane.WARNING_MESSAGE
-//                );
-//            }
-//            
-//            new QSPROTGUI().setVisible(true);
-//        });
-//    }
-//    
     private boolean validateInputs() {
         projectNameLabel.setForeground(Color.BLACK);
         searchSettingsLabel.setForeground(Color.BLACK);
@@ -769,7 +786,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         outputLabel.setForeground(Color.BLACK);
         searchEnginesLabel.setForeground(Color.BLACK);
         boolean test = true;
-        if (jTextField1.getText() == null || jTextField1.getText().trim().isEmpty()) {            
+        if (jTextField1.getText() == null || jTextField1.getText().trim().isEmpty()) {
             projectNameLabel.setForeground(Color.RED);
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : The project name is missing!");
             test = false;
@@ -782,15 +799,15 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Search Parameter File (.par) is required!");
             test = false;
         }
-        
+
         if (inputEntity.getInputSpectrumFilePath() == null) {
             spectrumLabel.setForeground(Color.RED);
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Input MGF file (.mgf) is required!");
             test = false;
         }
-        
+
         if (inputEntity.getInputFastaFilePath() == null) {
-            
+
             databaseLabel.setForeground(Color.RED);
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Input Sequence database file (.fasta) is required!");
             test = false;
@@ -800,7 +817,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
             outputLabel.setForeground(Color.RED);
             test = false;
         }
-        
+
         if (jCheckBox2.isSelected()) {
             inputEntity.addSearchEngine(Advocate.sage.getName());
         }
@@ -813,10 +830,10 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
             test = false;
         }
         MainUtilities.QSProtWaitingHandler.addLogMassage(" ");
-        
+
         return test;
     }
-    
+
     public abstract void processData(QSProtInputsEntity projectEntity);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -849,19 +866,22 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSlider jSlider1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextPane jTextPane1;
     private javax.swing.JTextArea logTextArea;
+    private javax.swing.JTextArea mainProcessTextArea;
     private javax.swing.JLabel mgfFileLable;
     private javax.swing.JLabel outputFolderLabel;
     private javax.swing.JLabel outputLabel;
+    private javax.swing.JTextArea outputTextArea;
     private javax.swing.JLabel projectNameLabel;
     private javax.swing.JLabel searchEnginesLabel;
     private javax.swing.JLabel searchSettingsFileLabel;

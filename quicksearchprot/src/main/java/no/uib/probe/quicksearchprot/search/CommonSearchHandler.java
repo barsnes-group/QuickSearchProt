@@ -194,29 +194,7 @@ public abstract class CommonSearchHandler {
         System.out.println("Enzyme is " + values[0]);
         Map<String, RawScoreModel> resultsMapI = Collections.synchronizedMap(new LinkedHashMap<>());
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
-//        double speciftyThreshold = optProtDataset.getComparisonsThreshold(3);
-        //optimise enzyme  
 
-        //rerernce search with    Chymotrypsin (no P rule)   delete after get the data
-//        {
-//            Enzyme enzyme = EnzymeFactory.getInstance().getEnzyme("CNBr");
-//            oreginaltempIdParam.getSearchParameters().getDigestionParameters().clearEnzymes();
-//            oreginaltempIdParam.getSearchParameters().getDigestionParameters().addEnzyme(enzyme);
-//            oreginaltempIdParam.getSearchParameters().getDigestionParameters().setnMissedCleavages(enzyme.getName(), missedClavageNumb);
-//            final String option = enzyme.getName();
-//            final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + option + "_" + msFileName;
-//            Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
-//                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, true, optimisedSearchParameter, identificationParametersFile, false);
-//                return scoreModel;
-//            });
-//            try {
-//                RawScoreModel scoreModel = f.get();
-//                System.out.println("Enzyme: " + enzyme.getName() + "    Score: " + scoreModel.getFinalScore() + "    #PSMs: " + scoreModel.getIdPSMNumber() + "   " + scoreModel + "   ");
-//                optProtDataset.setActiveScoreModel(scoreModel);
-//            } catch (InterruptedException | ExecutionException ex) {
-//                ex.printStackTrace();
-//            }
-//        }
         if (optimisedSearchParameter.isOptimizeEnzymeParameter()) {
             for (Enzyme enzyme : EnzymeFactory.getInstance().getEnzymes()) {
                 if (enzyme.getName().replace(" ", "").equalsIgnoreCase("Trypsin(noPrule)")) {

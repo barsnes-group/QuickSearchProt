@@ -72,10 +72,12 @@ public class QuickSearchProtApp {
                     public void processData(QSProtInputsEntity projectEntity) {
                         MainUtilities.getDisplayExecuter().submit(() -> {
                             MainUtilities.QSProtWaitingHandler.startProgress();
+                            MainUtilities.QSProtWaitingHandler.addMainStepMassage("*******  Start data processing  *******");
                         });
                         MainUtilities.getDisplayExecuter().submit(() -> {
                             mainController.initializedController(projectEntity);
                             mainController.startDataProcessing();
+                            updatePanelView(2);
                         });
                     }
 

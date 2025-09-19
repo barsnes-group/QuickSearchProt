@@ -55,24 +55,21 @@ public class SearchInputSetting {
     private boolean runNovor = false;
     private boolean runDirecTag = false;
     private File omssaFolder = null;
-    private final File xTandemFolder = new File(ConfigurationsUtility.XTANDEM_FOLDER);
+    private final File xTandemFolder = new File(Configurations.XTANDEM_FOLDER);
     private File msgfFolder = null;
     private File msAmandaFolder = null;
-//    private final File myriMatchFolder = new File(Configurations.MYRIMATCH_FOLDER);
-//    private final File cometFolder = new File(ConfigurationsUtility.COMET_FOLDER);
     private File tideFolder = null;
     private File tideIndexLocation = null;
     private File andromedaFolder = null;
     private File metaMorpheusFolder = null;
-    private File sageFolder = new File(ConfigurationsUtility.SAGE_FOLDER);
-    private final File novorFolder = new File(ConfigurationsUtility.NOVOR_FOLDER);
-    private final File direcTagFolder = new File(ConfigurationsUtility.DIRECTAG_FOLDER);
+    private File sageFolder = new File(Configurations.SAGE_FOLDER);
+    private final File novorFolder = new File(Configurations.NOVOR_FOLDER);
+    private final File direcTagFolder = new File(Configurations.DIRECTAG_FOLDER);
 
     private File makeblastdbFolder = null;
 
     //parameter to optimise
     private boolean optimizeDigestionParameter;
-//    private boolean optimizeEnzymeParameter;
     private boolean optimizeSpecificityParameter = false;
     private boolean optimizeMaxMissCleavagesParameter = false;
     private boolean optimizeEnzymeParameter = false;

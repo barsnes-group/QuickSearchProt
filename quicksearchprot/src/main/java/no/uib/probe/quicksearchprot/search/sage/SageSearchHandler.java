@@ -73,35 +73,17 @@ public class SageSearchHandler extends CommonSearchHandler {
             sageParameters.setGenerateDecoys(false);
             sageParameters.setWideWindow(false);
             sageParameters.setPredictRt(true);
-              IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
+            IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
 
         }
         potintialFalsePostiveParamSet.add("precursorAccuracy");
         potintialFalsePostiveParamSet.add("fragmentAccuracy");
         potintialFalsePostiveParamSet.add("WideWindow");
-//        potintialFalsePostiveParamSet.add("minPeaks");
         potintialFalsePostiveParamSet.add("maxFragmentCharge");
         for (int i = 0; i < DigestionParameters.Specificity.values().length; i++) {
             final String option = DigestionParameters.Specificity.getSpecificity(i).name();
             potintialFalsePostiveParamSet.add(option);
         }
-//        potintialFalsePostiveParamSet.addAll(ptmFactory.getModifications(ModificationCategory.Common));
-//        potintialFalsePostiveParamSet.addAll(ptmFactory.getModifications(ModificationCategory.Common_Biological));
-//        potintialFalsePostiveParamSet.addAll(ptmFactory.getModifications(ModificationCategory.Common_Artifact));
-//        for (String modId : ptmFactory.getModifications(ModificationCategory.Common_Biological)) {
-//            if (ptmFactory.getModification(modId).getModificationType().isNTerm() || ptmFactory.getModification(modId).getModificationType().isCTerm()) {
-//                potintialFalsePostiveParamSet.remove(modId);
-//            }
-//        }
-//        for (String modId : ptmFactory.getModifications(ModificationCategory.Common_Artifact)) {
-//            if (ptmFactory.getModification(modId).getModificationType().isNTerm() || ptmFactory.getModification(modId).getModificationType().isCTerm()) {
-//                potintialFalsePostiveParamSet.remove(modId);
-//            }
-//        }
-
-//        System.out.println(" identificationParameters.getFastaParameters().getDecoyFlag() " + identificationParameters.getFastaParameters().getDecoyFlag() + "  oreginal size  " + optProtDataset.getOreginalDatasize() + "  total subsize " + optProtDataset.getTotalSpectraNumber());
-//        sageParameters.setMinFragmentMz(150.0);
-//        sageParameters.setMaxFragmentMz(1500.0);
         MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
         parameterScoreMap.put("DigestionParameter", new TreeSet<>(Collections.reverseOrder()));
         parameterScoreMap.put("EnzymeParameter", new TreeSet<>(Collections.reverseOrder()));
@@ -142,40 +124,19 @@ public class SageSearchHandler extends CommonSearchHandler {
         digestionParameterOpt = identificationParameters.getSearchParameters().getDigestionParameters().getCleavageParameter().name();
         searchInputSetting.setDigestionParameterOpt(digestionParameterOpt);
         MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
-//        String bestEnzyme = CalculateEnzymeComparisonsBasedThreshold(optProtDataset, generatedIdentificationParametersFile, searchInputSetting);
-////        if (!searchInputSetting.isOptimizeAllParameters()) {
-//        //run refrence search 
-//        String preEnzyme = identificationParameters.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName();
-//        if (!bestEnzyme.equalsIgnoreCase(preEnzyme)) {
-//            enzymeSpecificityOpt = identificationParameters.getSearchParameters().getDigestionParameters().getSpecificity(preEnzyme).name();
-//            int nMissesCleavages = identificationParameters.getSearchParameters().getDigestionParameters().getnMissedCleavages(preEnzyme);
-//            identificationParameters.getSearchParameters().getDigestionParameters().clearEnzymes();
-//            optimisedSearchResults.setEnzymeName(bestEnzyme);
-//            identificationParameters.getSearchParameters().getDigestionParameters().addEnzyme(EnzymeFactory.getInstance().getEnzyme(bestEnzyme));
-//            identificationParameters.getSearchParameters().getDigestionParameters().setSpecificity(bestEnzyme, DigestionParameters.Specificity.valueOf(enzymeSpecificityOpt));
-//            identificationParameters.getSearchParameters().getDigestionParameters().setnMissedCleavages(bestEnzyme, nMissesCleavages);
-//            IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
-//        }
-
         runReferenceRun(optProtDataset, identificationParameters, searchInputSetting);
-//        }
 
         for (String param : paramOrder) {
-//            System.out.println("last active " + MainUtilities.getParamScoreSet().size() + "   " + MainUtilities.getParamScoreSet().last());
-//
-//            optProtDataset.updateMaxScore(MainUtilities.getParamScoreSet().last());
-            System.out.println("-------------------------------------------param " + param + "-------------------------------------------  last max ");
+            MainUtilities.QSProtWaitingHandler.addMainStepMassage("Start to adjust "+param);
             MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
             if (param.equalsIgnoreCase("DigestionParameter") && searchInputSetting.isOptimizeDigestionParameter()) {
                 String[] values = this.optimizeEnzymeParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("EnzymeParameter"));
-
                 if (!values[0].equalsIgnoreCase("")) {
                     identificationParameters.getSearchParameters().getDigestionParameters().clearEnzymes();
                     optimisedSearchResults.setEnzymeName(values[0]);
-                    int nMissesCleavages = Integer.parseInt(values[2]);// identificationParameters.getSearchParameters().getDigestionParameters().getnMissedCleavages(value);                   
+                    int nMissesCleavages = Integer.parseInt(values[2]);                   
                     identificationParameters.getSearchParameters().getDigestionParameters().addEnzyme(EnzymeFactory.getInstance().getEnzyme(values[0]));
                     enzymeSpecificityOpt = values[1];
-//                    identificationParameters.getSearchParameters().getDigestionParameters().setSpecificity(values[0], DigestionParameters.Specificity.valueOf(values[1]));
                     identificationParameters.getSearchParameters().getDigestionParameters().setnMissedCleavages(values[0], nMissesCleavages);
                     IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
                 }
@@ -388,14 +349,12 @@ public class SageSearchHandler extends CommonSearchHandler {
     @Override
     public synchronized RawScoreModel excuteSearch(SearchingSubDataset optProtDataset, String defaultOutputFileName, String paramOption, IdentificationParameters tempIdParam, boolean addSpectraList, SearchInputSetting optProtSearchSettings, File identificationParametersFile) {
         if (!optProtSearchSettings.getSageEnabledParameters().getParamsToOptimize().isEnabledParam(paramOption.split("_")[0])) {
-            System.out.println("param " + paramOption + " is not supported " + paramOption);
+            MainUtilities.QSProtWaitingHandler.addLogMassage("param " + paramOption + " is not supported " + paramOption);
+             MainUtilities.QSProtWaitingHandler.addMainStepMassage("param " + paramOption + " is not supported " + paramOption);
             return new RawScoreModel(paramOption);
         }
-//        if (defaultOutputFileName.contains("_resultsf_Carbamilation of protein N-term") || defaultOutputFileName.contains("_resultsf_Acetylation of protein N-term") || defaultOutputFileName.contains("_resultsf_Pyrolidone from carbamidomethylated C")) {
-//            System.out.println("param " + paramOption + " is not supported " + paramOption);
-//            return new RawScoreModel();
-//        }
 
+         MainUtilities.QSProtWaitingHandler.addMainStepMassage("Parameter option --> " + paramOption);
         Future<File> f = MainUtilities.getLongExecutorService().submit(() -> {
             File resultOutput = SearchExecuter.executeSearch(defaultOutputFileName, optProtSearchSettings, optProtDataset.getSubMsFile(), optProtDataset.getSubFastaFile(), tempIdParam, identificationParametersFile);
             return resultOutput;
@@ -412,7 +371,7 @@ public class SageSearchHandler extends CommonSearchHandler {
         boolean potintialFP = false;
         if (potintialFalsePostiveParamSet.contains(paramOption.split("_")[0]) && !defaultOutputFileName.contains("optsearch_results0v_") && !defaultOutputFileName.contains("optsearch_results1v_")) {
             potintialFP = true;
-            System.out.println("at param name is " + paramOption + "  " + validatedMaches.size());
+             MainUtilities.QSProtWaitingHandler.addLogMassage("at param name is " + paramOption + "  " + validatedMaches.size());
         }
         if (paramOption.contains("charge-")) {
 //            potintialFP = true;
@@ -427,6 +386,7 @@ public class SageSearchHandler extends CommonSearchHandler {
         if (addSpectraList || rawScore.isSensitiveChange()) {
             rawScore.setSpectrumMatchResult(validatedMaches);
         }
+        MainUtilities.QSProtWaitingHandler.addMainStepMassage("done!");
         return (rawScore);
     }
 

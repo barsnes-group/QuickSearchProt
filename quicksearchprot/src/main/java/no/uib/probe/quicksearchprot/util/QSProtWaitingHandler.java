@@ -78,8 +78,21 @@ public class QSProtWaitingHandler extends WaitingHandlerCLIImpl {
     
     
     private  JProgressBar mainPrgressBar =new JProgressBar();
+      /**
+     * panel for log all steps
+     */
+    private JTextArea mainLogTextPanel = new JTextArea();
     
-    private JTextArea logTextArea = new JTextArea();
+     /**
+     * panel for log main process steps
+     */
+    private JTextArea mainProcessesTextPanel = new JTextArea();
+    
+      /**
+     * panel for desplay output steps
+     */
+    private JTextArea mainOutputTextPanel = new JTextArea();
+    
 
     public void setMainPrgressBar(JProgressBar mainPrgressBar) {
         this.mainPrgressBar = mainPrgressBar;
@@ -221,14 +234,14 @@ public class QSProtWaitingHandler extends WaitingHandlerCLIImpl {
                 if (needNewLine) {
                     printToLog(lineBreak);
                 }
-                System.out.print("10%");
+                printToLog("10%");
                 needNewLine = true;
             } else if (progress2 > 99) {
-                System.out.print(" " + progress + "%");
+                printToLog(" " + progress + "%");
                 printToLog(lineBreak);
                 needNewLine = false;
             } else {
-                System.out.print(" " + progress + "%");
+                printToLog(" " + progress + "%");
                 needNewLine = true;
             }
 
@@ -419,16 +432,34 @@ public class QSProtWaitingHandler extends WaitingHandlerCLIImpl {
         return displayProgress;
     }
 
-    public void setLogTextArea(JTextArea logTextArea) {
-        this.logTextArea = logTextArea;
+    public void setMainLogTextPanel(JTextArea mainLogTextPanel) {
+        this.mainLogTextPanel = mainLogTextPanel;
     }
     
     public void addLogMassage(String massage){
-    logTextArea.append(massage+lineBreak);
+    mainLogTextPanel.append(massage+lineBreak);
     }
-     public void printToLog(String massage){
-    logTextArea.append(massage);
+     private void printToLog(String massage){
+    mainLogTextPanel.append(massage);
     }
+     
+      public void addMainStepMassage(String massage){
+    mainProcessesTextPanel.append(massage+lineBreak);
+    }
+      public void printMainStepMassage(String massage){
+    mainProcessesTextPanel.append(massage);
+    }
+     private void printToMainStepPanel(String massage){
+    mainProcessesTextPanel.append(massage);
+    }
+     
+      public void addOutputMassage(String massage){
+    mainOutputTextPanel.append(massage+lineBreak);
+    }
+     
+     
+     
+     
      
      public void startProgress(){
       
@@ -437,4 +468,16 @@ public class QSProtWaitingHandler extends WaitingHandlerCLIImpl {
       public void endProgress(){
      this.mainPrgressBar.setIndeterminate(false);
      }
+
+    public void setSecondaryMaxProgressCounter(int secondaryMaxProgressCounter) {
+        this.secondaryMaxProgressCounter = secondaryMaxProgressCounter;
+    }
+
+    public void setMainOutputTextPanel(JTextArea mainOutputTextPanel) {
+        this.mainOutputTextPanel = mainOutputTextPanel;
+    }
+
+    public void setMainProcessesTextPanel(JTextArea mainProcessesTextPanel) {
+        this.mainProcessesTextPanel = mainProcessesTextPanel;
+    }
 }

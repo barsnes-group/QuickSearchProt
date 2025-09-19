@@ -68,22 +68,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
         potintialFalsePostiveParamSet.add("precursorAccuracy");
         potintialFalsePostiveParamSet.add("fragmentAccuracy");
-//        potintialFalsePostiveParamSet.add("usePotintialModification");
-//        potintialFalsePostiveParamSet.add("useRefinePointMutations");
-//        potintialFalsePostiveParamSet.add("spectrumDR");
-//        potintialFalsePostiveParamSet.addAll(ptmFactory.getModifications(ModificationCategory.Common));
-//        potintialFalsePostiveParamSet.addAll(ptmFactory.getModifications(ModificationCategory.Common_Biological));
-//        potintialFalsePostiveParamSet.addAll(ptmFactory.getModifications(ModificationCategory.Common_Artifact));
-//        for (String modId : ptmFactory.getModifications(ModificationCategory.Common_Biological)) {
-//            if (ptmFactory.getModification(modId).getModificationType().isNTerm() || ptmFactory.getModification(modId).getModificationType().isCTerm()) {
-//                potintialFalsePostiveParamSet.remove(modId);
-//            }
-//        }
-//        for (String modId : ptmFactory.getModifications(ModificationCategory.Common_Artifact)) {
-//            if (ptmFactory.getModification(modId).getModificationType().isNTerm() || ptmFactory.getModification(modId).getModificationType().isCTerm()) {
-//                potintialFalsePostiveParamSet.remove(modId);
-//            }
-//        }
+
         for (int i = 0; i < DigestionParameters.Specificity.values().length; i++) {
             final String option = DigestionParameters.Specificity.getSpecificity(i).name();
             potintialFalsePostiveParamSet.add(option);
@@ -138,35 +123,12 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         digestionParameterOpt = identificationParameters.getSearchParameters().getDigestionParameters().getCleavageParameter().name();
         searchInputSetting.setDigestionParameterOpt(digestionParameterOpt);
         MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
-//        MainUtilities.paramScoreSet.clear();
-
-//          XtandemParameters xtandemParameters = (XtandemParameters) identificationParameters.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
-//        xtandemParameters.setRefine(true);
-//        xtandemParameters.setQuickPyrolidone(true);
-//        xtandemParameters.setProteinQuickAcetyl(true);
-//           IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
-//        String preEnzyme = identificationParameters.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName();
-//        String bestEnzyme = CalculateEnzymeComparisonsBasedThreshold(optProtDataset, generatedIdentificationParametersFile, searchInputSetting);
-//        System.out.println("best enzyme is " + bestEnzyme);
-//        if (!bestEnzyme.equalsIgnoreCase(preEnzyme)) {
-//            enzymeSpecificityOpt = identificationParameters.getSearchParameters().getDigestionParameters().getSpecificity(preEnzyme).name();
-//            int nMissesCleavages = identificationParameters.getSearchParameters().getDigestionParameters().getnMissedCleavages(preEnzyme);
-//            identificationParameters.getSearchParameters().getDigestionParameters().clearEnzymes();
-//            optimisedSearchResults.setEnzymeName(bestEnzyme);
-//            identificationParameters.getSearchParameters().getDigestionParameters().addEnzyme(EnzymeFactory.getInstance().getEnzyme(bestEnzyme));
-//            identificationParameters.getSearchParameters().getDigestionParameters().setSpecificity(bestEnzyme, DigestionParameters.Specificity.valueOf(enzymeSpecificityOpt));
-//            identificationParameters.getSearchParameters().getDigestionParameters().setnMissedCleavages(bestEnzyme, nMissesCleavages);
-//            IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
-//        }
         runReferenceRun(optProtDataset, identificationParameters, searchInputSetting);
 
-//        System.out.println("at refrence run " + bestEnzyme + "  " + optProtDataset.getCurrentScoreModel());
         for (String param : paramOrder) {
-//            if (!MainUtilities.getParamScoreSet().isEmpty()) {
-//                optProtDataset.updateMaxScore(MainUtilities.getParamScoreSet().last());
-//            }
+
             //empty param score list
-            System.out.println("-------------------------------------------param " + param + "-------------------------------------------");
+            MainUtilities.QSProtWaitingHandler.addMainStepMassage("Start to adjust " + param);
             if (param.equalsIgnoreCase("DigestionParameter") && searchInputSetting.isOptimizeDigestionParameter()) {
                 String[] values = this.optimizeEnzymeParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("EnzymeParameter"));
                 System.out.println("Selected enzyme " + values[0] + "  " + values[1] + "  " + values[2]);
@@ -457,7 +419,8 @@ public class XTandemSearchHandler extends CommonSearchHandler {
     public synchronized RawScoreModel excuteSearch(SearchingSubDataset optProtDataset, String defaultOutputFileName, String paramOption, IdentificationParameters tempIdParam, boolean addSpectraList, SearchInputSetting optProtSearchSettings, File identificationParametersFile) {
 
         if (!optProtSearchSettings.getXTandemEnabledParameters().getParamsToOptimize().isEnabledParam(paramOption.split("_")[0])) {
-            System.out.println(" param: " + paramOption + "  not supporten by xtandem");
+            MainUtilities.QSProtWaitingHandler.addLogMassage("param " + paramOption + " is not supported " + paramOption);
+            MainUtilities.QSProtWaitingHandler.addMainStepMassage("param " + paramOption + " is not supported " + paramOption);
             return new RawScoreModel(paramOption);
         }
 
@@ -488,7 +451,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         if (paramOption.contains("_")) {
             paramOption = paramOption.split("_")[1];
         }
-
+        MainUtilities.QSProtWaitingHandler.addMainStepMassage("Parameter option --> " + paramOption);
         Future<File> f = MainUtilities.getLongExecutorService().submit(() -> {
             File resultOutput = SearchExecuter.executeSearch(defaultOutputFileName, optProtSearchSettings, optProtDataset.getSubMsFile(), optProtDataset.getSubFastaFile(), tempIdParam, identificationParametersFile);
             return resultOutput;
@@ -509,6 +472,8 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         if (addSpectraList && rawScore.isSensitiveChange()) {
             rawScore.setSpectrumMatchResult(validatedMaches);
         }
+         MainUtilities.QSProtWaitingHandler.addLogMassage("Parameter" + paramOption + "  " + validatedMaches.size());
+         MainUtilities.QSProtWaitingHandler.addMainStepMassage("done!");
         return (rawScore);
 
     }
@@ -529,6 +494,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         } catch (ExecutionException | InterruptedException ex) {
             ex.printStackTrace();
         }
+
         return option;
     }
 
@@ -560,7 +526,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                 RawScoreModel scoreModel = f.get();
                 System.out.println("---->>> DR " + j + "  " + spectraCounter + "  " + scoreModel);
 
-                if (scoreModel.getFinalScore() > 0&& (scoreModel.getSpectrumMatchResult().size() >= spectraCounter)) {
+                if (scoreModel.getFinalScore() > 0 && (scoreModel.getSpectrumMatchResult().size() >= spectraCounter)) {
                     resultsMap.put(j + "", scoreModel);
                     if (scoreModel.getSpectrumMatchResult().size() <= spectraCounter) {
                         break;
@@ -678,8 +644,8 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                System.out.println("MinimumFragmentMz "+j+"  "+scoreModel);
-                if(scoreModel.isAcceptedChange()){
+                System.out.println("MinimumFragmentMz " + j + "  " + scoreModel);
+                if (scoreModel.isAcceptedChange()) {
 //                if (scoreModel.isSensitiveChange() && (scoreModel.getSpectrumMatchResult().size() >= spectraCounter)) {
 //                    if (scoreModel.getSpectrumMatchResult().size() <= spectraCounter) {
 //                        break;
@@ -1033,7 +999,8 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         parameterScoreSet.add(paramScore);
         return selectedOption;
     }
-////
+
+    ////
 
     public boolean optimizeUseRefine(SearchingSubDataset optProtDataset, IdentificationParameters oreginaltempIdParam, SearchInputSetting optimisedSearchParameter, TreeSet<ParameterScoreModel> parameterScoreSet) throws IOException {
         final ParameterScoreModel paramScore = new ParameterScoreModel();
@@ -1530,7 +1497,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                if (scoreModel.getFinalScore()>0 && scoreModel.getDiffrentInSize()>0) {
+                if (scoreModel.getFinalScore() > 0 && scoreModel.getDiffrentInSize() > 0) {
                     resultsMap.put(j, scoreModel);
                 }
             } catch (ExecutionException | InterruptedException ex) {

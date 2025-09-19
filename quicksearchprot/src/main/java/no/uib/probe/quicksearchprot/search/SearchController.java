@@ -13,8 +13,6 @@ import no.uib.probe.quicksearchprot.model.SearchInputSetting;
 import no.uib.probe.quicksearchprot.search.myrimatch.MyrimatchSearchHandler;
 import no.uib.probe.quicksearchprot.search.sage.SageSearchHandler;
 import no.uib.probe.quicksearchprot.search.xtandam.XTandemSearchHandler;
-import no.uib.probe.quicksearchprot.util.ConfigurationsUtility;
-
 /**
  *
  * @author yfa041
@@ -26,7 +24,7 @@ public class SearchController {
             final File generatedIdentificationParametersFile;
             IdentificationParameters identificationParameters = IdentificationParameters.getIdentificationParameters(searchingSubDataset.getSearchSettingsFile());
             if (searchInputSetting.isOptimizeAllParameters()) {
-                generatedIdentificationParametersFile = new File(searchingSubDataset.getSubDataFolder(), Configurations.DEFAULT_RESULT_NAME + "_" + ConfigurationsUtility.DEFAULT_QSPROT_SEARCH_PARAM_FILE.replace(".par", "_optAll.par"));
+                generatedIdentificationParametersFile = new File(searchingSubDataset.getSubDataFolder(), Configurations.DEFAULT_RESULT_NAME + "_" + Configurations.DEFAULT_QSPROT_SEARCH_PARAM_FILE.replace(".par", "_optAll.par"));
             } else {
                 generatedIdentificationParametersFile = new File(searchingSubDataset.getSubDataFolder(), searchingSubDataset.getSearchSettingsFile().getName());
             }

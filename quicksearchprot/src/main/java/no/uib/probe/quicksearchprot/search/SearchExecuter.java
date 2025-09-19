@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import no.uib.probe.quicksearchprot.configurations.Configurations;
-import no.uib.probe.quicksearchprot.dataset.OptProtDatasetHandler;
+import no.uib.probe.quicksearchprot.dataset.QSPDatasetHandler;
 import no.uib.probe.quicksearchprot.model.SearchInputSetting;
 import no.uib.probe.quicksearchprot.util.ConfigurationsUtility;
 import no.uib.probe.quicksearchprot.util.MainUtilities;
@@ -66,9 +66,9 @@ public class SearchExecuter {
             }
         }
 
-        File resultOutput = new File(ConfigurationsUtility.WORKING_FOLDER_PATH, processId);
+        File resultOutput = new File(Configurations.WORKING_FOLDER_PATH, processId);
         resultOutput.mkdir();
-        File tempSearchEngineFolder = new File(ConfigurationsUtility.WORKING_FOLDER_PATH, processId + "_temp");
+        File tempSearchEngineFolder = new File(Configurations.WORKING_FOLDER_PATH, processId + "_temp");
         tempSearchEngineFolder.mkdir();
 
         ArrayList<File> msFileInList = new ArrayList<>();
@@ -156,7 +156,7 @@ public class SearchExecuter {
             }
             return matches;
         } catch (IOException | SQLException | ClassNotFoundException | InterruptedException | JAXBException | XmlPullParserException | XMLStreamException ex) {
-            Logger.getLogger(OptProtDatasetHandler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(QSPDatasetHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         return new ArrayList<>();
 

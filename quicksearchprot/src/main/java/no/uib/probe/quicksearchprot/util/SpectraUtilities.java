@@ -102,7 +102,6 @@ public class SpectraUtilities {
             if (filteredSubMsFile == null) {
                 filteredSubMsFile = new File(msFile.getParent(), Configurations.DEFAULT_RESULT_NAME + Configurations.get_current_file_fingerprent() + "_" + fullSpectrumSize + "_" + msFile.getName());
             }
-//            System.out.println("file name ms " + filteredSubMsFile.getName() + "   " + filteredSubMsFile.exists());
             if (!filteredSubMsFile.exists()) {
 
                 /**
@@ -130,73 +129,9 @@ public class SpectraUtilities {
                     currentSpectrumSize += (currentSpectrumSize * 0.1);
                     spectrumMap.putAll(substractSpectraWithConfidentTag(startIndex, currentSpectrumSize, msFileHandler, spectrumTitles, fileNameWithoutExtension));
                     startIndex += step;
-//                    System.out.println("final size is " + spectrumMap.size() + "   " + currentSpectrumSize);
-
                 }
 
                 writeSpectraToFile(spectrumMap, filteredSubMsFile);
-
-//                System.exit(0);
-                /**
-                 * **
-                 */
-//                File unfilteredSubMsFile = subsetSpectraFile(msFile, Configurations.EXTRACT_MS_TYPE.equals("TA"));
-//                long end1st = System.currentTimeMillis();
-//                double total = (end1st - start1) / 1000.0;
-//                System.out.println("process I ( subsetSpectraFile) in seconds: " + total + "  generated file size ");
-//                long start2 = System.currentTimeMillis();
-//                DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex());
-//                direcTagParameters.setMaxTagCount(1);
-//                direcTagParameters.setTagLength(4);
-//                direcTagParameters.setNumChargeStates(4);
-//                searchOptimizerParameters.setRunDirecTag(true);
-//                resultsFolder = SearchExecuter.executeSearch(updatedName, searchOptimizerParameters, unfilteredSubMsFile, fastaFile, tempIdParam, identificationParametersFile);
-//                File direcTagFile = new File(resultsFolder, IoUtil.removeExtension(unfilteredSubMsFile.getName()) + ".tags");
-//                if (!direcTagFile.exists()) {
-//                    //delete previos sub mgf and cms files 
-//                    unfilteredSubMsFile.delete();
-//                    File cms = new File(unfilteredSubMsFile.getParent(), unfilteredSubMsFile.getName().replace(".mgf", ".cms"));
-//                    cms.delete();
-//                    Configurations.EXTRACT_MAX_MS_SIZE += 1000;
-//                    MainUtilities.cleanFolder();
-//                    return initInputSubSetFiles(msFile, fastaFile, identificationParametersFile);
-//                }
-//
-//                IdfileReader idReader = IdfileReaderFactory.getInstance().getFileReader(direcTagFile);
-//                MsFileHandler msFileHandler = new MsFileHandler();
-//                msFileHandler.register(unfilteredSubMsFile, MainUtilities.QSProtWaitingHandler);
-//                ArrayList<SpectrumMatch> matches = idReader.getAllSpectrumMatches(msFileHandler, MainUtilities.QSProtWaitingHandler, searchParameters);
-//                Map<String, String> specTagMap = new LinkedHashMap<>();
-//                for (SpectrumMatch sm : matches) {
-//                    TagAssumption tag = sm.getAllTagAssumptions().toList().get(0);
-//                    if (tag.getScore() < 0.01) {
-//                        specTagMap.put(sm.getSpectrumTitle(), tag.getTag().getContent().get(1).asSequence());
-//                    }
-//                }
-//                System.out.println("tag size " + specTagMap.size());
-//                if (specTagMap.size() < Configurations.MIN_TAG_SIZE) {
-//                    //delete previos sub mgf and cms files 
-//                    unfilteredSubMsFile.delete();
-//                    msFileHandler.close();
-//                    File cms = new File(unfilteredSubMsFile.getParent(), unfilteredSubMsFile.getName().replace(".mgf", ".cms"));
-//                    cms.delete();
-////                    Configurations.EXTRACT_MAX_MS_SIZE += 500;
-//                    Configurations.EXTRACT_MIN_MS_SIZE += 500;
-//                    if (Configurations.EXTRACT_MAX_MS_SIZE <= Configurations.EXTRACT_MIN_MS_SIZE) {
-//                        Configurations.EXTRACT_MAX_MS_SIZE = Configurations.EXTRACT_MIN_MS_SIZE + 500;
-//                    }
-//                    MainUtilities.cleanFolder();
-//                    return initInputSubSetFiles(msFile, fastaFile, identificationParametersFile);
-//
-//                }
-//                filteredSubMsFile = subsetSpectraFile(unfilteredSubMsFile, specTagMap.keySet());
-//                long end2ndst = System.currentTimeMillis();
-//                total = (end2ndst - start2) / 1000.0;
-//                System.out.println("process II ( DirecTag+Generated subMGF) in seconds: " + total);
-//                File cms = new File(unfilteredSubMsFile.getParent(), unfilteredSubMsFile.getName().replace(".mgf", ".cms"));
-//                cms.delete();
-//                unfilteredSubMsFile.delete();
-//                MainUtilities.deleteFolder(direcTagFile.getParentFile());
             }
 
             File subFasta = null;
@@ -217,18 +152,18 @@ public class SpectraUtilities {
                 resultsFolder = SearchExecuter.executeSearch(updatedName, searchOptimizerParameters, filteredSubMsFile, fastaFile, identificationParameters, identificationParametersFile);
                 File NovorFile = new File(resultsFolder, IoUtil.removeExtension(filteredSubMsFile.getName()) + ".novor.csv");
                 Set<String> sequences = SpectraUtilities.getSequences(NovorFile);
-                System.out.println("sequence from nover " + sequences.size());
+                MainUtilities.QSProtWaitingHandler.addLogMassage("sequence from nover " + sequences.size());
                 long end3rd = System.currentTimeMillis();
-                double total = (end3rd - start3) / 1000.0;
-                System.out.println("process III ( Novor ) in seconds: " + total);
+                String total = MainUtilities.msToTime(end3rd - start3);
+                MainUtilities.QSProtWaitingHandler.addLogMassage("( Novor ) in seconds: " + total);
                 long start4 = System.currentTimeMillis();
                 subFasta = initSubFastaFile(fastaFile, sequences);
                 long end4th = System.currentTimeMillis();
-                total = (end4th - start4) / 1000.0;
-                System.out.println("process IV ( Generated Fasta) in seconds: " + total);
+                total = MainUtilities.msToTime(end4th - start4);
+                MainUtilities.QSProtWaitingHandler.addLogMassage("p( Generated Fasta) in seconds: " + total);
                 long end = System.currentTimeMillis();
-                total = (end - start1) / 1000.0;
-                System.out.println("Total Elapsed Time for initInputSubSetFiles in seconds: " + total);
+                total = MainUtilities.msToTime(end - start1) ;
+                MainUtilities.QSProtWaitingHandler.addLogMassage("Total Elapsed Time for initInputSubSetFiles in seconds: " + total);
                 MainUtilities.deleteFolder(NovorFile.getParentFile());
             }
 

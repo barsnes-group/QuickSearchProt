@@ -17,6 +17,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import no.uib.probe.quicksearchprot.configurations.Configurations;
 
 /**
  *
@@ -39,7 +40,7 @@ public class MainUtilities {
         userParameters.setRenameXTandemFile(true);
         UtilitiesUserParameters.saveUserParameters(userParameters);
         SearchHandler.setCloseProcessWhenDone(false);
-        File resultsOutput = new File(ConfigurationsUtility.WORKING_FOLDER_PATH);
+        File resultsOutput = new File(Configurations.WORKING_FOLDER_PATH);
         resultsOutput.mkdir();
     }
 
@@ -153,12 +154,10 @@ public class MainUtilities {
     public static String msToTime(double ms) {
         // Prompt the user to input the total seconds
         int seconds = (int) Math.round(ms / 1000);
-        // Calculate the hours, minutes, and seconds
         int S = seconds % 60;  // Calculate the remaining seconds
         int H = seconds / 60;  // Convert total seconds to minutes
         int M = H % 60;         // Calculate the remaining minutes
         H = H / 60;            // Convert total minutes to hours
-        // Display the time in the format HH:MM:SS
         String time = (H + ":" + M + ":" + S);
         return time;
 

@@ -14,6 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.TreeSet;
+import no.uib.probe.quicksearchprot.configurations.Configurations;
 import no.uib.probe.quicksearchprot.dataset.model.SearchingSubDataset;
 import no.uib.probe.quicksearchprot.model.ParameterScoreModel;
 
@@ -24,7 +25,7 @@ import no.uib.probe.quicksearchprot.model.ParameterScoreModel;
 public class ReportExporter {
 
     public static void addElementToReport(String datasetId, String paramId, String paramOption, double idRate, double timeInSecond) {
-        System.out.println("Report --->  datasetId: " + datasetId + "\tparamId:" + paramId + "\tparamOption:" + paramOption + "\tid_rate:" + idRate + "%\ttime:" + timeInSecond);
+        MainUtilities.QSProtWaitingHandler.addLogMassage("Report --->  datasetId: " + datasetId + "\tparamId:" + paramId + "\tparamOption:" + paramOption + "\tid_rate:" + idRate + "%\ttime:" + timeInSecond);
 
     }
 
@@ -37,59 +38,59 @@ public class ReportExporter {
             ex.printStackTrace();
             return;
         }
-        System.out.println("-------------------------------" + datasetId + "(" + searchEngine.getName() + ")-----------------------------------------");
+       MainUtilities.QSProtWaitingHandler.addOutputMassage("-------------------------------" + datasetId + "(" + searchEngine.getName() + ")-----------------------------------------");
         if (dataset != null) {
-        System.out.println("Spectra size        :\t" + dataset.getSubsetSize());
+       MainUtilities.QSProtWaitingHandler.addOutputMassage("Spectra size        :\t" + dataset.getSubsetSize());
         }
-        System.out.println("Digestion           :\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getCleavageParameter().name());
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Digestion           :\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getCleavageParameter().name());
         if (optimisedSearchParameter.getSearchParameters().getDigestionParameters().getCleavageParameter().name().equals("enzyme")) {
 
-            System.out.println("Enzyme              :\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName());
-            System.out.println("Specificity         :\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getSpecificity(optimisedSearchParameter.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName()));
-            System.out.println("Max Missed Cleavages:\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getnMissedCleavages(optimisedSearchParameter.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName()));
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Enzyme              :\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Specificity         :\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getSpecificity(optimisedSearchParameter.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName()));
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Max Missed Cleavages:\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getnMissedCleavages(optimisedSearchParameter.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName()));
         }
-        System.out.println("Fragment Ion Types  :\t" + optimisedSearchParameter.getSearchParameters().getForwardIons().get(0) + "-" + optimisedSearchParameter.getSearchParameters().getRewindIons().get(0));
-        System.out.println("Precursor Accuracy  :\t" + optimisedSearchParameter.getSearchParameters().getPrecursorAccuracy() + " " + optimisedSearchParameter.getSearchParameters().getPrecursorAccuracyType().name());
-        System.out.println("Fragment Accuracy   :\t" + optimisedSearchParameter.getSearchParameters().getFragmentIonAccuracy() + " " + optimisedSearchParameter.getSearchParameters().getFragmentAccuracyType().name());
-        System.out.println("PrecursorCharge     :\t" + optimisedSearchParameter.getSearchParameters().getMinChargeSearched() + " - " + optimisedSearchParameter.getSearchParameters().getMaxChargeSearched());
-        System.out.println("Isotops             :\t" + optimisedSearchParameter.getSearchParameters().getMinIsotopicCorrection() + " - " + optimisedSearchParameter.getSearchParameters().getMaxIsotopicCorrection());
-//            System.out.println("default Variable mod:\t" + optimisedSearchParameter.getSearchParameters() + "  Factor " + referenceFactor);
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragment Ion Types  :\t" + optimisedSearchParameter.getSearchParameters().getForwardIons().get(0) + "-" + optimisedSearchParameter.getSearchParameters().getRewindIons().get(0));
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Precursor Accuracy  :\t" + optimisedSearchParameter.getSearchParameters().getPrecursorAccuracy() + " " + optimisedSearchParameter.getSearchParameters().getPrecursorAccuracyType().name());
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragment Accuracy   :\t" + optimisedSearchParameter.getSearchParameters().getFragmentIonAccuracy() + " " + optimisedSearchParameter.getSearchParameters().getFragmentAccuracyType().name());
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("PrecursorCharge     :\t" + optimisedSearchParameter.getSearchParameters().getMinChargeSearched() + " - " + optimisedSearchParameter.getSearchParameters().getMaxChargeSearched());
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Isotops             :\t" + optimisedSearchParameter.getSearchParameters().getMinIsotopicCorrection() + " - " + optimisedSearchParameter.getSearchParameters().getMaxIsotopicCorrection());
+//            MainUtilities.QSProtWaitingHandler.addOutputMassage("default Variable mod:\t" + optimisedSearchParameter.getSearchParameters() + "  Factor " + referenceFactor);
         String fm = "";
         if (optimisedSearchParameter.getSearchParameters().getModificationParameters().getFixedModifications() != null) {
             for (String fixedMod : optimisedSearchParameter.getSearchParameters().getModificationParameters().getFixedModifications()) {
                 fm += (fixedMod + "\n");
             }
         }
-        System.out.println("Fixed Mod mod:\n" + fm);
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Fixed Mod mod:\n" + fm);
         fm = "";
         if (optimisedSearchParameter.getSearchParameters().getModificationParameters().getVariableModifications() != null) {
             for (String v : optimisedSearchParameter.getSearchParameters().getModificationParameters().getVariableModifications()) {
-                fm += (v + "% \t" + "\n");
+                fm += (v + "\t" + "\n");
             }
         }
-        System.out.println("Variable mod:\n" + fm);
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Variable mod:\n" + fm);
         if (searchEngine.getIndex() == Advocate.xtandem.getIndex()) {
             XtandemParameters xtandemParameters = (XtandemParameters) optimisedSearchParameter.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
-            System.out.println("---------------------------xtandem advanced-----------------------------");
-            System.out.println("Spectrum Dynamic Range:\t" + xtandemParameters.getDynamicRange());
-            System.out.println("Number of Peaks       :\t" + xtandemParameters.getnPeaks());
-            System.out.println("MinimumFragmentMz     :\t" + xtandemParameters.getMinFragmentMz());
-            System.out.println("Minimum Peaks         :\t" + xtandemParameters.getMinPeaksPerSpectrum());
-            System.out.println("Use NoiseSuppression  :\t" + xtandemParameters.isUseNoiseSuppression() + "  (" + xtandemParameters.getMinPrecursorMass() + ")");
-            System.out.println("Use Parent isotop exp :\t" + xtandemParameters.getParentMonoisotopicMassIsotopeError());
-            System.out.println("Use QuickAcetyl       :\t" + xtandemParameters.isProteinQuickAcetyl());
-            System.out.println("Use QuickPyrolidone   :\t" + xtandemParameters.isQuickPyrolidone());
-            System.out.println("Use stP Bias          :\t" + xtandemParameters.isStpBias());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("---------------------------xtandem advanced-----------------------------");
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Spectrum Dynamic Range:\t" + xtandemParameters.getDynamicRange());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Number of Peaks       :\t" + xtandemParameters.getnPeaks());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("MinimumFragmentMz     :\t" + xtandemParameters.getMinFragmentMz());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Minimum Peaks         :\t" + xtandemParameters.getMinPeaksPerSpectrum());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("NoiseSuppression  :\t" + xtandemParameters.isUseNoiseSuppression() + "  (" + xtandemParameters.getMinPrecursorMass() + ")");
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Parent isotop exp :\t" + xtandemParameters.getParentMonoisotopicMassIsotopeError());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("QuickAcetyl       :\t" + xtandemParameters.isProteinQuickAcetyl());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("QuickPyrolidone   :\t" + xtandemParameters.isQuickPyrolidone());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("stP Bias          :\t" + xtandemParameters.isStpBias());
 
-            System.out.println("Use Refinement        :\t" + xtandemParameters.isRefine());
-            System.out.println("UnanticipatedCleavage :\t" + xtandemParameters.isRefineUnanticipatedCleavages());
-            System.out.println("SimiEnzymaticCleavage :\t" + xtandemParameters.isRefineSemi());
-            System.out.println("Potintial Modification:\t" + xtandemParameters.isPotentialModificationsForFullRefinment());
-            System.out.println("Use PointMutations    :\t" + xtandemParameters.isRefinePointMutations());
-            System.out.println("Use SnAPs             :\t" + xtandemParameters.isRefineSnaps());
-            System.out.println("Spectrum Synthesis    :\t" + xtandemParameters.isRefineSpectrumSynthesis());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Refinement        :\t" + xtandemParameters.isRefine());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("UnanticipatedCleavage :\t" + xtandemParameters.isRefineUnanticipatedCleavages());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("SimiEnzymaticCleavage :\t" + xtandemParameters.isRefineSemi());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Potintial Modification:\t" + xtandemParameters.isPotentialModificationsForFullRefinment());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("PointMutations    :\t" + xtandemParameters.isRefinePointMutations());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("SnAPs             :\t" + xtandemParameters.isRefineSnaps());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Spectrum Synthesis    :\t" + xtandemParameters.isRefineSpectrumSynthesis());
 
-            System.out.println("------------------------------------------------------------------------");
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("------------------------------------------------------------------------");
 
             String rfm = "";
             if (optimisedSearchParameter.getSearchParameters().getModificationParameters().getRefinementFixedModifications() != null) {
@@ -97,57 +98,57 @@ public class ReportExporter {
                     rfm += (fixedMod + "\n");
                 }
             }
-            System.out.println("Refined Fixed Mod mod:\n" + rfm);
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Refined Fixed Mod mod:\n" + rfm);
             rfm = "";
             if (optimisedSearchParameter.getSearchParameters().getModificationParameters().getRefinementVariableModifications() != null) {
                 for (String v : optimisedSearchParameter.getSearchParameters().getModificationParameters().getRefinementVariableModifications()) {
                     rfm += (v + "\n");
                 }
             }
-            System.out.println("Refined Variable mod:\n" + rfm);
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Refined Variable mod:\n" + rfm);
         } else if (searchEngine.getIndex() == Advocate.myriMatch.getIndex()) {
             MyriMatchParameters myriMatchParameters = (MyriMatchParameters) optimisedSearchParameter.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.myriMatch.getIndex());
-            System.out.println("---------------------------MyriMatch advanced-----------------------------");
-            System.out.println("Peptide Length (min-max):\t" + myriMatchParameters.getMinPeptideLength() + "-" + myriMatchParameters.getMaxPeptideLength());
-            System.out.println("Precursor Mass (min-max):\t" + myriMatchParameters.getMinPrecursorMass() + "-" + myriMatchParameters.getMaxPrecursorMass());
-            System.out.println("Max Variable PTM        :\t" + myriMatchParameters.getMaxDynamicMods());
-            System.out.println("Fragmentaion Methods    :\t" + myriMatchParameters.getFragmentationRule());
-            System.out.println("Enzymatic Terminals     :\t" + myriMatchParameters.getMinTerminiCleavages());
-            System.out.println("Use smart + 3 model     :\t" + myriMatchParameters.getUseSmartPlusThreeModel());
-            System.out.println("Compute xCorr           :\t" + myriMatchParameters.getComputeXCorr());
-            System.out.println("TIC Cutoff  %           :\t" + myriMatchParameters.getTicCutoffPercentage());
-            System.out.println("Num Of Inten Classes    :\t" + myriMatchParameters.getNumIntensityClasses());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("---------------------------MyriMatch advanced-----------------------------");
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Peptide Length (min-max):\t" + myriMatchParameters.getMinPeptideLength() + "-" + myriMatchParameters.getMaxPeptideLength());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Precursor Mass (min-max):\t" + myriMatchParameters.getMinPrecursorMass() + "-" + myriMatchParameters.getMaxPrecursorMass());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Max Variable PTM        :\t" + myriMatchParameters.getMaxDynamicMods());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragmentaion Methods    :\t" + myriMatchParameters.getFragmentationRule());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Enzymatic Terminals     :\t" + myriMatchParameters.getMinTerminiCleavages());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("smart + 3 model     :\t" + myriMatchParameters.getUseSmartPlusThreeModel());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Compute xCorr           :\t" + myriMatchParameters.getComputeXCorr());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("TIC Cutoff  %           :\t" + myriMatchParameters.getTicCutoffPercentage());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Num Of Inten Classes    :\t" + myriMatchParameters.getNumIntensityClasses());
 
-            System.out.println("Class Size Multiplier   :\t" + myriMatchParameters.getClassSizeMultiplier());
-            System.out.println("Number Of Batches       :\t" + myriMatchParameters.getNumberOfBatches());
-            System.out.println("Max Peak Count          :\t" + myriMatchParameters.getMaxPeakCount());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Class Size Multiplier   :\t" + myriMatchParameters.getClassSizeMultiplier());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Number Of Batches       :\t" + myriMatchParameters.getNumberOfBatches());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Max Peak Count          :\t" + myriMatchParameters.getMaxPeakCount());
         } else if (searchEngine.getIndex() == Advocate.sage.getIndex()) {
             SageParameters sageParameters = (SageParameters) optimisedSearchParameter.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.sage.getIndex());
-            System.out.println("---------------------------Sage advanced-----------------------------");
-            System.out.println("Peptide Length (min-max):\t" + sageParameters.getMinPeptideLength() + "-" + sageParameters.getMaxPeptideLength());
-            System.out.println("Fragment mz    (min-max):\t" + sageParameters.getMinFragmentMz() + "-" + sageParameters.getMaxFragmentMz());
-            System.out.println("Peptide Mass            :\t" + sageParameters.getMinPeptideMass() + "-" + sageParameters.getMaxPeptideMass());
-            System.out.println("Min Ion Index           :\t" + sageParameters.getMinIonIndex());
-            System.out.println("Max Variable Mod        :\t" + sageParameters.getMaxVariableMods());
-            System.out.println("Generate Decoy          :\t" + sageParameters.getGenerateDecoys());
-            System.out.println("Deisotope               :\t" + sageParameters.getDeisotope());
-            System.out.println("Chimeric Spectra        :\t" + sageParameters.getChimera());
-            System.out.println("Wide window             :\t" + sageParameters.getWideWindow());
-            System.out.println("Predect RT              :\t" + sageParameters.getPredictRt());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("---------------------------Sage advanced-----------------------------");
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Peptide Length (min-max):\t" + sageParameters.getMinPeptideLength() + "-" + sageParameters.getMaxPeptideLength());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragment mz    (min-max):\t" + sageParameters.getMinFragmentMz() + "-" + sageParameters.getMaxFragmentMz());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Peptide Mass            :\t" + sageParameters.getMinPeptideMass() + "-" + sageParameters.getMaxPeptideMass());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Min Ion Index           :\t" + sageParameters.getMinIonIndex());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Max Variable Mod        :\t" + sageParameters.getMaxVariableMods());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Generate Decoy          :\t" + sageParameters.getGenerateDecoys());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Deisotope               :\t" + sageParameters.getDeisotope());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Chimeric Spectra        :\t" + sageParameters.getChimera());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Wide window             :\t" + sageParameters.getWideWindow());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Predect RT              :\t" + sageParameters.getPredictRt());
 
-            System.out.println("Number of Peaks         :\t" + sageParameters.getMinPeaks() + "-" + sageParameters.getMaxPeaks());
-            System.out.println("Min Mached Peaks        :\t" + sageParameters.getMinMatchedPeaks());
-            System.out.println("Max Fragment Charge     :\t" + sageParameters.getMaxFragmentCharge());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Number of Peaks         :\t" + sageParameters.getMinPeaks() + "-" + sageParameters.getMaxPeaks());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Min Mached Peaks        :\t" + sageParameters.getMinMatchedPeaks());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Max Fragment Charge     :\t" + sageParameters.getMaxFragmentCharge());
         }
 
     }
 
     public static void exportFullReport(File optimisedSearchParameterFile, SearchingSubDataset dataset, Advocate searchEngine, String datasetId, String timeInMin, String initDsTime, Map<String, TreeSet<ParameterScoreModel>> parameterScoreMap) {
         if (dataset == null) {
-            System.out.println("can not export un exist dataset " + datasetId);
+            MainUtilities.QSProtWaitingHandler.addLogMassage("can not export un exist dataset " + datasetId);
             return;
         }
-        String pathToRemoteResults ="C:\\Users\\yfa041\\OneDrive - University of Bergen\\quickprotResults";//dataset.getSubDataFolder()
+        String pathToRemoteResults =Configurations.SUBSET_DATA_FOLDER;//dataset.getSubDataFolder()
         File reportFile = new File(pathToRemoteResults, dataset.getSubMsFile().getName()+"_"+searchEngine.getName() + "_.txt");
         IdentificationParameters optimisedSearchParameter;
         try {
@@ -155,7 +156,7 @@ public class ReportExporter {
             if (!reportFile.exists()) {
                 reportFile.createNewFile();
             } else {
-                System.out.println("file exist and will re-write");
+                MainUtilities.QSProtWaitingHandler.addLogMassage("file exist and will re-write");
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -222,18 +223,18 @@ public class ReportExporter {
                     myWriter.write("Number of Peaks       :\t" + xtandemParameters.getnPeaks() + "\n");
                     myWriter.write("MinimumFragmentMz     :\t" + xtandemParameters.getMinFragmentMz() + "\n");
                     myWriter.write("Minimum Peaks         :\t" + xtandemParameters.getMinPeaksPerSpectrum() + "\n");
-                    myWriter.write("Use NoiseSuppression  :\t" + xtandemParameters.isUseNoiseSuppression() + "  (" + xtandemParameters.getMinPrecursorMass() + ")\n");
-                    myWriter.write("Use Parent isotop exp :\t" + xtandemParameters.getParentMonoisotopicMassIsotopeError() + "\n");
-                    myWriter.write("Use QuickAcetyl       :\t" + xtandemParameters.isProteinQuickAcetyl() + "\n");
-                    myWriter.write("Use QuickPyrolidone   :\t" + xtandemParameters.isQuickPyrolidone() + "\n");
-                    myWriter.write("Use stP Bias          :\t" + xtandemParameters.isStpBias() + "\n");
+                    myWriter.write("NoiseSuppression  :\t" + xtandemParameters.isUseNoiseSuppression() + "  (" + xtandemParameters.getMinPrecursorMass() + ")\n");
+                    myWriter.write("Parent isotop exp :\t" + xtandemParameters.getParentMonoisotopicMassIsotopeError() + "\n");
+                    myWriter.write("QuickAcetyl       :\t" + xtandemParameters.isProteinQuickAcetyl() + "\n");
+                    myWriter.write("QuickPyrolidone   :\t" + xtandemParameters.isQuickPyrolidone() + "\n");
+                    myWriter.write("stP Bias          :\t" + xtandemParameters.isStpBias() + "\n");
 
-                    myWriter.write("Use Refinement        :\t" + xtandemParameters.isRefine() + "\n");
+                    myWriter.write("Refinement        :\t" + xtandemParameters.isRefine() + "\n");
                     myWriter.write("UnanticipatedCleavage :\t" + xtandemParameters.isRefineUnanticipatedCleavages() + "\n");
                     myWriter.write("SimiEnzymaticCleavage :\t" + xtandemParameters.isRefineSemi() + "\n");
                     myWriter.write("Potintial Modification:\t" + xtandemParameters.isPotentialModificationsForFullRefinment() + "\n");
-                    myWriter.write("Use PointMutations    :\t" + xtandemParameters.isRefinePointMutations() + "\n");
-                    myWriter.write("Use SnAPs             :\t" + xtandemParameters.isRefineSnaps() + "\n");
+                    myWriter.write("PointMutations    :\t" + xtandemParameters.isRefinePointMutations() + "\n");
+                    myWriter.write("SnAPs             :\t" + xtandemParameters.isRefineSnaps() + "\n");
                     myWriter.write("Spectrum Synthesis    :\t" + xtandemParameters.isRefineSpectrumSynthesis() + "\n");
 
                     myWriter.write("------------------------------------------------------------------------\n");
@@ -261,7 +262,7 @@ public class ReportExporter {
                     myWriter.write("Max Variable PTM        :\t" + myriMatchParameters.getMaxDynamicMods() + "\n");
                     myWriter.write("Fragmentaion Methods    :\t" + myriMatchParameters.getFragmentationRule() + "\n");
                     myWriter.write("Enzymatic Terminals     :\t" + myriMatchParameters.getMinTerminiCleavages() + "\n");
-                    myWriter.write("Use smart + 3 model     :\t" + myriMatchParameters.getUseSmartPlusThreeModel() + "\n");
+                    myWriter.write("smart + 3 model     :\t" + myriMatchParameters.getUseSmartPlusThreeModel() + "\n");
                     myWriter.write("Compute xCorr           :\t" + myriMatchParameters.getComputeXCorr() + "\n");
                     myWriter.write("TIC Cutoff  %           :\t" + myriMatchParameters.getTicCutoffPercentage() + "\n");
                     myWriter.write("Num Of Inten Classes    :\t" + myriMatchParameters.getNumIntensityClasses() + "\n");
@@ -293,9 +294,9 @@ public class ReportExporter {
                     myWriter.write(param + ":\t" + parameterScoreMap.get(param).toString() + "\n");
                 }
             }
-            System.out.println("Successfully wrote to the file.");
+            MainUtilities.QSProtWaitingHandler.addLogMassage("Successfully wrote to the file.");
         } catch (IOException e) {
-            System.out.println("An error occurred.");
+            MainUtilities.QSProtWaitingHandler.addLogMassage("An error occurred.");
             e.printStackTrace();
         }
     }
