@@ -24,7 +24,8 @@ public class QSProtInputsEntity {
 
     private int subSetSize=-1;
 
-    private List<String> searchEngineList = new ArrayList<>();
+    private final List<String> searchEngineList = new ArrayList<>();
+    private SelectedSearchParametersEntity paramsToAdjust;
 
     public String getSearchParameterFilePath() {
         return searchParameterFilePath;
@@ -100,5 +101,13 @@ public class QSProtInputsEntity {
 
     public void setDatasetId(String datasetId) {
         this.datasetId = datasetId;
+    }
+
+    public SelectedSearchParametersEntity getParamsToAdjust() {
+        return paramsToAdjust;
+    }
+
+    public void setParamsToAdjust(SelectedSearchParametersEntity paramsToAdjust) {
+        this.paramsToAdjust = paramsToAdjust;
     }
 }
