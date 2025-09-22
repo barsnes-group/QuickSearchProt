@@ -26,7 +26,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import no.uib.probe.quicksearchprot.configurations.Configurations;
-import no.uib.probe.quicksearchprot.dataset.model.SearchingSubDataset;
+import no.uib.probe.quicksearchprot.model.SearchingSubDataset;
 import no.uib.probe.quicksearchprot.model.OptimisedSearchResults;
 import no.uib.probe.quicksearchprot.model.ParameterScoreModel;
 import no.uib.probe.quicksearchprot.model.RawScoreModel;

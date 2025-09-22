@@ -7,30 +7,38 @@ import java.util.Map;
 import no.uib.probe.quicksearchprot.util.MainUtilities;
 import no.uib.probe.quicksearchprot.configurations.Configurations;
 import no.uib.probe.quicksearchprot.handllers.QSPDatasetHandler;
-import no.uib.probe.quicksearchprot.dataset.model.SearchingSubDataset;
+import no.uib.probe.quicksearchprot.model.SearchingSubDataset;
 import no.uib.probe.quicksearchprot.model.QSProtInputsEntity;
 import no.uib.probe.quicksearchprot.model.SearchInputSetting;
 import no.uib.probe.quicksearchprot.util.ConfigurationsUtility;
 import no.uib.probe.quicksearchprot.util.ReportExporter;
 
 /**
- * Main controller class for orchestrating the QuickSearchProt pipeline.
- * Handles initialization, data processing, and parameter optimization.
+ * Main controller class for orchestrating the QuickSearchProt pipeline. Handles
+ * initialization, data processing, and parameter optimization.
  *
  * @author Yehia Mokhtar Farag
  */
 public class Controller {
 
-    /** Handler for managing dataset operations. */
+    /**
+     * Handler for managing dataset operations.
+     */
     private QSPDatasetHandler optProtDatasetHandler;
 
-    /** Map specifying the order of parameters for each search engine. */
+    /**
+     * Map specifying the order of parameters for each search engine.
+     */
     private Map<Advocate, List<String>> paramOrderMap;
 
-    /** Search input settings for the current project. */
+    /**
+     * Search input settings for the current project.
+     */
     private SearchInputSetting searchInputSetting;
 
-    /** Entity holding all project input details. */
+    /**
+     * Entity holding all project input details.
+     */
     private QSProtInputsEntity projectEntity;
 
     /**
@@ -41,10 +49,11 @@ public class Controller {
     }
 
     /**
-     * Initializes the controller with the provided project entity.
-     * Sets up configuration, search input settings, and parameter adjustment options.
+     * Initializes the controller with the provided project entity. Sets up
+     * configuration, search input settings, and parameter adjustment options.
      *
-     * @param projectEntity The project input entity containing configurations and data paths.
+     * @param projectEntity The project input entity containing configurations
+     * and data paths.
      */
     public void initializedController(QSProtInputsEntity projectEntity) {
         ConfigurationsUtility.initConfig(projectEntity);
@@ -77,8 +86,8 @@ public class Controller {
     }
 
     /**
-     * Starts the data processing workflow, iterating over each selected search engine.
-     * Handles cleaning folders, initializing datasets, and reporting.
+     * Starts the data processing workflow, iterating over each selected search
+     * engine. Handles cleaning folders, initializing datasets, and reporting.
      */
     public void startDataProcessing() {
         long start = System.currentTimeMillis();
@@ -131,13 +140,17 @@ public class Controller {
     }
 
     /**
-     * Processes a dataset for a specific search engine, performing sub-dataset generation and parameter optimization.
+     * Processes a dataset for a specific search engine, performing sub-dataset
+     * generation and parameter optimization.
      *
-     * @param projectEntity      Project input entity with all paths and configurations.
-     * @param paramOrder         Ordered list of parameters for optimization.
-     * @param wholeDataTest      Flag to indicate if the whole data set should be used.
-     * @param fullFasta          Flag to indicate if the full FASTA database is used.
-     * @param useOriginalInputs  Flag to indicate if original inputs should be used.
+     * @param projectEntity Project input entity with all paths and
+     * configurations.
+     * @param paramOrder Ordered list of parameters for optimization.
+     * @param wholeDataTest Flag to indicate if the whole data set should be
+     * used.
+     * @param fullFasta Flag to indicate if the full FASTA database is used.
+     * @param useOriginalInputs Flag to indicate if original inputs should be
+     * used.
      */
     private void processDataset(
             QSProtInputsEntity projectEntity,
@@ -163,20 +176,17 @@ public class Controller {
         MainUtilities.QSProtWaitingHandler.addMainStepMassage("Start preparing sub-dataset files");
 
         // Generate the sub-dataset for optimization
-        
-         SearchingSubDataset optProtDataset = optProtDatasetHandler.generateQSProtDataset(
-                 optProtDatasetHandler.getSearchInputSetting().getDatasetId(),
-                 msFile, fastaFile, optProtDatasetHandler.getSearchInputSetting().getSelectedSearchEngine(),
-                 subDataFolder,
-                 searchParamFile,
-                 wholeDataTest,
-                 fullFasta,
-                 useOriginalInputs,
-                 projectEntity.getSubSetSize()
-         );
-        
-        
-       
+        SearchingSubDataset optProtDataset = optProtDatasetHandler.generateQSProtDataset(
+                optProtDatasetHandler.getSearchInputSetting().getDatasetId(),
+                msFile, fastaFile, optProtDatasetHandler.getSearchInputSetting().getSelectedSearchEngine(),
+                subDataFolder,
+                searchParamFile,
+                wholeDataTest,
+                fullFasta,
+                useOriginalInputs,
+                projectEntity.getSubSetSize()
+        );
+
         long endDsInit = System.currentTimeMillis();
         String totalDsTime = MainUtilities.msToTime(endDsInit - startDsInit);
 
@@ -210,14 +220,12 @@ public class Controller {
                 "done adjusting process (" + totalDsTime + ")");
 
         if (generatedFile != null) {
-           
-            
-            
+
             ReportExporter.exportFullReport(
                     generatedFile,
                     optProtDataset,
                     optProtDatasetHandler.getSearchInputSetting().getSelectedSearchEngine(),
-                    optProtDatasetHandler.getSearchInputSetting().getDatasetId(),totalTime,totalDsTime
+                    optProtDatasetHandler.getSearchInputSetting().getDatasetId(), totalTime, totalDsTime
             );
             ReportExporter.printFullReport(
                     generatedFile,

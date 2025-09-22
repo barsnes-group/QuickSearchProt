@@ -1,15 +1,11 @@
 package no.uib.probe.quicksearchprot.gui;
 
 import com.compomics.util.experiment.identification.Advocate;
-import static com.google.common.io.Resources.getResource;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.net.URL;
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.DefaultCaret;
@@ -18,40 +14,64 @@ import no.uib.probe.quicksearchprot.model.QSProtInputsEntity;
 import no.uib.probe.quicksearchprot.util.MainUtilities;
 
 /**
+ * Abstract GUI class for QuickSearchProt main application window.
+ * <p>
+ * Handles user input, UI actions, and input validation for project setup.
+ * Subclasses must implement {@link #processData(QSProtInputsEntity)} for
+ * workflow.
  *
  * @author Yehia Farag
  */
 public abstract class QSPROTGUI extends javax.swing.JFrame {
 
-    private String lastSelectedDirectory = "/";
-    private final QSProtInputsEntity inputEntity = new QSProtInputsEntity();
+   
 
     /**
      * Creates new form QSPROTGUI
      */
+    // Tracks the last used directory in file dialogs.
+    private String lastSelectedDirectory = "/";
+    // Holds user input parameters for processing.
+    private final QSProtInputsEntity inputEntity = new QSProtInputsEntity();
+
+    /**
+     * Creates the main application GUI and initializes all UI components.
+     */
     public QSPROTGUI() {
         initComponents();
-        this.setBackground(Color.WHITE);
-        this.setResizable(false);
-        this.getContentPane().setBackground(Color.WHITE);
+        setupUI();
+    }
+
+    /**
+     * Set up the UI defaults and listeners.
+     */
+    private void setupUI() {
+        setBackground(Color.WHITE);
+        setResizable(false);
+        getContentPane().setBackground(Color.WHITE);
+
+        // Subset size slider setup
         jSlider1.setMinimum(1500);
         jSlider1.setValue(1500);
         jSlider1.setMaximum(300000);
-        jLabel5.setText(jSlider1.getValue() + "");
+        jLabel5.setText(Integer.toString(jSlider1.getValue()));
         jSlider1.addChangeListener((ChangeEvent e) -> {
-            jLabel5.setText(jSlider1.getValue() + "");
+            jLabel5.setText(Integer.toString(jSlider1.getValue()));
             inputEntity.setSubSetSize(jSlider1.getValue());
         });
+
+        // Adjustment mode radio buttons
         ButtonGroup group = new ButtonGroup();
         group.add(jRadioButton1);
         group.add(jRadioButton2);
         jRadioButton1.setSelected(true);
-        jCheckBox5.setSelected(true);
 
+        // Default settings
+        jCheckBox5.setSelected(true);
         spectrumLabel.setForeground(Color.BLACK);
         jSlider1.setEnabled(!jCheckBox5.isSelected());
-        this.jLabel5.setEnabled(!jCheckBox5.isSelected());
-        this.inputEntity.setReGenerateSubset(!jCheckBox5.isSelected());
+        jLabel5.setEnabled(!jCheckBox5.isSelected());
+        inputEntity.setReGenerateSubset(!jCheckBox5.isSelected());
         if (!jCheckBox5.isSelected()) {
             jCheckBox4.setSelected(true);
             jCheckBox4.setEnabled(false);
@@ -59,66 +79,61 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
             jCheckBox4.setEnabled(true);
         }
 
-        jRadioButton1ActionPerformed(null);
+        // Set up main log/progress panels for MainUtilities
         MainUtilities.QSProtWaitingHandler.setMainPrgressBar(jProgressBar1);
         MainUtilities.QSProtWaitingHandler.setMainLogTextPanel(logTextArea);
         MainUtilities.QSProtWaitingHandler.setMainOutputTextPanel(outputTextArea);
         MainUtilities.QSProtWaitingHandler.setMainProcessesTextPanel(mainProcessTextArea);
-        logTextArea.setEditable(false);
 
-        // Get the caret and set its update policy
+        // Ensure auto-scroll for log/output areas
         DefaultCaret caret = (DefaultCaret) logTextArea.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-
-        // Get the caret and set its update policy
         DefaultCaret caret2 = (DefaultCaret) outputTextArea.getCaret();
         caret2.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-
-        // Get the caret and set its update policy
         DefaultCaret caret3 = (DefaultCaret) mainProcessTextArea.getCaret();
         caret3.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
+        logTextArea.setEditable(false);
         jTabbedPane1.setSelectedIndex(0);
-        this.setLocationRelativeTo(null);
+        setLocationRelativeTo(null);
 
+        // Set window icon
         ImageIcon myAppImage = loadIcon();
         if (myAppImage != null) {
             setIconImage(myAppImage.getImage());
         }
-
-    }
-
-    private ImageIcon loadIcon() {
-        ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/qsprot_transparent.png"));
-        return icon;
-
-    }
-
-    public void updatePanelView(int viewIndex) {
-        jTabbedPane1.setSelectedIndex(viewIndex);
-        switch (viewIndex) {
-            case 0:
-                DefaultCaret caret = (DefaultCaret) logTextArea.getCaret();
-                caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-            case 1:
-                // Get the caret and set its update policy
-                DefaultCaret caret3 = (DefaultCaret) mainProcessTextArea.getCaret();
-                caret3.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-                break;
-            case 2:
-                DefaultCaret caret2 = (DefaultCaret) outputTextArea.getCaret();
-                caret2.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-            default:
-                throw new AssertionError();
-        }
+        
+         jButton1.setEnabled(false);
     }
 
     /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * Loads the application icon.
+     *
+     * @return The ImageIcon object, or null if not found.
      */
-    @SuppressWarnings("unchecked")
+    private ImageIcon loadIcon() {
+        return new ImageIcon(getClass().getResource("/qsprot_transparent.png"));
+    }
+
+    /**
+     * Updates the main panel view to the given tab index and ensures caret
+     * policy.
+     *
+     * @param viewIndex selected tab index (0: log, 1: main steps, 2: output)
+     */
+    public void updatePanelView(int viewIndex) {
+        jTabbedPane1.setSelectedIndex(viewIndex);
+        switch (viewIndex) {
+            case 0 ->
+                ((DefaultCaret) logTextArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+            case 1 ->
+                ((DefaultCaret) mainProcessTextArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+            case 2 ->
+                ((DefaultCaret) outputTextArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+            default ->
+                throw new AssertionError("Invalid tab index");
+        }
+    }
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -143,9 +158,9 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         fastaLabel = new javax.swing.JLabel();
         outputFolderLabel = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        projectNameLabel = new javax.swing.JLabel();
+        searchSettingsParFileLabel = new javax.swing.JLabel();
         inputOutputPanel1 = new javax.swing.JPanel();
-        searchSettingsFileLabel1 = new javax.swing.JLabel();
+        projectNameLabel = new javax.swing.JLabel();
         jCheckBox4 = new javax.swing.JCheckBox();
         jSlider1 = new javax.swing.JSlider();
         jLabel4 = new javax.swing.JLabel();
@@ -175,7 +190,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         outputTextArea = new javax.swing.JTextArea();
         jPanel4 = new javax.swing.JPanel();
-        searchSettingsLabel1 = new javax.swing.JLabel();
+        projectNameLabel_ = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -251,11 +266,11 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
 
         jLabel2.setText("<html><b style=\"color: black\">Input/Output</b></html>");
 
-        projectNameLabel.setText("     Search settings file generated by SearchGUI tool (.par)");
-        projectNameLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        projectNameLabel.setMaximumSize(new java.awt.Dimension(201, 18));
-        projectNameLabel.setMinimumSize(new java.awt.Dimension(201, 18));
-        projectNameLabel.setPreferredSize(new java.awt.Dimension(201, 18));
+        searchSettingsParFileLabel.setText("     Search settings file generated by SearchGUI tool (.par)");
+        searchSettingsParFileLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        searchSettingsParFileLabel.setMaximumSize(new java.awt.Dimension(201, 18));
+        searchSettingsParFileLabel.setMinimumSize(new java.awt.Dimension(201, 18));
+        searchSettingsParFileLabel.setPreferredSize(new java.awt.Dimension(201, 18));
 
         javax.swing.GroupLayout inputOutputPanelLayout = new javax.swing.GroupLayout(inputOutputPanel);
         inputOutputPanel.setLayout(inputOutputPanelLayout);
@@ -280,7 +295,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
                         .addGroup(inputOutputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(fastaLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 564, Short.MAX_VALUE)
                             .addComponent(mgfFileLable, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(projectNameLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(searchSettingsParFileLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(outputFolderLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
             .addGroup(inputOutputPanelLayout.createSequentialGroup()
@@ -297,7 +312,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
                     .addComponent(searchSettingsLabel)
                     .addComponent(jButton1)
                     .addComponent(searchSettingsFileLabel)
-                    .addComponent(projectNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(searchSettingsParFileLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(inputOutputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(spectrumLabel)
@@ -362,7 +377,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel5)))
                         .addGap(0, 0, 0)
-                        .addComponent(searchSettingsFileLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 758, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(projectNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 758, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
@@ -381,7 +396,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
                     .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(searchSettingsFileLabel1)
+                .addComponent(projectNameLabel)
                 .addGap(0, 0, 0))
         );
 
@@ -573,7 +588,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
 
-        searchSettingsLabel1.setText("<html><b style=\"color: black\">Project name</b></html></b></html>");
+        projectNameLabel_.setText("<html><b>Project name</b></html></b></html>");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -581,7 +596,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addComponent(searchSettingsLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(projectNameLabel_, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 653, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -591,7 +606,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(searchSettingsLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(projectNameLabel_, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
@@ -666,40 +681,42 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+  /**
+     * Handle "Re-generate subset" checkbox action.
+     */
     private void jCheckBox4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox4ActionPerformed
-        // TODO add your handling code here:
+
         inputEntity.setReGenerateSubset(jCheckBox4.isSelected());
     }//GEN-LAST:event_jCheckBox4ActionPerformed
-
+    /**
+     * Handle "Process" button click.
+     */
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        if (this.validateInputs()) {
+        if (validateInputs()) {
             MainUtilities.QSProtWaitingHandler.addLogMassage("Process started");
             jTabbedPane1.setSelectedIndex(1);
             processData(inputEntity);
         }
 
     }//GEN-LAST:event_jButton5ActionPerformed
-
+    /**
+     * Handle "Use suggested size" checkbox action.
+     */
     private void jCheckBox5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox5ActionPerformed
         spectrumLabel.setForeground(Color.BLACK);
         if (!jCheckBox5.isSelected() && inputEntity.getInputSpectrumFilePath() != null) {
-
             MainUtilities.getDisplayExecuter().submit(() -> {
                 int count = QSPDatasetHandler.countTotalSpectra(inputEntity.getInputSpectrumFilePath());
                 jSlider1.setMaximum(count);
             });
-
         } else if (inputEntity.getInputSpectrumFilePath() == null) {
             spectrumLabel.setForeground(Color.RED);
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Input MGF file (.mgf) is required to enable subset size selection!");
             jCheckBox5.setSelected(true);
-
         }
-
         jSlider1.setEnabled(!jCheckBox5.isSelected());
-        this.jLabel5.setEnabled(!jCheckBox5.isSelected());
-        this.inputEntity.setReGenerateSubset(!jCheckBox5.isSelected());
+        jLabel5.setEnabled(!jCheckBox5.isSelected());
+        inputEntity.setReGenerateSubset(!jCheckBox5.isSelected());
         if (!jCheckBox5.isSelected()) {
             jCheckBox4.setSelected(true);
             jCheckBox4.setEnabled(false);
@@ -708,15 +725,17 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_jCheckBox5ActionPerformed
-
+    // Placeholders for unused checkbox actions (may be used for future features)
     private void jCheckBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox3ActionPerformed
 
     }//GEN-LAST:event_jCheckBox3ActionPerformed
-
+    // Placeholders for unused checkbox actions (may be used for future features)
     private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBox2ActionPerformed
-
+    /**
+     * Handle output folder selection.
+     */
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -725,150 +744,172 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-            this.outputFolderLabel.setText("     " + selectedFile.getAbsolutePath());
+            outputFolderLabel.setText("     " + selectedFile.getAbsolutePath());
             lastSelectedDirectory = selectedFile.getPath();
             inputEntity.setOutputFolderPath(lastSelectedDirectory);
         } else {
-            this.outputFolderLabel.setText("     Generated data location");
+            outputFolderLabel.setText("     Generated data location");
             inputEntity.setOutputFolderPath(null);
         }
     }//GEN-LAST:event_jButton4ActionPerformed
-
+    /**
+     * Handle FASTA file selection.
+     */
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter parameterFileFilter = new FileNameExtensionFilter("FASTA file formate (.fasta)", "fasta");
-        fileChooser.addChoosableFileFilter(parameterFileFilter);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("FASTA file format (.fasta)", "fasta");
+        fileChooser.addChoosableFileFilter(filter);
         fileChooser.setAcceptAllFileFilterUsed(false);
-        fileChooser.setFileFilter(parameterFileFilter);
+        fileChooser.setFileFilter(filter);
         fileChooser.setCurrentDirectory(new File(lastSelectedDirectory));
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-            this.fastaLabel.setText("     " + selectedFile.getAbsolutePath());
+            fastaLabel.setText("     " + selectedFile.getAbsolutePath());
             lastSelectedDirectory = selectedFile.getPath();
             inputEntity.setInputFastaFilePath(lastSelectedDirectory);
         } else {
-            this.fastaLabel.setText("     FASTA file formate");
+            fastaLabel.setText("     FASTA file format");
             inputEntity.setInputFastaFilePath(null);
         }
     }//GEN-LAST:event_jButton3ActionPerformed
-
+    /**
+     * Handle MGF spectrum file selection.
+     */
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter parameterFileFilter = new FileNameExtensionFilter("Only MGF files supported (.mgf)", "mgf");
-        fileChooser.addChoosableFileFilter(parameterFileFilter);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Only MGF files supported (.mgf)", "mgf");
+        fileChooser.addChoosableFileFilter(filter);
         fileChooser.setAcceptAllFileFilterUsed(false);
-        fileChooser.setFileFilter(parameterFileFilter);
+        fileChooser.setFileFilter(filter);
         fileChooser.setCurrentDirectory(new File(lastSelectedDirectory));
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-            this.mgfFileLable.setText("     " + selectedFile.getAbsolutePath());
+            mgfFileLable.setText("     " + selectedFile.getAbsolutePath());
             lastSelectedDirectory = selectedFile.getPath();
             inputEntity.setInputSpectrumFilePath(lastSelectedDirectory);
-            System.out.println("selected file was null " + selectedFile.getName());
         } else {
-            this.mgfFileLable.setText("     Currently only MGF files supported");
+            mgfFileLable.setText("     Currently only MGF files supported");
             inputEntity.setInputSpectrumFilePath(null);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
-
+ /**
+     * Handle Search Parameter file selection.
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter parameterFileFilter = new FileNameExtensionFilter("Search settings file generated by SearchGUI tool (.par)", "par");
-        fileChooser.addChoosableFileFilter(parameterFileFilter);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Search settings file generated by SearchGUI tool (.par)", "par");
+        fileChooser.addChoosableFileFilter(filter);
         fileChooser.setAcceptAllFileFilterUsed(false);
-        fileChooser.setFileFilter(parameterFileFilter);
+        fileChooser.setFileFilter(filter);
         fileChooser.setCurrentDirectory(new File(lastSelectedDirectory));
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             lastSelectedDirectory = selectedFile.getPath();
-            this.projectNameLabel.setText("     " + selectedFile.getAbsolutePath());
+            searchSettingsParFileLabel.setText("     " + selectedFile.getAbsolutePath());
             inputEntity.setSearchParameterFilePath(lastSelectedDirectory);
         } else {
-            this.projectNameLabel.setText("     Search settings file generated by SearchGUI tool (.par)");
+            searchSettingsParFileLabel.setText("     Search settings file generated by SearchGUI tool (.par)");
             inputEntity.setSearchParameterFilePath(null);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
-
+/**
+     * "Adjust all parameters" mode selected.
+     */
     private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
-
         searchSettingsFileLabel.setEnabled(!jRadioButton1.isSelected());
         jButton1.setEnabled(!jRadioButton1.isSelected());
-        searchSettingsFileLabel.setEnabled(!jRadioButton1.isSelected());
         inputEntity.setAdjustAllSearchParameters(jRadioButton1.isSelected());
-
     }//GEN-LAST:event_jRadioButton1ActionPerformed
-
+/**
+     * "Select parameters to adjust" mode selected.
+     * Opens parameter selection dialog.
+     */
     private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
-        searchSettingsFileLabel.setEnabled(!jRadioButton1.isSelected());
+       searchSettingsFileLabel.setEnabled(!jRadioButton1.isSelected());
         jButton1.setEnabled(!jRadioButton1.isSelected());
-        searchSettingsFileLabel.setEnabled(!jRadioButton1.isSelected());
         inputEntity.setAdjustAllSearchParameters(jRadioButton1.isSelected());
-        this.setEnabled(false);
-        SelectParametersPanel selectParametersToAdjust = new SelectParametersPanel();
-        selectParametersToAdjust.addWindowListener(new WindowAdapter() {
+        setEnabled(false);
+
+        SelectParametersPanel selectPanel = new SelectParametersPanel();
+        selectPanel.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                if (!selectParametersToAdjust.getParametersToAdjust().isAtleastOneSelection()) {
+                if (!selectPanel.getParametersToAdjust().isAtleastOneSelection()) {
                     jRadioButton1.setSelected(true);
                 }
-                //  save changes, perform cleanup.
                 QSPROTGUI.this.setEnabled(true);
-                // dispose the frame
-                selectParametersToAdjust.dispose(); // Close the frame
-
+                selectPanel.dispose();
             }
         });
-
-        selectParametersToAdjust.setVisible(true);
-
-        inputEntity.setParamsToAdjust(selectParametersToAdjust.getParametersToAdjust());
+        selectPanel.setVisible(true);
+        inputEntity.setParamsToAdjust(selectPanel.getParametersToAdjust());
     }//GEN-LAST:event_jRadioButton2ActionPerformed
 
+    /**
+     * Validate the user input fields. Sets error highlighting and logs error
+     * messages as needed.
+     *
+     * @return true if all required fields are valid, false otherwise
+     */
     private boolean validateInputs() {
-        projectNameLabel.setForeground(Color.BLACK);
+        // Reset label colors
+        projectNameLabel_.setForeground(Color.BLACK);
+        searchSettingsParFileLabel.setForeground(Color.BLACK);
         searchSettingsLabel.setForeground(Color.BLACK);
         spectrumLabel.setForeground(Color.BLACK);
         fastaLabel.setForeground(Color.BLACK);
         databaseLabel.setForeground(Color.BLACK);
         outputLabel.setForeground(Color.BLACK);
         searchEnginesLabel.setForeground(Color.BLACK);
-        boolean test = true;
-        if (jTextField1.getText() == null || jTextField1.getText().trim().isEmpty()) {
-            projectNameLabel.setForeground(Color.RED);
+
+        boolean valid = true;
+
+        // Project name
+        String projectName = jTextField1.getText();
+        if (projectName == null || projectName.trim().isEmpty()) {
+            projectNameLabel_.setForeground(Color.RED);
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : The project name is missing!");
-            test = false;
+            valid = false;
             inputEntity.setDatasetId(null);
         } else {
-            inputEntity.setDatasetId(jTextField1.getText().replace(" ", "_"));
+            inputEntity.setDatasetId(projectName.replace(" ", "_"));
         }
 
+        // Search parameter file (if not adjusting all params)
         if (inputEntity.getSearchParameterFilePath() == null && !inputEntity.isAdjustAllSearchParameters()) {
             searchSettingsLabel.setForeground(Color.RED);
+            System.out.println("inputEntity.isAdjustAllSearchParameters() "+inputEntity.isAdjustAllSearchParameters());
+            
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Search Parameter File (.par) is required!");
-            test = false;
+            valid = false;
         }
 
+        // Input spectrum file
         if (inputEntity.getInputSpectrumFilePath() == null) {
             spectrumLabel.setForeground(Color.RED);
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Input MGF file (.mgf) is required!");
-            test = false;
+            valid = false;
         }
 
+        // Input FASTA file
         if (inputEntity.getInputFastaFilePath() == null) {
-
             databaseLabel.setForeground(Color.RED);
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Input Sequence database file (.fasta) is required!");
-            test = false;
+            valid = false;
         }
+
+        // Output folder
         if (inputEntity.getOutputFolderPath() == null) {
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Select output folder!");
             outputLabel.setForeground(Color.RED);
-            test = false;
+            valid = false;
         }
 
+        // Search engines
+        inputEntity.getSearchEngineList().clear();
         if (jCheckBox2.isSelected()) {
             inputEntity.addSearchEngine(Advocate.sage.getName());
         }
@@ -878,14 +919,17 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         if (!jCheckBox2.isSelected() && !jCheckBox3.isSelected()) {
             searchEnginesLabel.setForeground(Color.RED);
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Select at least 1 search engine!");
-            test = false;
+            valid = false;
         }
 
         MainUtilities.QSProtWaitingHandler.addLogMassage(" ");
-
-        return test;
+        return valid;
     }
-
+    /**
+     * Subclasses must implement this to process the input parameters.
+     *
+     * @param projectEntity The user inputs, validated and prepared.
+     */
     public abstract void processData(QSProtInputsEntity projectEntity);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -935,13 +979,13 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
     private javax.swing.JLabel outputLabel;
     private javax.swing.JTextArea outputTextArea;
     private javax.swing.JLabel projectNameLabel;
+    private javax.swing.JLabel projectNameLabel_;
     private javax.swing.JLabel searchEnginesLabel;
     private javax.swing.JLabel searchSettingsFileLabel;
-    private javax.swing.JLabel searchSettingsFileLabel1;
     private javax.swing.JLabel searchSettingsFileLabel3;
     private javax.swing.JLabel searchSettingsFileLabel4;
     private javax.swing.JLabel searchSettingsLabel;
-    private javax.swing.JLabel searchSettingsLabel1;
+    private javax.swing.JLabel searchSettingsParFileLabel;
     private javax.swing.JLabel spectrumLabel;
     private javax.swing.JLabel welcomeLabel;
     // End of variables declaration//GEN-END:variables

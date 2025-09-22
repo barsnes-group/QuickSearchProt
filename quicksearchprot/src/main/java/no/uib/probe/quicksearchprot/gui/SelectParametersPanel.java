@@ -1,36 +1,50 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package no.uib.probe.quicksearchprot.gui;
 
-import java.awt.Dimension;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import no.uib.probe.quicksearchprot.model.SelectedSearchParametersEntity;
 
 /**
+ * A JFrame that allows users to select and adjust various search parameters.
+ * This panel provides check boxes to enable/disable parameter adjustment, and
+ * buttons for common selection operations (select all, clear, defaults, OK).
  *
- * @author Yehia
+ * @author Yehia Mokhtar Farag
  */
 public class SelectParametersPanel extends javax.swing.JFrame {
 
+    /**
+     * The entity holding the state of selected search parameters.
+     */
     private final SelectedSearchParametersEntity parametersToAdjust;
 
+    /**
+     * Returns the checkbox for the "Adjust Digestion" option.
+     *
+     * @return JCheckBox for digestion adjustment
+     */
     public JCheckBox getAdjustDigestion() {
         return adjustDigestion;
     }
 
     /**
-     * Creates new form SelectParametersPanel
+     * Constructs the SelectParametersPanel and initializes GUI components.
      */
     public SelectParametersPanel() {
         parametersToAdjust = new SelectedSearchParametersEntity();
         initComponents();
         this.setLocationRelativeTo(null);
 
+    }
+
+    /**
+     * Gets the current SelectedSearchParametersEntity reflecting the user
+     * selection.
+     *
+     * @return the parameters entity
+     */
+    public SelectedSearchParametersEntity getParametersToAdjust() {
+        return parametersToAdjust;
     }
 
     /**
@@ -310,73 +324,106 @@ public class SelectParametersPanel extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+// --- Event handler methods ---
 
+    /**
+     * Handles the Adjust digestion checkbox selection.
+     */
     private void adjustDigestionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adjustDigestionActionPerformed
-        parametersToAdjust.setDigestion(adjustDigestion.isSelected());
-        jCheckBox2.setSelected(adjustDigestion.isSelected());
-        jCheckBox3.setSelected(adjustDigestion.isSelected());
-        jCheckBox4.setSelected(adjustDigestion.isSelected());
-
-        jCheckBox2.setEnabled(!adjustDigestion.isSelected());
-        jCheckBox3.setEnabled(!adjustDigestion.isSelected());
-        jCheckBox4.setEnabled(!adjustDigestion.isSelected());
+        boolean selected = adjustDigestion.isSelected();
+        parametersToAdjust.setDigestion(selected);
+        jCheckBox2.setSelected(selected);
+        jCheckBox3.setSelected(selected);
+        jCheckBox4.setSelected(selected);
+// Disable enzyme/specificity/max missed cleavages when digestion is selected, enable otherwise
+        jCheckBox2.setEnabled(!selected);
+        jCheckBox3.setEnabled(!selected);
+        jCheckBox4.setEnabled(!selected);
 
     }//GEN-LAST:event_adjustDigestionActionPerformed
-
+    /**
+     * Handles Modifications (PTMs) checkbox selection.
+     */
     private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
         parametersToAdjust.setModifications(jCheckBox1.isSelected());
     }//GEN-LAST:event_jCheckBox1ActionPerformed
-
+    /**
+     * Handles Sage advanced parameters checkbox selection.
+     */
     private void jCheckBox11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox11ActionPerformed
         parametersToAdjust.setSageAdvanced(jCheckBox11.isSelected());
     }//GEN-LAST:event_jCheckBox11ActionPerformed
-
+    /**
+     * Handles Enzyme checkbox selection.
+     */
     private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox2ActionPerformed
         parametersToAdjust.setEnzyme(jCheckBox2.isSelected());           // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBox2ActionPerformed
-
+    /**
+     * Handles Specificity checkbox selection.
+     */
     private void jCheckBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox3ActionPerformed
         parametersToAdjust.setSpecificity(jCheckBox3.isSelected());          // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBox3ActionPerformed
-
+    /**
+     * Handles Max missed cleavages checkbox selection.
+     */
     private void jCheckBox4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox4ActionPerformed
         parametersToAdjust.setMaxMissCleavages(jCheckBox4.isSelected());          // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBox4ActionPerformed
-
+    /**
+     * Handles Precursor tolerance checkbox selection.
+     */
     private void jCheckBox6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox6ActionPerformed
         parametersToAdjust.setPrecursorTolerance(jCheckBox6.isSelected());          // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBox6ActionPerformed
-
+    /**
+     * Handles Fragment tolerance checkbox selection.
+     */
     private void jCheckBox7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox7ActionPerformed
         parametersToAdjust.setFragmentTolerance(jCheckBox7.isSelected());          // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBox7ActionPerformed
-
+    /**
+     * Handles Precursor charge checkbox selection.
+     */
     private void jCheckBox8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox8ActionPerformed
         parametersToAdjust.setPrecursorCharge(jCheckBox8.isSelected());
     }//GEN-LAST:event_jCheckBox8ActionPerformed
-
+    /**
+     * Handles Isotops checkbox selection.
+     */
     private void jCheckBox9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox9ActionPerformed
         parametersToAdjust.setIsotops(jCheckBox9.isSelected());
     }//GEN-LAST:event_jCheckBox9ActionPerformed
-
+    /**
+     * Handles X! Tandem advanced parameters checkbox selection.
+     */
     private void jCheckBox10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox10ActionPerformed
         parametersToAdjust.setXtandemAdvanced(jCheckBox10.isSelected());
     }//GEN-LAST:event_jCheckBox10ActionPerformed
-
+    /**
+     * Handles Clear button: deselects all checkboxes.
+     */
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         selectUnSelectAll(false);
     }//GEN-LAST:event_jButton2ActionPerformed
-
+    /**
+     * Handles Select All button: selects all checkboxes.
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         selectUnSelectAll(true);
     }//GEN-LAST:event_jButton1ActionPerformed
-
+    /**
+     * Handles Fragment ion types checkbox selection.
+     */
     private void jCheckBox5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox5ActionPerformed
         parametersToAdjust.setFragmentIonTypes(jCheckBox5.isSelected());
     }//GEN-LAST:event_jCheckBox5ActionPerformed
-
+    /**
+     * Handles Default button: resets to default selection state.
+     */
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
+
         selectUnSelectAll(true);
         adjustDigestion.setSelected(false);
         adjustDigestionActionPerformed(null);
@@ -387,15 +434,19 @@ public class SelectParametersPanel extends javax.swing.JFrame {
         jCheckBox4.setSelected(true);
         jCheckBox4ActionPerformed(null);
 
-
     }//GEN-LAST:event_jButton4ActionPerformed
-
+  /** Handles OK button: closes the window. */
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 
 
     }//GEN-LAST:event_jButton3ActionPerformed
-
+    /**
+     * Selects or deselects all checkboxes and updates their corresponding
+     * parameter states.
+     *
+     * @param select true to select all, false to deselect all
+     */
     private void selectUnSelectAll(boolean select) {
         jCheckBox1.setSelected(select);
         jCheckBox1ActionPerformed(null);
@@ -425,6 +476,7 @@ public class SelectParametersPanel extends javax.swing.JFrame {
     }
 
     /**
+     * Main method for running the panel standalone.
      * @param args the command line arguments
      */
     public static void main(String args[]) {
@@ -479,7 +531,5 @@ public class SelectParametersPanel extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     // End of variables declaration//GEN-END:variables
 
-    public SelectedSearchParametersEntity getParametersToAdjust() {
-        return parametersToAdjust;
-    }
+  
 }

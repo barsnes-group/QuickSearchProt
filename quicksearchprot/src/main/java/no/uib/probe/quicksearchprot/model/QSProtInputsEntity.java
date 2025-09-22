@@ -21,7 +21,7 @@ public class QSProtInputsEntity {
     private String datasetId;
 
     private boolean reGenerateSubset;
-    private boolean adjustAllSearchParameters;
+    private boolean adjustAllSearchParameters=true;
 
     private int subSetSize=-1;
     private final Set<String> searchEngineList = new LinkedHashSet<>();

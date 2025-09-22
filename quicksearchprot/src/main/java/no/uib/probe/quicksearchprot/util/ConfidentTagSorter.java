@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package no.uib.probe.quicksearchprot.dataset.model;
+package no.uib.probe.quicksearchprot.util;
 
 import com.compomics.util.experiment.mass_spectrometry.spectra.Spectrum;
 

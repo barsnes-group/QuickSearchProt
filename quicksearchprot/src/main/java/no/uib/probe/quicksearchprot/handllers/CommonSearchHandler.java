@@ -1,3 +1,4 @@
+
 package no.uib.probe.quicksearchprot.handllers;
 
 import com.compomics.util.experiment.biology.enzymes.Enzyme;
@@ -13,107 +14,45 @@ import com.compomics.util.parameters.identification.search.DigestionParameters;
 import com.compomics.util.parameters.identification.search.SearchParameters;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import no.uib.probe.quicksearchprot.configurations.Configurations;
-import no.uib.probe.quicksearchprot.dataset.model.SearchingSubDataset;
 import no.uib.probe.quicksearchprot.model.ParameterScoreModel;
 import no.uib.probe.quicksearchprot.model.RawScoreModel;
 import no.uib.probe.quicksearchprot.model.SearchInputSetting;
+import no.uib.probe.quicksearchprot.model.SearchingSubDataset;
 import no.uib.probe.quicksearchprot.model.SortedPTMs;
 import no.uib.probe.quicksearchprot.util.MainUtilities;
 import no.uib.probe.quicksearchprot.util.SpectraUtilities;
 
 /**
+ * Abstract handler for common search parameter optimization and evaluation routines.
+ * Provides methods to optimize search parameters such as enzyme selection, cleavage, fragment/precursor tolerances,
+ * charge, isotopic correction, and PTM modifications.
  *
- * @author yfa041
+ * @author yehia mokhtar farag
  */
 public abstract class CommonSearchHandler {
-
     /**
      * The compomics PTM factory.
      */
     private final ModificationFactory ptmFactory = ModificationFactory.getInstance();
+    // ========================== CLEAVAGE PARAMETER ==========================
 
-//    /**
-//     * Optimize digestion enzyme
-//     *
-//     * @param optProtDataset
-//     * @param identificationParametersFile
-//     * @param optimisedSearchParameter
-//     * @param parameterScoreSet
-//     * @return
-//     * @throws IOException
-//     */
-//    public String CalculateEnzymeComparisonsBasedThreshold(SearchingSubDataset optProtDataset, File identificationParametersFile, SearchInputSetting optimisedSearchParameter) throws IOException {
-//
-//        IdentificationParameters oreginaltempIdParam = IdentificationParameters.getIdentificationParameters(identificationParametersFile);
-//        Map<RawScoreModel, String> resultsMapI = Collections.synchronizedMap(new TreeMap<>());
-//        String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
-//        String bestPerformanceEnzyme = "Trypsin";
-//        //optimise enzyme  
-//
-//        //rerernce search with    Chymotrypsin (no P rule)   delete after get the data
-//        boolean done = false;
-//        ArrayList<Enzyme> enz = EnzymeFactory.getInstance().getEnzymes();
-//        while (true) {
-//            for (Enzyme enzyme : enz) {
-//                if (enzyme.getName().replace(" ", "").equalsIgnoreCase("Trypsin(noPrule)")) {//|| enzyme.getName().replace(" ", "").contains("(noPrule)")
-//                    continue;
-//                }
-//                oreginaltempIdParam.getSearchParameters().getDigestionParameters().clearEnzymes();
-//                oreginaltempIdParam.getSearchParameters().getDigestionParameters().addEnzyme(enzyme);
-//                oreginaltempIdParam.getSearchParameters().getDigestionParameters().setnMissedCleavages(enzyme.getName(), 2);
-//                final String option = enzyme.getName();
-//                final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + option + "_" + msFileName;
-//                Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
-//                    RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, true, optimisedSearchParameter, identificationParametersFile);
-//                    return scoreModel;
-//                });
-//                try {
-//                    RawScoreModel scoreModel = f.get();
-//                    System.out.println(done + " Enzyme: " + enzyme.getName() + "    Score: " + scoreModel.getFinalScore() + "    #PSMs: " + scoreModel.getIdPSMNumber() + "   " + "   ");
-//
-//                    resultsMapI.put(scoreModel, option);
-//                } catch (InterruptedException | ExecutionException ex) {
-//                    ex.printStackTrace();
-//                }
-//            }
-//
-//            if (done) {
-//                SpectraUtilities.updateComparisonsThreshold(optProtDataset);
-//                break;
-//            }
-//            TreeMap<RawScoreModel, String> sortMap = new TreeMap<>(resultsMapI);
-//            optProtDataset.setActiveScoreModel(sortMap.firstKey());
-//            bestPerformanceEnzyme = sortMap.lastEntry().getValue();
-//            done = true;
-////            TreeMap<Integer, RawScoreModel> sortMap2 = new TreeMap<>();
-////            for (RawScoreModel key : resultsMapI.keySet()) {
-////                sortMap2.put(key.getIdPSMNumber(), key);
-////            }
-////             optProtDataset.setActiveScoreModel(sortMap2.firstEntry().getValue());
-////            bestPerformanceEnzyme = sortMap.lastEntry().getValue();
-//            System.out.println("lowest enzyme score is " + sortMap.firstEntry().getValue() + "   bestEnzyme " + bestPerformanceEnzyme);
-//
-//            //optimize specifty 
-//        }
-//        return bestPerformanceEnzyme;
-//
-//    }
+    /**
+     * Optimize the cleavage parameter for digestion.
+     * @param optProtDataset
+     * @param identificationParametersFile
+     * @param optimisedSearchParameter
+     * @param parameterScoreSet
+     * @return 
+     * @throws java.io.IOException
+     */
     public String optimizeDigestionCleavageParameter(SearchingSubDataset optProtDataset, File identificationParametersFile, SearchInputSetting optimisedSearchParameter, TreeSet<ParameterScoreModel> parameterScoreSet) throws IOException {
+        /**
+         * The CompOmics PTM factory used for handling modifications.
+         */
         final ParameterScoreModel paramScore = new ParameterScoreModel();
         paramScore.setParamId("CleavageParameter");
         IdentificationParameters oreginaltempIdParam = IdentificationParameters.getIdentificationParameters(identificationParametersFile);
@@ -172,8 +111,10 @@ public abstract class CommonSearchHandler {
 
     }
 
+    
+    // ========================== ENZYME PARAMETER ==========================
     /**
-     * Optimize digestion enzyme
+     * Optimize digestion enzyme, specificity, and missed cleavage parameters.
      *
      * @param optProtDataset
      * @param identificationParametersFile

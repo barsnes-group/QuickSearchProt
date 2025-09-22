@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeSet;
 import no.uib.probe.quicksearchprot.configurations.Configurations;
-import no.uib.probe.quicksearchprot.dataset.model.SearchingSubDataset;
+import no.uib.probe.quicksearchprot.model.SearchingSubDataset;
 import no.uib.probe.quicksearchprot.model.ParameterScoreModel;
 
 /**

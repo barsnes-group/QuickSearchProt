@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import no.uib.probe.quicksearchprot.configurations.Configurations;
-import no.uib.probe.quicksearchprot.dataset.model.SearchingSubDataset;
+import no.uib.probe.quicksearchprot.model.SearchingSubDataset;
 import no.uib.probe.quicksearchprot.model.PSM;
 import no.uib.probe.quicksearchprot.model.RawScoreModel;
 import no.uib.probe.quicksearchprot.model.SearchInputSetting;
