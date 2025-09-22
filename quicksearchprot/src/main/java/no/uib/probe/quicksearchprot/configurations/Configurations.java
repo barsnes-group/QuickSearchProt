@@ -18,7 +18,7 @@ public class Configurations {
 
     public static final String DEFAULT_RESULT_NAME = "qsprot_results"; 
      public static Map<Advocate, List<String>> paramOrderMap = new HashMap<>();
-    public static Map<String, Boolean> searchOperationParameters = new LinkedHashMap<>();
+//    public static Map<String, Boolean> searchOperationParameters = new LinkedHashMap<>();
     public static boolean useFullDataMode = false;
     public static String DATASET_MAIN_OUTPUT_FOLDER_PATH;
     public static String SUBSET_DATA_FOLDER;
@@ -64,9 +64,9 @@ public class Configurations {
         return paramOrderMap;
     }
 
-    public Map<String, Boolean> getSearchOperationParameters() {
-        return searchOperationParameters;
-    }
+//    public Map<String, Boolean> getSearchOperationParameters() {
+//        return searchOperationParameters;
+//    }
 
     public boolean isUseFullDataMode() {
         return useFullDataMode;

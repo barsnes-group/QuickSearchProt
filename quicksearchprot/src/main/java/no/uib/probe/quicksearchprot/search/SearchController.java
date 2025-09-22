@@ -23,11 +23,11 @@ public class SearchController {
         try {
             final File generatedIdentificationParametersFile;
             IdentificationParameters identificationParameters = IdentificationParameters.getIdentificationParameters(searchingSubDataset.getSearchSettingsFile());
-            if (searchInputSetting.isOptimizeAllParameters()) {
-                generatedIdentificationParametersFile = new File(searchingSubDataset.getSubDataFolder(), Configurations.DEFAULT_RESULT_NAME + "_" + Configurations.DEFAULT_QSPROT_SEARCH_PARAM_FILE.replace(".par", "_optAll.par"));
-            } else {
-                generatedIdentificationParametersFile = new File(searchingSubDataset.getSubDataFolder(), searchingSubDataset.getSearchSettingsFile().getName());
-            }
+//            if (searchInputSetting.isOptimizeAllParameters()) {
+                generatedIdentificationParametersFile = new File(searchingSubDataset.getSubDataFolder(),"QSProtSearchParameter.par");
+//            } else {
+//                generatedIdentificationParametersFile = new File(searchingSubDataset.getSubDataFolder(), searchingSubDataset.getSearchSettingsFile().getName());
+//            }
             if (generatedIdentificationParametersFile.exists()) {
                 generatedIdentificationParametersFile.delete();
             }

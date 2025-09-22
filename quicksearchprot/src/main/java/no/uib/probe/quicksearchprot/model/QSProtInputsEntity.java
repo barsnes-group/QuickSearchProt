@@ -4,8 +4,9 @@
  */
 package no.uib.probe.quicksearchprot.model;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -23,9 +24,9 @@ public class QSProtInputsEntity {
     private boolean adjustAllSearchParameters;
 
     private int subSetSize=-1;
-
-    private final List<String> searchEngineList = new ArrayList<>();
-    private SelectedSearchParametersEntity paramsToAdjust;
+    private final Set<String> searchEngineList = new LinkedHashSet<>();
+    
+    private SelectedSearchParametersEntity paramsToAdjust = new SelectedSearchParametersEntity();
 
     public String getSearchParameterFilePath() {
         return searchParameterFilePath;
@@ -83,7 +84,7 @@ public class QSProtInputsEntity {
         this.subSetSize = subSetSize;
     }
 
-    public List<String> getSearchEngineList() {
+    public Set<String> getSearchEngineList() {
         return searchEngineList;
     }
 

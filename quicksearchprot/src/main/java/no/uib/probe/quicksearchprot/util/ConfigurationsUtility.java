@@ -56,9 +56,7 @@ public class ConfigurationsUtility {
             Configurations.SUBSET_DATA_FOLDER = subDatafolder.getAbsolutePath();
             Configurations.WORKING_FOLDER_PATH = workingfolder.getAbsolutePath();
             try (FileReader reader = new FileReader(Configurations.configurationsFile)) {
-                JsonObject jsonObject = JsonParser.parseReader(reader).getAsJsonObject();
-                Configurations.searchOperationParameters = new Gson().fromJson(jsonObject.getAsJsonObject("searchOpParameter"), new TypeToken<Map<String, Boolean>>() {
-                }.getType());
+                JsonObject jsonObject = JsonParser.parseReader(reader).getAsJsonObject();               
                 for (String seName : projectEntity.getSearchEngineList()) {
                     Advocate se = Advocate.xtandem;
                     if (seName.equalsIgnoreCase("Sage")) {

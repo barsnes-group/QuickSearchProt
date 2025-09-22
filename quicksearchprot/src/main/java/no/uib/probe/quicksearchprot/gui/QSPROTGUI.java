@@ -1,11 +1,14 @@
 package no.uib.probe.quicksearchprot.gui;
 
 import com.compomics.util.experiment.identification.Advocate;
+import static com.google.common.io.Resources.getResource;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.net.URL;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -19,7 +22,7 @@ import no.uib.probe.quicksearchprot.util.MainUtilities;
  * @author Yehia Farag
  */
 public abstract class QSPROTGUI extends javax.swing.JFrame {
-    
+
     private String lastSelectedDirectory = "/";
     private final QSProtInputsEntity inputEntity = new QSProtInputsEntity();
 
@@ -44,7 +47,6 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         group.add(jRadioButton2);
         jRadioButton1.setSelected(true);
         jCheckBox5.setSelected(true);
-//        jCheckBox5ActionPerformed(null);
 
         spectrumLabel.setForeground(Color.BLACK);
         jSlider1.setEnabled(!jCheckBox5.isSelected());
@@ -56,7 +58,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         } else {
             jCheckBox4.setEnabled(true);
         }
-        
+
         jRadioButton1ActionPerformed(null);
         MainUtilities.QSProtWaitingHandler.setMainPrgressBar(jProgressBar1);
         MainUtilities.QSProtWaitingHandler.setMainLogTextPanel(logTextArea);
@@ -75,14 +77,40 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         // Get the caret and set its update policy
         DefaultCaret caret3 = (DefaultCaret) mainProcessTextArea.getCaret();
         caret3.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        
+
         jTabbedPane1.setSelectedIndex(0);
         this.setLocationRelativeTo(null);
-        
+
+        ImageIcon myAppImage = loadIcon();
+        if (myAppImage != null) {
+            setIconImage(myAppImage.getImage());
+        }
+
     }
-    
+
+    private ImageIcon loadIcon() {
+        ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/qsprot_transparent.png"));
+        return icon;
+
+    }
+
     public void updatePanelView(int viewIndex) {
         jTabbedPane1.setSelectedIndex(viewIndex);
+        switch (viewIndex) {
+            case 0:
+                DefaultCaret caret = (DefaultCaret) logTextArea.getCaret();
+                caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+            case 1:
+                // Get the caret and set its update policy
+                DefaultCaret caret3 = (DefaultCaret) mainProcessTextArea.getCaret();
+                caret3.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+                break;
+            case 2:
+                DefaultCaret caret2 = (DefaultCaret) outputTextArea.getCaret();
+                caret2.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+            default:
+                throw new AssertionError();
+        }
     }
 
     /**
@@ -656,19 +684,19 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
     private void jCheckBox5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox5ActionPerformed
         spectrumLabel.setForeground(Color.BLACK);
         if (!jCheckBox5.isSelected() && inputEntity.getInputSpectrumFilePath() != null) {
-            
+
             MainUtilities.getDisplayExecuter().submit(() -> {
                 int count = QSPDatasetHandler.countTotalSpectra(inputEntity.getInputSpectrumFilePath());
                 jSlider1.setMaximum(count);
             });
-            
+
         } else if (inputEntity.getInputSpectrumFilePath() == null) {
             spectrumLabel.setForeground(Color.RED);
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Input MGF file (.mgf) is required to enable subset size selection!");
             jCheckBox5.setSelected(true);
-            
+
         }
-        
+
         jSlider1.setEnabled(!jCheckBox5.isSelected());
         this.jLabel5.setEnabled(!jCheckBox5.isSelected());
         this.inputEntity.setReGenerateSubset(!jCheckBox5.isSelected());
@@ -765,7 +793,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
-        
+
         searchSettingsFileLabel.setEnabled(!jRadioButton1.isSelected());
         jButton1.setEnabled(!jRadioButton1.isSelected());
         searchSettingsFileLabel.setEnabled(!jRadioButton1.isSelected());
@@ -784,25 +812,21 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 if (!selectParametersToAdjust.getParametersToAdjust().isAtleastOneSelection()) {
-                    System.out.println("no parameters were selected");
                     jRadioButton1.setSelected(true);
                 }
-
-                // Your custom logic when the window is closing
-                System.out.println("Window is closing! Performing custom actions...");
-                // You can prompt the user to save changes, perform cleanup, etc.
+                //  save changes, perform cleanup.
                 QSPROTGUI.this.setEnabled(true);
-                // After your custom logic, you can choose to dispose the frame or exit the application
+                // dispose the frame
                 selectParametersToAdjust.dispose(); // Close the frame
-                // System.exit(0); // Exit the application
+
             }
         });
-        
+
         selectParametersToAdjust.setVisible(true);
-        
+
         inputEntity.setParamsToAdjust(selectParametersToAdjust.getParametersToAdjust());
     }//GEN-LAST:event_jRadioButton2ActionPerformed
-    
+
     private boolean validateInputs() {
         projectNameLabel.setForeground(Color.BLACK);
         searchSettingsLabel.setForeground(Color.BLACK);
@@ -820,21 +844,21 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         } else {
             inputEntity.setDatasetId(jTextField1.getText().replace(" ", "_"));
         }
-        
+
         if (inputEntity.getSearchParameterFilePath() == null && !inputEntity.isAdjustAllSearchParameters()) {
             searchSettingsLabel.setForeground(Color.RED);
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Search Parameter File (.par) is required!");
             test = false;
         }
-        
+
         if (inputEntity.getInputSpectrumFilePath() == null) {
             spectrumLabel.setForeground(Color.RED);
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Input MGF file (.mgf) is required!");
             test = false;
         }
-        
+
         if (inputEntity.getInputFastaFilePath() == null) {
-            
+
             databaseLabel.setForeground(Color.RED);
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Input Sequence database file (.fasta) is required!");
             test = false;
@@ -844,7 +868,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
             outputLabel.setForeground(Color.RED);
             test = false;
         }
-        
+
         if (jCheckBox2.isSelected()) {
             inputEntity.addSearchEngine(Advocate.sage.getName());
         }
@@ -856,12 +880,12 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Select at least 1 search engine!");
             test = false;
         }
-        
+
         MainUtilities.QSProtWaitingHandler.addLogMassage(" ");
-        
+
         return test;
     }
-    
+
     public abstract void processData(QSProtInputsEntity projectEntity);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

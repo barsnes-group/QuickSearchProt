@@ -197,7 +197,7 @@ public class QSPDatasetHandler {
                     Set<String> sequences = SpectraUtilities.getSequences(NovorFile);
                     long end3rd = System.currentTimeMillis();
                    String total = MainUtilities.msToTime(end3rd - start3) ;
-                    MainUtilities.QSProtWaitingHandler.addMainStepMassage("done (Sequence number from nover " + sequences.size() + ")" + " time used" + total);
+                    MainUtilities.QSProtWaitingHandler.addMainStepMassage("done (Sequence number from nover " + sequences.size() + ")" + " time used : " + total);
 
                     long start4 = System.currentTimeMillis();
                     if (searchEngineToOptimise.getIndex() == Advocate.sage.getIndex() || true) {
@@ -215,7 +215,7 @@ public class QSPDatasetHandler {
 
                     long end = System.currentTimeMillis();
                     total = MainUtilities.msToTime(end - start1) ;
-                    System.out.println("Done processing the sub-data files, total time used: " + total);
+                    System.out.println("Done processing the sub-data files, total time used : " + total);
                 }
             } catch (IOException ex) {
                 if (subMsFile != null) {
@@ -448,7 +448,7 @@ public class QSPDatasetHandler {
             ArrayList<SpectrumMatch> matches = idReader.getAllSpectrumMatches(subMsFileHandler, MainUtilities.QSProtWaitingHandler, identificationParameters.getSearchParameters());
             long end3rd = System.currentTimeMillis();
             String total = MainUtilities.msToTime(end3rd - start1);
-            MainUtilities.QSProtWaitingHandler.addMainStepMassage("Done with DirecTag search, total number of tag maches " + matches.size()+" time used "+total);
+            MainUtilities.QSProtWaitingHandler.addMainStepMassage("Done with DirecTag search, total number of tag maches " + matches.size()+" time used : "+total);
             return matches;
         } catch (IOException | SQLException | ClassNotFoundException | InterruptedException | JAXBException | XmlPullParserException | XMLStreamException ex) {
             Logger.getLogger(QSPDatasetHandler.class.getName()).log(Level.SEVERE, null, ex);

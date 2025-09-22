@@ -29,6 +29,9 @@ public class SelectedSearchParametersEntity {
     private boolean sageAdvanced = true;
     private boolean xtandemAdvanced = true;
    
+    
+    
+    
 
     public boolean isModifications() {
         return modifications;

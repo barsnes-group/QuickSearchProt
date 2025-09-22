@@ -37,21 +37,21 @@ public class Controller {
         this.projectEntity = projectEntity;
         paramOrderMap = Configurations.paramOrderMap;
         searchInputSetting = new SearchInputSetting();
-        boolean all = Configurations.searchOperationParameters.get("optimizeAllParameters");//configUtil.getSearchOperationParameters().get("optimizeAllParameters");
+        boolean all =projectEntity.isAdjustAllSearchParameters();   
         searchInputSetting.setOptimizeAllParameters(all);
-        searchInputSetting.setOptimizeDigestionParameter(Configurations.searchOperationParameters.get("optimizeDigestionParameter") || all);
-        searchInputSetting.setOptimizeCleavageParameter(Configurations.searchOperationParameters.get("optimizeCleavageParameter"));
-        searchInputSetting.setOptimizeEnzymeParameter(Configurations.searchOperationParameters.get("optimizeEnzymeParameter"));
-        searchInputSetting.setOptimizeMaxMissCleavagesParameter(Configurations.searchOperationParameters.get("optimizeMaxMissCleavagesParameter") || all);
-        searchInputSetting.setOptimizeSpecificityParameter(Configurations.searchOperationParameters.get("optimizeSpecificityParameter"));
-        searchInputSetting.setOptimizeFragmentIonTypesParameter(Configurations.searchOperationParameters.get("optimizeFragmentIonTypesParameter") || all);
-        searchInputSetting.setOptimizePrecursorToleranceParameter(Configurations.searchOperationParameters.get("optimizePrecursorToleranceParameter") || all);
-        searchInputSetting.setOptimizeFragmentToleranceParameter(Configurations.searchOperationParameters.get("optimizeFragmentToleranceParameter") || all);
-        searchInputSetting.setOptimizePrecursorChargeParameter(Configurations.searchOperationParameters.get("optimizePrecursorChargeParameter") || all);
-        searchInputSetting.setOptimizeIsotopsParameter(Configurations.searchOperationParameters.get("optimizeIsotopsParameter") || all);
-        searchInputSetting.setOptimizeModificationParameter(Configurations.searchOperationParameters.get("optimizeModificationParameter") || all);
-        searchInputSetting.setOptimizeSageAdvancedParameter(Configurations.searchOperationParameters.get("optimizeSageAdvancedParameter") || all);
-        searchInputSetting.setOptimizeXtandemAdvancedParameter(Configurations.searchOperationParameters.get("optimizeXtandemAdvancedParameter") || all);
+        searchInputSetting.setOptimizeDigestionParameter(projectEntity.getParamsToAdjust().isDigestion() || all);
+        searchInputSetting.setOptimizeCleavageParameter(projectEntity.getParamsToAdjust().isDigestion());
+        searchInputSetting.setOptimizeEnzymeParameter(projectEntity.getParamsToAdjust().isEnzyme());
+        searchInputSetting.setOptimizeMaxMissCleavagesParameter(projectEntity.getParamsToAdjust().isMaxMissCleavages() || all);
+        searchInputSetting.setOptimizeSpecificityParameter(projectEntity.getParamsToAdjust().isSpecificity());
+        searchInputSetting.setOptimizeFragmentIonTypesParameter(projectEntity.getParamsToAdjust().isFragmentIonTypes()|| all);
+        searchInputSetting.setOptimizePrecursorToleranceParameter(projectEntity.getParamsToAdjust().isPrecursorTolerance() || all);
+        searchInputSetting.setOptimizeFragmentToleranceParameter(projectEntity.getParamsToAdjust().isFragmentTolerance() || all);
+        searchInputSetting.setOptimizePrecursorChargeParameter(projectEntity.getParamsToAdjust().isPrecursorCharge()|| all);
+        searchInputSetting.setOptimizeIsotopsParameter(projectEntity.getParamsToAdjust().isIsotops() || all);
+        searchInputSetting.setOptimizeModificationParameter(projectEntity.getParamsToAdjust().isModifications() || all);
+        searchInputSetting.setOptimizeSageAdvancedParameter(projectEntity.getParamsToAdjust().isSageAdvanced() || all);
+        searchInputSetting.setOptimizeXtandemAdvancedParameter(projectEntity.getParamsToAdjust().isXtandemAdvanced() || all);
 
     }
 
@@ -60,6 +60,7 @@ public class Controller {
         try {
 
             for (String seName : projectEntity.getSearchEngineList()) {
+                System.out.println("search engine list "+projectEntity.getSearchEngineList());
                 Advocate se = Advocate.xtandem;
                 if (seName.equalsIgnoreCase("Sage")) {
                     se = Advocate.sage;

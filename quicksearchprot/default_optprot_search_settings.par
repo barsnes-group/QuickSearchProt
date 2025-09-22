@@ -455,6 +455,9 @@
     "intensityLimit": 0.75,
     "automaticAnnotation": true,
     "selectedIonsMap": {
+      "PRECURSOR_ION": [
+        0
+      ],
       "RELATED_ION": [
         0,
         1,
@@ -476,15 +479,11 @@
         17,
         18
       ],
-      "PRECURSOR_ION": [
-        0
-      ],
-      "REPORTER_ION": [],
-      "PEPTIDE_FRAGMENT_ION": [
+      "TAG_FRAGMENT_ION": [
         1,
         4
       ],
-      "TAG_FRAGMENT_ION": [
+      "PEPTIDE_FRAGMENT_ION": [
         1,
         4
       ],
@@ -510,7 +509,8 @@
         18,
         19,
         20
-      ]
+      ],
+      "REPORTER_ION": []
     },
     "neutralLossesList": [
       {
