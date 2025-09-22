@@ -2,6 +2,8 @@ package no.uib.probe.quicksearchprot;
 
 import com.compomics.util.gui.UtilitiesGUIDefaults;
 import java.awt.Dimension;
+import java.awt.HeadlessException;
+import java.io.IOException;
 import javax.swing.JOptionPane;
 import javax.swing.LookAndFeel;
 import javax.swing.UIDefaults;
@@ -12,70 +14,89 @@ import no.uib.probe.quicksearchprot.model.QSProtInputsEntity;
 import no.uib.probe.quicksearchprot.util.MainUtilities;
 
 /**
- * This app is search settings optimization workflow that aim to optimize search
- * settings for different Proteomics search engines
+ * The main application class for QuickSearchProt.
+ * <p>
+ * QuickSearchProt is a search settings optimization workflow targeting the optimization of
+ * search settings for different proteomics search engines.
+ * </p>
  *
  * @author Yehia Mokhtar Farag
  */
 public class QuickSearchProtApp {
 
-    /**
-     * @param args the command line arguments
+     /**
+     * The main method to launch the QuickSearchProt application.
+     *
+     * @param args the command line arguments (unused)
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */    
+     public static void main(String[] args) {
+        // Set the Nimbus look and feel if available
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(QSPROTGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException | InstantiationException
+                | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(QSPROTGUI.class.getName())
+                    .log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-        /* Create and display the form */
+        // Create and display the UI in the Event Dispatch Thread
         java.awt.EventQueue.invokeLater(() -> {
+            boolean nimbusLookAndFeelSet = false;
 
-            boolean numbusLookAndFeelSet;
             try {
+                // Try to set the default look and feel via the utility method
+                nimbusLookAndFeelSet = UtilitiesGUIDefaults.setLookAndFeel();
 
-                numbusLookAndFeelSet = UtilitiesGUIDefaults.setLookAndFeel();
-                // fix for the scroll bar thumb disappearing...
+                // Fix for the scroll bar thumb disappearing in Nimbus
                 LookAndFeel lookAndFeel = UIManager.getLookAndFeel();
                 UIDefaults defaults = lookAndFeel.getDefaults();
                 defaults.put("ScrollBar.minimumThumbSize", new Dimension(30, 30));
-                if (!numbusLookAndFeelSet) {
+
+                // Warn user if the look and feel couldn't be set
+                if (!nimbusLookAndFeelSet) {
                     JOptionPane.showMessageDialog(null, """
-                                                    Failed to set the default look and feel. Using backup look and feel.
-                                                    QSProt will work but not look as good as it should...""", "Look and Feel",
+                                                        Failed to set the default look and feel. Using backup look and feel.
+                                                        QSProt will work but not look as good as it should...""",
+                            "Look and Feel",
                             JOptionPane.WARNING_MESSAGE
                     );
                 }
 
+                // Initialize the main controller
                 final Controller mainController = new Controller();
 
-                QSPROTGUI QSProtView = new QSPROTGUI() {
+                // Instantiate and show the main GUI, overriding processData to handle data processing
+                QSPROTGUI qsProtView = new QSPROTGUI() {
                     @Override
                     public void processData(QSProtInputsEntity projectEntity) {
+                        // Update UI to show processing started
                         MainUtilities.getDisplayExecuter().submit(() -> {
                             MainUtilities.QSProtWaitingHandler.startProgress();
-                            MainUtilities.QSProtWaitingHandler.addMainStepMassage("*******  Start data processing  *******");
+                            MainUtilities.QSProtWaitingHandler.addMainStepMassage(
+                                    "*******  Start data processing  *******"
+                            );
                         });
+
+                        // Process data in the background
                         MainUtilities.getDisplayExecuter().submit(() -> {
                             mainController.initializedController(projectEntity);
                             mainController.startDataProcessing();
                             updatePanelView(2);
                         });
                     }
-
                 };
-                QSProtView.setVisible(true);
+                qsProtView.setVisible(true);
 
-            } catch (Exception e) {
+            } catch (HeadlessException | IOException e) {
+                // Log exception if any unexpected error occurs
+                java.util.logging.Logger.getLogger(QuickSearchProtApp.class.getName())
+                        .log(java.util.logging.Level.SEVERE, "Failed to start QuickSearchProtApp", e);
             }
         });
     }
-
 }
