@@ -37,6 +37,7 @@ public class ConfigurationsUtility {
             Configurations.NOVOR_FOLDER = container.getAbsolutePath() + "\\searchengines\\Novor";
             Configurations.DIRECTAG_FOLDER = container.getAbsolutePath() + "\\searchengines\\DirecTag\\windows\\windows_64bit";
             Configurations.SAGE_FOLDER = container.getAbsolutePath() + "\\searchengines\\Sage\\windows\\";
+            
 
             //create output folder structure
             File datasetMainOutputFolder = new File(projectEntity.getOutputFolderPath(), projectEntity.getDatasetId());

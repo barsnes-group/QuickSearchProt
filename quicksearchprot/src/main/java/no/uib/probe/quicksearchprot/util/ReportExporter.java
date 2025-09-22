@@ -24,7 +24,7 @@ import no.uib.probe.quicksearchprot.model.ParameterScoreModel;
  */
 public class ReportExporter {
     
-    private static final String[] ions = new String[]{"b", "a", "c","y", "x", "z"};
+    private static final String[] ions = new String[]{"a", "b", "c","x", "y", "z"};
         
 
     public static void addElementToReport(String datasetId, String paramId, String paramOption, double idRate, double timeInSecond) {

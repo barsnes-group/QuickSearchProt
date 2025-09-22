@@ -64,9 +64,6 @@ public class Configurations {
         return paramOrderMap;
     }
 
-//    public Map<String, Boolean> getSearchOperationParameters() {
-//        return searchOperationParameters;
-//    }
 
     public boolean isUseFullDataMode() {
         return useFullDataMode;
