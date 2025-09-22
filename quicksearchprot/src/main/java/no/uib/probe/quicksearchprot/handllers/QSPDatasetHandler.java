@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package no.uib.probe.quicksearchprot.dataset;
+package no.uib.probe.quicksearchprot.handllers;
 
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
@@ -116,12 +116,12 @@ public class QSPDatasetHandler {
             subMsFile = msFile;
         } else {
             if (!wholeDataTest) {
-                subFastaFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.get_current_file_fingerprent() + "_" + fastaFile.getName());
-                subMsFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.get_current_file_fingerprent() + "_" + msFile.getName());
+                subFastaFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint()+ "_" + fastaFile.getName());
+                subMsFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_" + msFile.getName());
 
             } else {
-                subFastaFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.get_current_file_fingerprent() + "_Full_" + fastaFile.getName());
-                subMsFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.get_current_file_fingerprent() + "_Full_" + msFile.getName());
+                subFastaFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_Full_" + fastaFile.getName());
+                subMsFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_Full_" + msFile.getName());
 
             }
             if (fullFasta) {
@@ -191,7 +191,7 @@ public class QSPDatasetHandler {
                     searchInputSetting.setRunDirecTag(false);
                     searchInputSetting.setRunNovor(true);
                     MainUtilities.QSProtWaitingHandler.addMainStepMassage("Start Novor search");
-                    final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + fileNameWithoutExtension + Configurations.get_current_file_fingerprent();
+                    final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + fileNameWithoutExtension + Configurations.getCurrentFileFingerprint();
                     File resultsFolder = SearchExecuter.executeSearch(updatedName, searchInputSetting, subMsFile, fastaFile, identificationParameters, new File(Configurations.DEFAULT_QSPROT_SEARCH_PARAM_FILE));
                     File NovorFile = new File(resultsFolder, IoUtil.removeExtension(subMsFile.getName()) + ".novor.csv");
                     Set<String> sequences = SpectraUtilities.getSequences(NovorFile);
@@ -432,7 +432,7 @@ public class QSPDatasetHandler {
 
             MainUtilities.QSProtWaitingHandler.addMainStepMassage("Start DirecTag search");
             searchInputSetting.setRunDirecTag(true);
-            String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + msFileNameWithoutExtension + Configurations.get_current_file_fingerprent();
+            String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + msFileNameWithoutExtension + Configurations.getCurrentFileFingerprint();
             File tempResultsFolder = SearchExecuter.executeSearch(updatedName, searchInputSetting, destinationFile, fastaFile, identificationParameters, identificationParametersFile);
             File direcTagFile = new File(tempResultsFolder, IoUtil.removeExtension(destinationFile.getName()) + ".tags");
             MainUtilities.QSProtWaitingHandler.addLogMassage("direct tag file " + tempResultsFolder.getAbsolutePath());

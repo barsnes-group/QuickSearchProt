@@ -141,7 +141,7 @@ public class ReportExporter {
 
     }
 
-    public static void exportFullReport(File optimisedSearchParameterFile, SearchingSubDataset dataset, Advocate searchEngine, String datasetId, String timeInMin, String initDsTime, Map<String, TreeSet<ParameterScoreModel>> parameterScoreMap) {
+    public static void exportFullReport(File optimisedSearchParameterFile, SearchingSubDataset dataset, Advocate searchEngine, String datasetId, String timeInMin, String initDsTime) {
         if (dataset == null) {
             MainUtilities.QSProtWaitingHandler.addLogMassage("can not export data (dataset " + datasetId+" not exist)");
             return;

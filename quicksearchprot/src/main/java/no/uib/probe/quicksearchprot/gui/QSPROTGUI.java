@@ -13,7 +13,7 @@ import javax.swing.JFileChooser;
 import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.DefaultCaret;
-import no.uib.probe.quicksearchprot.dataset.QSPDatasetHandler;
+import no.uib.probe.quicksearchprot.handllers.QSPDatasetHandler;
 import no.uib.probe.quicksearchprot.model.QSProtInputsEntity;
 import no.uib.probe.quicksearchprot.util.MainUtilities;
 

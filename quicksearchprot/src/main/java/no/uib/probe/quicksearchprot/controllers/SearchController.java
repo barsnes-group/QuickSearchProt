@@ -1,4 +1,4 @@
-package no.uib.probe.quicksearchprot.search;
+package no.uib.probe.quicksearchprot.controllers;
 
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.parameters.identification.IdentificationParameters;

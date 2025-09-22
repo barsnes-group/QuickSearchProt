@@ -1,4 +1,4 @@
-package no.uib.probe.quicksearchprot.search;
+package no.uib.probe.quicksearchprot.handllers;
 
 import com.compomics.util.experiment.biology.enzymes.Enzyme;
 import com.compomics.util.experiment.biology.enzymes.EnzymeFactory;

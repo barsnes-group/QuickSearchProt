@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import no.uib.probe.quicksearchprot.configurations.Configurations;
-import no.uib.probe.quicksearchprot.dataset.QSPDatasetHandler;
+import no.uib.probe.quicksearchprot.handllers.QSPDatasetHandler;
 import no.uib.probe.quicksearchprot.model.SearchInputSetting;
 import no.uib.probe.quicksearchprot.util.ConfigurationsUtility;
 import no.uib.probe.quicksearchprot.util.MainUtilities;
@@ -122,7 +122,7 @@ public class SearchExecuter {
     public static ArrayList<SpectrumMatch> getTagMaches(File destinationFile, File fastaFile, IdentificationParameters identificationParameters, File identificationParametersFile, String msFileNameWithoutExtension, SearchInputSetting searchInputSetting, boolean validOnly) {
         try {
             searchInputSetting.setRunDirecTag(true);
-            String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + msFileNameWithoutExtension + Configurations.get_current_file_fingerprent();
+            String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + msFileNameWithoutExtension + Configurations.getCurrentFileFingerprint();
             File tempResultsFolder = SearchExecuter.executeSearch(updatedName, searchInputSetting, destinationFile, fastaFile, identificationParameters, identificationParametersFile);
             File direcTagFile = new File(tempResultsFolder, IoUtil.removeExtension(destinationFile.getName()) + ".tags");
             if (!direcTagFile.exists()) {

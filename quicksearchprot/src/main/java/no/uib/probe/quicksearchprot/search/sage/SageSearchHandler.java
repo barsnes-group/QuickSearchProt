@@ -28,7 +28,7 @@ import no.uib.probe.quicksearchprot.model.OptimisedSearchResults;
 import no.uib.probe.quicksearchprot.model.ParameterScoreModel;
 import no.uib.probe.quicksearchprot.model.RawScoreModel;
 import no.uib.probe.quicksearchprot.model.SearchInputSetting;
-import no.uib.probe.quicksearchprot.search.CommonSearchHandler;
+import no.uib.probe.quicksearchprot.handllers.CommonSearchHandler;
 import no.uib.probe.quicksearchprot.search.SearchExecuter;
 import no.uib.probe.quicksearchprot.util.MainUtilities;
 import no.uib.probe.quicksearchprot.util.SpectraUtilities;

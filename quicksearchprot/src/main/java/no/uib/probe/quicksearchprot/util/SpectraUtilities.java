@@ -91,16 +91,16 @@ public class SpectraUtilities {
             SearchParameters searchParameters = identificationParameters.getSearchParameters();
             searchParameters.getModificationParameters().clearVariableModifications();
             searchParameters.getModificationParameters().clearFixedModifications();
-            final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + spectraFileName + Configurations.get_current_file_fingerprent() + "_" + fullSpectrumSize;
+            final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + spectraFileName + Configurations.getCurrentFileFingerprint() + "_" + fullSpectrumSize;
             File filteredSubMsFile = null;
             for (File f : oreginalMsFile.getParentFile().listFiles()) {
-                if (f.getName().startsWith(Configurations.DEFAULT_RESULT_NAME + Configurations.get_current_file_fingerprent() + "_") && f.getName().endsWith("_" + oreginalMsFile.getName())) {
+                if (f.getName().startsWith(Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_") && f.getName().endsWith("_" + oreginalMsFile.getName())) {
                     filteredSubMsFile = f;
                     break;
                 }
             }
             if (filteredSubMsFile == null) {
-                filteredSubMsFile = new File(msFile.getParent(), Configurations.DEFAULT_RESULT_NAME + Configurations.get_current_file_fingerprent() + "_" + fullSpectrumSize + "_" + msFile.getName());
+                filteredSubMsFile = new File(msFile.getParent(), Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_" + fullSpectrumSize + "_" + msFile.getName());
             }
             if (!filteredSubMsFile.exists()) {
 
@@ -137,13 +137,13 @@ public class SpectraUtilities {
             File subFasta = null;
 
             for (File f : oreginalFastaFile.getParentFile().listFiles()) {
-                if (f.getName().startsWith(Configurations.DEFAULT_RESULT_NAME + Configurations.get_current_file_fingerprent() + "_") && f.getName().endsWith("_" + oreginalFastaFile.getName())) {
+                if (f.getName().startsWith(Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_") && f.getName().endsWith("_" + oreginalFastaFile.getName())) {
                     subFasta = f;
                     break;
                 }
             }
             if (subFasta == null) {
-                subFasta = new File(fastaFile.getParent(), Configurations.DEFAULT_RESULT_NAME + Configurations.get_current_file_fingerprent() + "_" + fullSpectrumSize + "_" + fastaFile.getName());
+                subFasta = new File(fastaFile.getParent(), Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_" + fullSpectrumSize + "_" + fastaFile.getName());
             }
 
             if (!subFasta.exists()) {
@@ -197,7 +197,7 @@ public class SpectraUtilities {
 
     private File initSubFastaFile(File fastaFile, Set<String> sequences) {
 
-        File subFastaFile = new File(fastaFile.getParent(), Configurations.DEFAULT_RESULT_NAME + Configurations.get_current_file_fingerprent() + "_" + fastaFile.getName());
+        File subFastaFile = new File(fastaFile.getParent(), Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_" + fastaFile.getName());
         if (subFastaFile.exists()) {
             subFastaFile.delete();
         }
@@ -210,8 +210,8 @@ public class SpectraUtilities {
     private File subsetSpectraFile(File oreginalMsFile, Set<String> spectraTags) {
 
         try {
-            String name = oreginalMsFile.getName().replace(Configurations.DEFAULT_RESULT_NAME + "_sub" + Configurations.get_current_file_fingerprent() + "_", "");
-            File subMsFile = new File(oreginalMsFile.getParent(), Configurations.DEFAULT_RESULT_NAME + Configurations.get_current_file_fingerprent() + "_" + name);
+            String name = oreginalMsFile.getName().replace(Configurations.DEFAULT_RESULT_NAME + "_sub" + Configurations.getCurrentFileFingerprint() + "_", "");
+            File subMsFile = new File(oreginalMsFile.getParent(), Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_" + name);
             if (subMsFile.exists()) {
                 subMsFile.delete();
                 File subSampleCMS = new File(oreginalMsFile.getParent(), subMsFile.getName().replace(".mgf", ".cms"));
@@ -654,7 +654,7 @@ public class SpectraUtilities {
                     i += n;
                 }
             }
-            String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + msFileNameWithoutExtension + Configurations.get_current_file_fingerprent();
+            String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + msFileNameWithoutExtension + Configurations.getCurrentFileFingerprint();
 
             File tempResultsFolder = SearchExecuter.executeSearch(updatedName, searchOptimizerParameters, destinationFile, oreginalFastaFile, identificationParameters, oreginalIdentificationFile);
 
