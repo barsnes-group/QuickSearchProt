@@ -205,7 +205,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/QS_icon_141_125.png"))); // NOI18N
 
         welcomeLabel.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        welcomeLabel.setText("<html>   <b><b style=\"color:#0B78A2\">Q</b>uick<b style=\"color:#E6580B\">S</b>earchProt</b>   <p style=\"font-size: 12px; margin-top: 10px;\">     A quick way to adjust search parameters for proteomics search engines.   </p> </html>  ");
+        welcomeLabel.setText("<html><b><b style=\"color:#0B78A2\">Q</b>uick<b style=\"color:#E6580B\">S</b>earchProt</b><p style=\"font-size: 12px;margin-top: 10px;\">Automatic selection of search parameter values for mass spectrometry-based search engines.</p></html>");
 
         inputOutputPanel.setBackground(new java.awt.Color(255, 255, 255));
         inputOutputPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
@@ -533,7 +533,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 800, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 5, Short.MAX_VALUE))
+                .addGap(0, 18, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -559,7 +559,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 818, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -576,7 +576,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 818, Short.MAX_VALUE)
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
