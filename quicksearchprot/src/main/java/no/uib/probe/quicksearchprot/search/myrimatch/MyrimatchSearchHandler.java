@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import no.uib.probe.quicksearchprot.configurations.Configurations;
 import no.uib.probe.quicksearchprot.model.SearchingSubDataset;
 import no.uib.probe.quicksearchprot.model.OptimisedSearchResults;
 import no.uib.probe.quicksearchprot.model.ParameterScoreModel;
@@ -67,7 +68,7 @@ public class MyrimatchSearchHandler extends CommonSearchHandler {
         this.optimisedSearchResults = new OptimisedSearchResults();
         this.parameterScoreMap = new LinkedHashMap<>();
         optProtDataset.setParameterScoreMap(parameterScoreMap);
-        MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
+        MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
           potintialFalsePostiveParamSet.add("precursorAccuracy");
         potintialFalsePostiveParamSet.add("fragmentAccuracy");
 //        potintialFalsePostiveParamSet.addAll(ptmFactory.getModifications(ModificationCategory.Common));

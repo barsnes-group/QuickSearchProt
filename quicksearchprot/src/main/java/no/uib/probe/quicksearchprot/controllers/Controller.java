@@ -205,7 +205,7 @@ public class Controller {
                 : searchParamFile;
         optProtDataset.setSearchSettingsFile(selectedSearchSettingsFile);
 
-        MainUtilities.cleanFolder(optProtDatasetHandler.getSearchInputSetting().getDatasetId());
+        MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
 
         // Start the parameter optimization process
         SearchController optProtSearchHandler = new SearchController();

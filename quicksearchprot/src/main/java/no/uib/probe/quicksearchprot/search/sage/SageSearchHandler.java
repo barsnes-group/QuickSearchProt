@@ -65,7 +65,7 @@ public class SageSearchHandler extends CommonSearchHandler {
         this.optimisedSearchResults = new OptimisedSearchResults();
         this.parameterScoreMap = new LinkedHashMap<>();
         optProtDataset.setParameterScoreMap(parameterScoreMap);
-        MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
+        MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
         if (searchInputSetting.isOptimizeAllParameters()) {
             SageParameters sageParameters = (SageParameters) identificationParameters.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.sage.getIndex());
             sageParameters.setMaxVariableMods(2);
@@ -84,7 +84,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             final String option = DigestionParameters.Specificity.getSpecificity(i).name();
             potintialFalsePostiveParamSet.add(option);
         }
-        MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
+        MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
         parameterScoreMap.put("DigestionParameter", new TreeSet<>(Collections.reverseOrder()));
         parameterScoreMap.put("EnzymeParameter", new TreeSet<>(Collections.reverseOrder()));
         parameterScoreMap.put("SpecificityParameter", new TreeSet<>(Collections.reverseOrder()));
@@ -123,12 +123,12 @@ public class SageSearchHandler extends CommonSearchHandler {
     public void startProcess(List<String> paramOrder) throws IOException {
         digestionParameterOpt = identificationParameters.getSearchParameters().getDigestionParameters().getCleavageParameter().name();
         searchInputSetting.setDigestionParameterOpt(digestionParameterOpt);
-        MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
+        MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
         runReferenceRun(optProtDataset, identificationParameters, searchInputSetting);
 
         for (String param : paramOrder) {
             MainUtilities.QSProtWaitingHandler.addMainStepMassage("Start to adjust "+param);
-            MainUtilities.cleanFolder(searchInputSetting.getDatasetId());
+            MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
             if (param.equalsIgnoreCase("DigestionParameter") && searchInputSetting.isOptimizeDigestionParameter()) {
                 String[] values = this.optimizeEnzymeParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("EnzymeParameter"));
                 if (!values[0].equalsIgnoreCase("")) {

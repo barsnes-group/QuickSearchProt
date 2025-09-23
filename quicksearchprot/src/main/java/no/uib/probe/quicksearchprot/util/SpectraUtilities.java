@@ -162,7 +162,7 @@ public class SpectraUtilities {
                 total = MainUtilities.msToTime(end4th - start4);
                 MainUtilities.QSProtWaitingHandler.addLogMassage("p( Generated Fasta) in seconds: " + total);
                 long end = System.currentTimeMillis();
-                total = MainUtilities.msToTime(end - start1) ;
+                total = MainUtilities.msToTime(end - start1);
                 MainUtilities.QSProtWaitingHandler.addLogMassage("Total Elapsed Time for initInputSubSetFiles in seconds: " + total);
                 MainUtilities.deleteFolder(NovorFile.getParentFile());
             }
@@ -170,7 +170,7 @@ public class SpectraUtilities {
             return new File[]{filteredSubMsFile, subFasta};
         } catch (IOException ex) {  //ex) {//
             ex.printStackTrace();
-            MainUtilities.cleanFolder(searchOptimizerParameters.getDatasetId());
+            MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
 //            System.exit(0);
         }
         return null;
@@ -768,7 +768,7 @@ public class SpectraUtilities {
 //        }
 //        if (!escapeScore) {
 //            double score1 = SpectraUtilities.performcomparison(referenceSharedData, toSharedData, true);
-////        double totalSampleSize = toSharedData.length + uniqueReferenceData.size();
+        ////        double totalSampleSize = toSharedData.length + uniqueReferenceData.size();
 ////        double ratio1 = (double) sharedReferenceData.size() / totalSampleSize; //1;//
 ////        double ratio2 = (double) Math.max(onlyToData.size(), uniqueReferenceData.size()) / totalSampleSize; //Math.max(onlyToData.size(), onlyFromData.size()) / (double) optProtDataset.getSubsetSize(); //
 ////        
@@ -1008,7 +1008,7 @@ public class SpectraUtilities {
 //            //ttest
 //
 //            if (uniqueTestData.size() < 30 && goodSampleUniqueTestData.length > 2) {
-////           measure the low quaity effect on data 
+        ////           measure the low quaity effect on data 
 //                if (TestUtils.tTest(testUniqueData, goodSampleUniqueTestData, 0.05)) {
 //                    score2 = -100;
 //                }
@@ -1146,7 +1146,7 @@ public class SpectraUtilities {
 //            testPsmScores.put(sm.getSpectrumTitle(), sm.getBestPeptideAssumption().getRawScore());
 //        }
 //
-////        Set<String> combinedSpecHeader = new LinkedHashSet<>(testPsmScores.keySet());
+    ////        Set<String> combinedSpecHeader = new LinkedHashSet<>(testPsmScores.keySet());
 ////        combinedSpecHeader.addAll(referencePsmScores.keySet());
 ////        for (String spectrumTitle : combinedSpecHeader) {
 ////            if (testPsmScores.containsKey(spectrumTitle) && referencePsmScores.containsKey(spectrumTitle)) {
@@ -1997,7 +1997,7 @@ public class SpectraUtilities {
                     if (i >= j) {
                         continue;
                     }
-                    RawScoreModel scoreII = resultsMap.get(topScoreSet.get(j));                 
+                    RawScoreModel scoreII = resultsMap.get(topScoreSet.get(j));
                     if (scoreI.getDiffrentInSize() < scoreII.getDiffrentInSize()) {
                         adjustedScore.remove(topScoreSet.get(j));
                     } else {
@@ -2024,7 +2024,6 @@ public class SpectraUtilities {
 //
 //                }
 //            }
-
             topSelection = adjustedScore.get(0);
         } else if (topScoreSet.isEmpty()) {
 //            System.out.println("2error should be only one value " + topScoreSet);
@@ -2046,7 +2045,7 @@ public class SpectraUtilities {
 //        List<RawScoreModel> scoreModelSorter = new ArrayList<>();
 //
 //        for (String rs1Key : resultsMap.keySet()) {
-////            sorter.put(resultsMap.get(rs1Key), rs1Key);
+    ////            sorter.put(resultsMap.get(rs1Key), rs1Key);
 //            scoreModelSorter.add(resultsMap.get(rs1Key));
 //        }
 //        Collections.sort(scoreModelSorter);
@@ -2162,7 +2161,7 @@ public class SpectraUtilities {
         return topSelection;
     }
 
-  //
+    //
 //    public static double isBetterScore1(List<SpectrumMatch> referenceData, List<SpectrumMatch> toData, double totalSize) {
 //        List<Double> sharedTestData = new ArrayList<>();
 //        List<Double> sharedReferenceData = new ArrayList<>();
@@ -2209,7 +2208,7 @@ public class SpectraUtilities {
 //        double[] referenceUniqueData = uniqueReferenceData.stream().mapToDouble(Double::doubleValue).toArray();
 //        double score1 = SpectraUtilities.performcomparison(referenceSharedData, toSharedData, true);
 //        double score2 = SpectraUtilities.performcomparison(referenceUniqueData, toOnlyData, false);
-////        if (referenceUniqueData.length == 0 && toOnlyData.length > 0) {
+    ////        if (referenceUniqueData.length == 0 && toOnlyData.length > 0) {
 ////            if (referenceUniqueData.length == 0 && toOnlyData.length > 0) {
 ////                System.out.println("-------------------------->>> adding new spec only potintial fb " + toOnlyData.length + "  ");
 ////

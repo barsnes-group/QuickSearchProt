@@ -696,7 +696,7 @@ public abstract class CommonSearchHandler {
                 optProtDataset.setActiveScoreModel(resultsMap.get(bestMod));
                 potintialMods.clear();
                 targtedFixedModificationScore.put("C", resultsMap.get(bestMod));
-                MainUtilities.cleanFolder(optimisedSearchParameter.getDatasetId());
+                MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
                 resultsMap.clear();
             }
 
@@ -714,10 +714,10 @@ public abstract class CommonSearchHandler {
             selectedVariableModificationOption.add(bestMod);
             optProtDataset.setActiveScoreModel(resultsMap.get(bestMod));
             potintialMods.clear();
-            MainUtilities.cleanFolder(optimisedSearchParameter.getDatasetId());
+            MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
             resultsMap.clear();
         }
-        MainUtilities.cleanFolder(optimisedSearchParameter.getDatasetId());
+        MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
         //process variable modifications
         mods.removeAll(selectedFixedModificationOption);
         mods.removeAll(selectedVariableModificationOption);
@@ -779,7 +779,7 @@ public abstract class CommonSearchHandler {
             optProtDataset.setActiveScoreModel(resultsMap.get(bestMod));
             potintialMods.clear();
             targtedFixedModificationScore.put(modPattern, resultsMap.get(bestMod));
-            MainUtilities.cleanFolder(optimisedSearchParameter.getDatasetId());
+            MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
             resultsMap.remove(bestMod);
         }
 
@@ -805,7 +805,7 @@ public abstract class CommonSearchHandler {
                     potintialMods.clear();
                     String modPattern = ptmFactory.getModification(bestMod).getPattern().toString();
                     targtedFixedModificationScore.put(modPattern, resultsMap.get(bestMod));
-                    MainUtilities.cleanFolder(optimisedSearchParameter.getDatasetId());
+                    MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
                     resultsMap.remove(bestMod);
                     test = !resultsMap.isEmpty() || counter <= 4;
                     counter++;
@@ -919,7 +919,7 @@ public abstract class CommonSearchHandler {
                     System.out.println("add new vm " + bestMod + "  " + thre + "  " + counter + "   " + resultsMap.get(bestMod).getFinalScore() + "   " );
                     selectedVariableModificationOption.add(bestMod);
                     optProtDataset.setActiveScoreModel(resultsMap.get(bestMod));
-                    MainUtilities.cleanFolder(optimisedSearchParameter.getDatasetId());
+                    MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
 //                    if (!optProtDataset.isFullDataSpectaInput()) {
                     thre = 0; //optProtDataset.getComparisonsThreshold(counter + 1);
                     resultsMap.remove(bestMod);
@@ -1017,7 +1017,7 @@ public abstract class CommonSearchHandler {
                     System.out.println("add new vm " + bestMod + " thr " + thre + " counter  " + counter + "  score: " + resultsMap.get(bestMod));
                     selectedVariableModificationOption.add(bestMod);
                     optProtDataset.setActiveScoreModel(resultsMap.get(bestMod));
-                    MainUtilities.cleanFolder(optimisedSearchParameter.getDatasetId());
+                    MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
 
 //                    if (!optProtDataset.isFullDataSpectaInput()) {
 //                    thre = optProtDataset.getBasicComparisonThreshold();
@@ -1062,7 +1062,7 @@ public abstract class CommonSearchHandler {
         variableModParamScore.setParamValue(selectedVariableModificationOption.toString());
         parameterScoreSet.add(variableModParamScore);
         modificationsResults.put("variableModifications", new HashSet<>(selectedVariableModificationOption));
-        MainUtilities.cleanFolder(optimisedSearchParameter.getDatasetId());
+        MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
         return modificationsResults;
 
     }
