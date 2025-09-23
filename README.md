@@ -16,15 +16,29 @@ Only `.mgf` files are supported as input for MS data at this stage. Make sure yo
 
 > More search engines and formats will be added in future releases.
 
+## 📦 Download
 
+For testing the system, download the latest release:
 
-----
-## Download
-For testing the system, download the QSProt.zip file:
+**➡️ [QSProt.zip]([#](https://drive.google.com/file/d/1DteDCLBZZ2SZzKf_woZgHj04wMkMjaOv/view?usp=drive_link))**
 
-[![Download](https://github.com/barsnes-group/QuickSearchProt/wiki/images/downloadBtn.png)](https://drive.google.com/file/d/1DteDCLBZZ2SZzKf_woZgHj04wMkMjaOv/view?usp=drive_link) 
+This archive contains everything needed to run QuickSearchProt locally, including:
 
-Click on the download icon to download the file to your computer.
+- 🧩 The `QuickSearchProt.jar` executable
+- 🧪 Sample `.mgf` file for MS data input
+- 🧬 Sample `.fasta` file containing protein sequences
+- ⚙️ Example `.par` file compatible with [SearchGUI](https://compomics.github.io/projects/searchgui.html)
+
+### ⚠️ Notes
+- 📁 The `searchengines/` folder includes essential binaries and configurations for **Sage** and **X!Tandem**.  
+  **Do not modify or delete** this folder, as it is required for proper execution.
+- 📂 The `test_data/` folder provides example input files to help you quickly test and validate the system.
+- 🧾 The `.par` file can be reused directly in [SearchGUI](https://compomics.github.io/projects/searchgui.html) for reproducible and customizable searches.
+
+This structure ensures a plug-and-play experience for testing and deploying QuickSearchProt in proteomics workflows.
+
+> 📦 Be sure to extract all contents before launching the application.
+
 
 ## Using QSProt
 
