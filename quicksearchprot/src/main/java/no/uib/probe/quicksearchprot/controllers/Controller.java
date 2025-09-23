@@ -162,6 +162,9 @@ public class Controller {
         File msFile = new File(projectEntity.getInputSpectrumFilePath());
         File searchParamFile = new File(projectEntity.getSearchParameterFilePath());
         File fastaFile = new File(projectEntity.getInputFastaFilePath());
+        
+         System.out.println("Path to Configurations.SUBSET_DATA_FOLDER "+Configurations.SUBSET_DATA_FOLDER);
+        
         File subDataFolder = new File(
                 Configurations.SUBSET_DATA_FOLDER,
                 optProtDatasetHandler.getSearchInputSetting().getSelectedSearchEngine().getName()

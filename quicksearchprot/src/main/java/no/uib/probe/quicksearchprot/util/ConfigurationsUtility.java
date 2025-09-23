@@ -41,18 +41,14 @@ public class ConfigurationsUtility {
 
             //create output folder structure
             File datasetMainOutputFolder = new File(projectEntity.getOutputFolderPath(), projectEntity.getDatasetId());
-            datasetMainOutputFolder.mkdir();
-            
-       
-            
-            
+            datasetMainOutputFolder.mkdir();  
             File subDatafolder = new File(datasetMainOutputFolder, "subsetFiles");
             subDatafolder.mkdir();
             File workingfolder = new File(datasetMainOutputFolder, "workingfolder");
-            
-            
-            
             workingfolder.mkdir();
+            
+            
+            
             Configurations.DATASET_MAIN_OUTPUT_FOLDER_PATH = datasetMainOutputFolder.getAbsolutePath();
             Configurations.SUBSET_DATA_FOLDER = subDatafolder.getAbsolutePath();
             Configurations.WORKING_FOLDER_PATH = workingfolder.getAbsolutePath();

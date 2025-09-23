@@ -205,7 +205,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/QS_icon_141_125.png"))); // NOI18N
 
         welcomeLabel.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        welcomeLabel.setText("<html><b><b style=\"color:#0B78A2\">Q</b>uick<b style=\"color:#E6580B\">S</b>earchProt</b><p style=\"font-size: 12px;margin-top: 10px;\">a quick way to help you adjust search parameters for proteomics search engines.</p></html>");
+        welcomeLabel.setText("<html>   <b><b style=\"color:#0B78A2\">Q</b>uick<b style=\"color:#E6580B\">S</b>earchProt</b>   <p style=\"font-size: 12px; margin-top: 10px;\">     A quick way to adjust search parameters for proteomics search engines.   </p> </html>  ");
 
         inputOutputPanel.setBackground(new java.awt.Color(255, 255, 255));
         inputOutputPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));

@@ -36,17 +36,19 @@ import org.apache.commons.collections15.map.LinkedMap;
 import org.xmlpull.v1.XmlPullParserException;
 
 /**
- * Handler class for QuickSearchProt dataset operations, including generating subsets,
- * filtering spectra, and preparing FASTA and MGF files for search engines.
- * 
- * <p>Provides utilities to:
+ * Handler class for QuickSearchProt dataset operations, including generating
+ * subsets, filtering spectra, and preparing FASTA and MGF files for search
+ * engines.
+ *
+ * <p>
+ * Provides utilities to:
  * <ul>
- *   <li>Count spectra in an MS file</li>
- *   <li>Generate subset MS/FASTA files based on identification results</li>
- *   <li>Run initial searches using different search engines</li>
- *   <li>Filter and extract confident spectra/tags</li>
+ * <li>Count spectra in an MS file</li>
+ * <li>Generate subset MS/FASTA files based on identification results</li>
+ * <li>Run initial searches using different search engines</li>
+ * <li>Filter and extract confident spectra/tags</li>
  * </ul>
- * 
+ *
  * @author Yehia Mokhtar Farag
  */
 public class QSPDatasetHandler {
@@ -57,9 +59,9 @@ public class QSPDatasetHandler {
 
     private File subMsFile = null;
 
-
     /**
      * Constructs a handler with the given search input settings.
+     *
      * @param searchInputSetting user search input settings
      */
     public QSPDatasetHandler(SearchInputSetting searchInputSetting) {
@@ -75,6 +77,7 @@ public class QSPDatasetHandler {
 
     /**
      * Counts the total number of spectra in an MS file.
+     *
      * @param msFilePath Path to MS file
      * @return Number of spectra, or -1 if file does not exist
      */
@@ -92,9 +95,11 @@ public class QSPDatasetHandler {
         }
         return msFileHandler.getSpectrumTitles(fileNameWithoutExtension).length;
     }
-/**
-     * Generate a QuickSearchProt dataset by producing subset MGF and FASTA files and running an initial search.
-     * 
+
+    /**
+     * Generate a QuickSearchProt dataset by producing subset MGF and FASTA
+     * files and running an initial search.
+     *
      * @param datasetId dataset identifier
      * @param msFile original MS file
      * @param fastaFile original FASTA file
@@ -105,7 +110,8 @@ public class QSPDatasetHandler {
      * @param useOreginalInputs use original input files without subsetting
      * @param subsetSize size of subset (-1 to auto select)
      * @param fullFasta use full fasta file
-     * @return SearchingSubDataset with relevant information for further analysis
+     * @return SearchingSubDataset with relevant information for further
+     * analysis
      */
     public SearchingSubDataset generateQSProtDataset(String datasetId, File msFile, File fastaFile, Advocate searchEngineToOptimise, File subDataFolder, File identificationParametersFile, boolean wholeDataTest, boolean fullFasta, boolean useOreginalInputs, int subsetSize) {
         double acceptedTagEvalue = Configurations.ACCEPTED_TAG_EVALUE;
@@ -140,7 +146,7 @@ public class QSPDatasetHandler {
         } else {
             // Set up subset file names
             if (!wholeDataTest) {
-                subFastaFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint()+ "_" + fastaFile.getName());
+                subFastaFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_" + fastaFile.getName());
                 subMsFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_" + msFile.getName());
 
             } else {
@@ -184,7 +190,7 @@ public class QSPDatasetHandler {
                     int subSize;
                     List<Double> quartileSizeRatios;
                     quartileSizeRatios = this.getSectionRatios(msFile, fastaFile, identificationParameters);
-                    Map<String, Spectrum> spectraMap = generatFilteredData(msFile, msFileHandler, quartileSizeRatios, wholeDataTest, searchEngineToOptimise.getIndex());
+                    Map<String, Spectrum> spectraMap = generatFilteredData(msFile, msFileHandler, quartileSizeRatios);
                     if (spectraMap.size() > 70000) {
                         Configurations.MIN_SUBSET_SIZE = 2000;
                     }
@@ -199,9 +205,12 @@ public class QSPDatasetHandler {
                         MainUtilities.QSProtWaitingHandler.addMainStepMassage("Selected subset size " + subSize + " spectra");
                         spectraMap = generateSubset(fileNameWithoutExtension, spectraMap, subSize, fastaFile, identificationParameters);
                     }
-                    MainUtilities.cleanFolder(datasetId);
+                    MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
                     MainUtilities.QSProtWaitingHandler.addMainStepMassage("Start subset generating process ");
                     //create stabkle subMs file
+                   
+                   
+                    System.out.println("----------generate subms file-------------------");
                     subMsFile = generateMsSubFile(spectraMap, subMsFile);
                     MainUtilities.QSProtWaitingHandler.addMainStepMassage("done!");
                     subFastaFile.delete();
@@ -219,7 +228,7 @@ public class QSPDatasetHandler {
                     File NovorFile = new File(resultsFolder, IoUtil.removeExtension(subMsFile.getName()) + ".novor.csv");
                     Set<String> sequences = SpectraUtilities.getSequences(NovorFile);
                     long end3rd = System.currentTimeMillis();
-                    String total = MainUtilities.msToTime(end3rd - start3) ;
+                    String total = MainUtilities.msToTime(end3rd - start3);
                     MainUtilities.QSProtWaitingHandler.addMainStepMassage("done (Sequence number from nover " + sequences.size() + ")" + " time used : " + total);
 
                     long start4 = System.currentTimeMillis();
@@ -237,7 +246,7 @@ public class QSPDatasetHandler {
                     MainUtilities.QSProtWaitingHandler.addMainStepMassage("Done generated filterd Fasta file, time used : " + total);
 
                     long end = System.currentTimeMillis();
-                    total = MainUtilities.msToTime(end - start1) ;
+                    total = MainUtilities.msToTime(end - start1);
                     System.out.println("Done processing the sub-data files, total time used : " + total);
                 }
             } catch (IOException ex) {
@@ -297,12 +306,16 @@ public class QSPDatasetHandler {
 
             int total = subMsFileHandler.getSpectrumTitles(subfileNameWithoutExtension).length;
             optProtDataset.setSubsetSize(total);
-            MainUtilities.cleanFolder(datasetId);
+            MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
             MainUtilities.QSProtWaitingHandler.addMainStepMassage("done!");
 
         } catch (IOException ex) {
-            if (subMsFile != null) subMsFile.delete();
-            if (subFastaFile != null) subFastaFile.delete();
+            if (subMsFile != null) {
+                subMsFile.delete();
+            }
+            if (subFastaFile != null) {
+                subFastaFile.delete();
+            }
             ex.printStackTrace();
         }
         return optProtDataset;
@@ -338,7 +351,9 @@ public class QSPDatasetHandler {
      */
     private File generateMsSubFile(Map<String, Spectrum> spectraMap, File destinationFile) {
         try {
-            if (destinationFile.exists()) destinationFile.delete();
+            if (destinationFile.exists()) {                
+                destinationFile.delete();
+            }
             destinationFile.createNewFile();
             try (MgfFileWriter writer = new MgfFileWriter(destinationFile)) {
                 for (String spectrumTitle : spectraMap.keySet()) {
@@ -348,8 +363,13 @@ public class QSPDatasetHandler {
                 writer.close();
             }
         } catch (IOException ex) {
-            if (subMsFile != null) subMsFile.delete();
-            if (subFastaFile != null) subFastaFile.delete();
+            if (subMsFile != null) {
+                subMsFile.delete();
+            }
+            if (subFastaFile != null) {
+                subFastaFile.delete();
+            }
+            System.out.println("error is here "+destinationFile.getAbsolutePath()+"  "+destinationFile.exists());
             ex.printStackTrace();
         }
         return destinationFile;
@@ -381,7 +401,7 @@ public class QSPDatasetHandler {
      * Filter and select spectra by quartile ratios.
      */
     private Map<String, Spectrum> generatFilteredData(
-            File msFile, MsFileHandler msFileHandler, List<Double> ratios, boolean full, int seIndex) {
+            File msFile, MsFileHandler msFileHandler, List<Double> ratios) {
 
         final String fileNameWithoutExtension = IoUtil.removeExtension(msFile.getName());
         String[] fullSpectrumTitiles = msFileHandler.getSpectrumTitles(fileNameWithoutExtension);
@@ -418,7 +438,9 @@ public class QSPDatasetHandler {
             File fastaFile, IdentificationParameters identificationParameters) {
         try {
             File destinationFile = new File(Configurations.WORKING_FOLDER_PATH, Configurations.DEFAULT_RESULT_NAME + "_temp_full_" + spectraMap.size() + "_-_" + fileNameWithoutExtension + ".mgf");
-            if (destinationFile.exists()) destinationFile.delete();
+            if (destinationFile.exists()) {
+                destinationFile.delete();
+            }
             destinationFile.createNewFile();
             destinationFile = generateMsSubFile(spectraMap, destinationFile);
             final String subfileNameWithoutExtension = IoUtil.removeExtension(destinationFile.getName());
@@ -540,7 +562,9 @@ public class QSPDatasetHandler {
      * Create a subset FASTA file containing only the given sequences.
      */
     private File initSubFastaFile(File tempSubFastaFile, File fastaFile, Set<String> sequences) {
-        if (tempSubFastaFile.exists()) tempSubFastaFile.delete();
+        if (tempSubFastaFile.exists()) {
+            tempSubFastaFile.delete();
+        }
         SpectraUtilities.createSubFastaFile(fastaFile, tempSubFastaFile, sequences);
         return tempSubFastaFile;
     }
