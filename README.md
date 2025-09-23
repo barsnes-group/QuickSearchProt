@@ -1,6 +1,5 @@
-# QuickSearchProt
+![](https://github.com/barsnes-group/QuickSearchProt/wiki/images/QSProt_header.png)
 
-Automatic selection of search parameter values for mass spectrometry-based search engines
 
 ----
 ## Download
