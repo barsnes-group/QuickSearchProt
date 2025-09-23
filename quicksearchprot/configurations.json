@@ -7,33 +7,7 @@
     "Sage": [],
     "X!Tandem": []
   },
-  "datasets": [
-    "PXD028427",
-    "PXD000561",
-    "PXD001468",
-    "PXD047036",
-    "PXD009340",
-    "PXD001250"
-  ],
-  "cleanAll": true,
-  "searchOpParameter": {
-    "optimizeAllParameters": true,
-    "optimizeDigestionParameter": true,
-    "optimizeCleavageParameter": false,
-    "optimizeEnzymeParameter": false,
-    "optimizeMaxMissCleavagesParameter": true,
-    "optimizeSpecificityParameter": false,
-    "optimizeFragmentIonTypesParameter": true,
-    "optimizePrecursorToleranceParameter": true,
-    "optimizeFragmentToleranceParameter": true,
-    "optimizePrecursorChargeParameter": true,
-    "optimizeIsotopsParameter": true,
-    "optimizeModificationParameter": true,
-    "optimizeSageAdvancedParameter": true,
-    "optimizeXtandemAdvancedParameter": true
-  },
   "useFullDataMode": false,
-  "datasetFolderURL": "PATH\\TO\\DATA\\FOLDER\\",
   "X!TandemParamOrder": [
     "XtandemAdvancedParameter",
     "DigestionParameter",
