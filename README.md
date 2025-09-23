@@ -20,7 +20,7 @@ Only `.mgf` files are supported as input for MS data at this stage. Make sure yo
 
 For testing the system, download the latest release:
 
-**➡️ [QSProt.zip]([#](https://github.com/barsnes-group/QuickSearchProt/releases/download/QSProt/QSProt.zip))**
+**➡️ [QSProt.zip](https://github.com/barsnes-group/QuickSearchProt/releases/download/QSProt/QSProt.zip)**
 
 This archive contains everything needed to run QuickSearchProt locally, including:
 
