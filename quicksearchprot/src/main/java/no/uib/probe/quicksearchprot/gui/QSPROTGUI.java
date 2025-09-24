@@ -78,6 +78,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         } else {
             jCheckBox4.setEnabled(true);
         }
+       
 
         // Set up main log/progress panels for MainUtilities
         MainUtilities.QSProtWaitingHandler.setMainPrgressBar(jProgressBar1);
@@ -104,6 +105,9 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         }
         
          jButton1.setEnabled(false);
+          jRadioButton1ActionPerformed(null);
+        jCheckBox4ActionPerformed(null);
+//        jCheckBox5ActionPerformed(null);
     }
 
     /**
@@ -713,6 +717,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
             spectrumLabel.setForeground(Color.RED);
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Input MGF file (.mgf) is required to enable subset size selection!");
             jCheckBox5.setSelected(true);
+            jCheckBox5ActionPerformed(null);
         }
         jSlider1.setEnabled(!jCheckBox5.isSelected());
         jLabel5.setEnabled(!jCheckBox5.isSelected());
@@ -720,10 +725,11 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         if (!jCheckBox5.isSelected()) {
             jCheckBox4.setSelected(true);
             jCheckBox4.setEnabled(false);
+            
         } else {
             jCheckBox4.setEnabled(true);
         }
-
+        jCheckBox4ActionPerformed(null);
     }//GEN-LAST:event_jCheckBox5ActionPerformed
     // Placeholders for unused checkbox actions (may be used for future features)
     private void jCheckBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox3ActionPerformed

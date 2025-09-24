@@ -479,10 +479,14 @@
         19,
         20
       ],
+      "TAG_FRAGMENT_ION": [
+        1,
+        4
+      ],
       "PRECURSOR_ION": [
         0
       ],
-      "TAG_FRAGMENT_ION": [
+      "PEPTIDE_FRAGMENT_ION": [
         1,
         4
       ],
@@ -506,10 +510,6 @@
         16,
         17,
         18
-      ],
-      "PEPTIDE_FRAGMENT_ION": [
-        1,
-        4
       ]
     },
     "neutralLossesList": [

@@ -56,7 +56,7 @@ public class ReportExporter {
         MainUtilities.QSProtWaitingHandler.addOutputMassage("Precursor Accuracy:\t" + optimisedSearchParameter.getSearchParameters().getPrecursorAccuracy() + " " + optimisedSearchParameter.getSearchParameters().getPrecursorAccuracyType().name());
         MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragment Accuracy:\t" + optimisedSearchParameter.getSearchParameters().getFragmentIonAccuracy() + " " + optimisedSearchParameter.getSearchParameters().getFragmentAccuracyType().name());
         MainUtilities.QSProtWaitingHandler.addOutputMassage("PrecursorCharge:\t" + optimisedSearchParameter.getSearchParameters().getMinChargeSearched() + " - " + optimisedSearchParameter.getSearchParameters().getMaxChargeSearched());
-        MainUtilities.QSProtWaitingHandler.addOutputMassage("Isotops:\tv\t" + optimisedSearchParameter.getSearchParameters().getMinIsotopicCorrection() + " - " + optimisedSearchParameter.getSearchParameters().getMaxIsotopicCorrection());
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Isotops:\t\t" + optimisedSearchParameter.getSearchParameters().getMinIsotopicCorrection() + " - " + optimisedSearchParameter.getSearchParameters().getMaxIsotopicCorrection());
 //            MainUtilities.QSProtWaitingHandler.addOutputMassage("default Variable mod:\t" + optimisedSearchParameter.getSearchParameters() + "  Factor " + referenceFactor);
         String fm = "";
         if (optimisedSearchParameter.getSearchParameters().getModificationParameters().getFixedModifications() != null) {
