@@ -93,7 +93,6 @@ public class Controller {
         long start = System.currentTimeMillis();
         try {
             for (String seName : projectEntity.getSearchEngineList()) {
-                System.out.println("search engine list " + projectEntity.getSearchEngineList());
                 Advocate searchEngine = Advocate.xtandem;
                 if ("Sage".equalsIgnoreCase(seName)) {
                     searchEngine = Advocate.sage;
@@ -107,7 +106,7 @@ public class Controller {
 
                 this.optProtDatasetHandler = new QSPDatasetHandler(searchInputSetting);
                 MainUtilities.QSProtWaitingHandler.addMainStepMassage(
-                        "****** Start the process for " + searchEngine.getName() + " search engine ******");
+                        "---------- Start the process for ( " + searchEngine.getName() + " ) ----------");
 
                 processDataset(
                         projectEntity,
@@ -162,9 +161,9 @@ public class Controller {
         File msFile = new File(projectEntity.getInputSpectrumFilePath());
         File searchParamFile = new File(projectEntity.getSearchParameterFilePath());
         File fastaFile = new File(projectEntity.getInputFastaFilePath());
-        
-         System.out.println("Path to Configurations.SUBSET_DATA_FOLDER "+Configurations.SUBSET_DATA_FOLDER);
-        
+
+        System.out.println("Path to Configurations.SUBSET_DATA_FOLDER " + Configurations.SUBSET_DATA_FOLDER);
+
         File subDataFolder = new File(
                 Configurations.SUBSET_DATA_FOLDER,
                 optProtDatasetHandler.getSearchInputSetting().getSelectedSearchEngine().getName()
@@ -174,9 +173,8 @@ public class Controller {
             subDataFolder.mkdir();
         }
         MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
-
         long startDsInit = System.currentTimeMillis();
-        MainUtilities.QSProtWaitingHandler.addMainStepMassage("Start preparing sub-dataset files");
+        MainUtilities.QSProtWaitingHandler.addMainStepMassage("Loading spectra data");
 
         // Generate the sub-dataset for optimization
         SearchingSubDataset optProtDataset = optProtDatasetHandler.generateQSProtDataset(
@@ -194,7 +192,7 @@ public class Controller {
         String totalDsTime = MainUtilities.msToTime(endDsInit - startDsInit);
 
         MainUtilities.QSProtWaitingHandler.addMainStepMassage(
-                "done preparing sub-dataset files (" + totalDsTime + ")");
+                " ---------- Done generating sub-set files and initial reference search (" + totalDsTime + ") ----------");
 
         optProtDataset.setSubDataFolder(subDataFolder);
         optProtDataset.setFullDataSpectaInput(wholeDataTest);
@@ -210,7 +208,10 @@ public class Controller {
         // Start the parameter optimization process
         SearchController optProtSearchHandler = new SearchController();
         long start = System.currentTimeMillis();
-        MainUtilities.QSProtWaitingHandler.addMainStepMassage("Start adjusting parameters process");
+        MainUtilities.QSProtWaitingHandler.addMainStepMassage("\n\n\nStart adjusting parameters process");
+        if (true) {
+            return;
+        }
         File generatedFile = optProtSearchHandler.startAutoSelectParamProcess(
                 optProtDataset,
                 optProtDatasetHandler.getSearchInputSetting(),

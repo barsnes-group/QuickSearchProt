@@ -455,7 +455,27 @@
     "intensityLimit": 0.75,
     "automaticAnnotation": true,
     "selectedIonsMap": {
-      "REPORTER_ION": [],
+      "RELATED_ION": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
       "IMMONIUM_ION": [
         0,
         1,
@@ -479,37 +499,17 @@
         19,
         20
       ],
-      "TAG_FRAGMENT_ION": [
-        1,
-        4
-      ],
       "PRECURSOR_ION": [
         0
       ],
+      "REPORTER_ION": [],
       "PEPTIDE_FRAGMENT_ION": [
         1,
         4
       ],
-      "RELATED_ION": [
-        0,
+      "TAG_FRAGMENT_ION": [
         1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13,
-        14,
-        15,
-        16,
-        17,
-        18
+        4
       ]
     },
     "neutralLossesList": [

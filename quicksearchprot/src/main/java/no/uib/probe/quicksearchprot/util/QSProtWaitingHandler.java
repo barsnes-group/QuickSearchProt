@@ -1,16 +1,19 @@
-
 package no.uib.probe.quicksearchprot.util;
+
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
 import com.compomics.util.threading.SimpleSemaphore;
 import java.util.Date;
 import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+
 /**
  *
  * @author yfa041
  */
 public class QSProtWaitingHandler extends WaitingHandlerCLIImpl {
-  /**
+
+    /**
      * Empty default constructor
      */
     public QSProtWaitingHandler() {
@@ -75,27 +78,27 @@ public class QSProtWaitingHandler extends WaitingHandlerCLIImpl {
      * Mutex to synchronize multiple threads writing text.
      */
     private final SimpleSemaphore textMutex = new SimpleSemaphore(1);
-    
-    
-    private  JProgressBar mainPrgressBar =new JProgressBar();
-      /**
+
+    private JProgressBar mainPrgressBar = new JProgressBar();
+    /**
      * panel for log all steps
      */
     private JTextArea mainLogTextPanel = new JTextArea();
-    
-     /**
+
+    /**
      * panel for log main process steps
      */
     private JTextArea mainProcessesTextPanel = new JTextArea();
-    
-      /**
+
+    /**
      * panel for desplay output steps
      */
     private JTextArea mainOutputTextPanel = new JTextArea();
-    
 
     public void setMainPrgressBar(JProgressBar mainPrgressBar) {
         this.mainPrgressBar = mainPrgressBar;
+//        this.mainPrgressBar.setStringPainted(true);
+        this.mainPrgressBar.setMaximum(100);
     }
 
     @Override
@@ -435,39 +438,52 @@ public class QSProtWaitingHandler extends WaitingHandlerCLIImpl {
     public void setMainLogTextPanel(JTextArea mainLogTextPanel) {
         this.mainLogTextPanel = mainLogTextPanel;
     }
-    
-    public void addLogMassage(String massage){
-    mainLogTextPanel.append(massage+lineBreak);
+
+    public void addLogMassage(String massage) {
+        mainLogTextPanel.append(massage + lineBreak);
     }
-     private void printToLog(String massage){
-    mainLogTextPanel.append(massage);
+
+    private void printToLog(String massage) {
+        mainLogTextPanel.append(massage);
     }
-     
-      public void addMainStepMassage(String massage){
-    mainProcessesTextPanel.append(massage+lineBreak);
+
+    public void addMainStepMassage(String massage) {
+        mainProcessesTextPanel.append(massage + lineBreak);
     }
-      public void printMainStepMassage(String massage){
-    mainProcessesTextPanel.append(massage);
+
+    public void printMainStepMassage(String massage) {
+        mainProcessesTextPanel.append(massage);
     }
-     private void printToMainStepPanel(String massage){
-    mainProcessesTextPanel.append(massage);
+
+    private void printToMainStepPanel(String massage) {
+        mainProcessesTextPanel.append(massage);
     }
-     
-      public void addOutputMassage(String massage){
-    mainOutputTextPanel.append(massage+lineBreak);
+
+    public void addOutputMassage(String massage) {
+        mainOutputTextPanel.append(massage + lineBreak);
     }
-     
-     
-     
-     
-     
-     public void startProgress(){
-      
-     this.mainPrgressBar.setIndeterminate(true);
-     }
-      public void endProgress(){
-     this.mainPrgressBar.setIndeterminate(false);
-     }
+
+    public void setCurrentProgressValue(int progress) {
+        SwingUtilities.invokeLater(() -> {
+//            this.mainPrgressBar.setIndeterminate(false);
+            for(int i=mainPrgressBar.getValue();i<=progress;i++){
+            this.mainPrgressBar.setValue(progress);
+            this.mainPrgressBar.setString("Progress " + progress + " %");
+            }
+            
+            
+        });
+
+    }
+
+    public void startProgress() {
+
+//        this.mainPrgressBar.setIndeterminate(true);
+    }
+
+    public void endProgress() {
+        this.mainPrgressBar.setIndeterminate(false);
+    }
 
     public void setSecondaryMaxProgressCounter(int secondaryMaxProgressCounter) {
         this.secondaryMaxProgressCounter = secondaryMaxProgressCounter;

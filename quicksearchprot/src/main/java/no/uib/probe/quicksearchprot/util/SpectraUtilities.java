@@ -77,7 +77,7 @@ public class SpectraUtilities {
     private int startIndex = 0;
     private final Map<String, Spectrum> spectrumMap = new LinkedHashMap<>();
 
-    ;
+ 
 
     public File[] initInputSubSetFiles(File msFile, File fastaFile, File identificationParametersFile, int fullSpectrumSize) {
         try {
@@ -207,6 +207,9 @@ public class SpectraUtilities {
 
     }
 
+    public static int scaleValue(double x, double originalMin, double originalMax, double targetMin, double targetMax) {
+        return (int)Math.round((targetMin + ((x - originalMin) * (targetMax - targetMin)) / (originalMax - originalMin)));
+    }
     private File subsetSpectraFile(File oreginalMsFile, Set<String> spectraTags) {
 
         try {
@@ -1707,10 +1710,10 @@ public class SpectraUtilities {
 //        return finalScore;
 //
 //    }
-    public static List<Double> getTagSectionRatios(String[] titiles, List<SpectrumMatch> matches) {
+    public static List<Double> getTagSectionRatios(int sectionNum,String[] titiles, List<SpectrumMatch> matches) {
 
-        double partCount = SpectraUtilities.getSpectraSectionsNumber(titiles.length);
-        System.out.println("suggestedTag section number " + partCount);
+       
+        System.out.println("suggestedTag section number " + sectionNum);
 
         Map<String, Double> fullSpectraMap = new LinkedHashMap<>();
         for (String titel : titiles) {
@@ -1722,10 +1725,10 @@ public class SpectraUtilities {
         }
         double countId = 0;
         double countUnId = 0;
-        double mainSectionsSize = Math.round((double) titiles.length / partCount);
-        double lastSectionsSize = (double) titiles.length - (mainSectionsSize * (partCount - 1));
+        double mainSectionsSize = Math.round((double) titiles.length / sectionNum);
+        double lastSectionsSize = (double) titiles.length - (mainSectionsSize * (sectionNum - 1));
 
-        double[][] quartileData = new double[(int) partCount][2];
+        double[][] quartileData = new double[(int) sectionNum][2];
         int counter = 0;
         int quartileIndex = 0;
         for (String titile : titiles) {
@@ -1742,7 +1745,7 @@ public class SpectraUtilities {
                 counter = 0;
                 countId = 0;
                 countUnId = 0;
-                if (quartileIndex == partCount - 1) {
+                if (quartileIndex == sectionNum - 1) {
                     mainSectionsSize = lastSectionsSize;
                 }
 

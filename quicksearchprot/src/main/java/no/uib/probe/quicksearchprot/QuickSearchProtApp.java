@@ -76,9 +76,9 @@ public class QuickSearchProtApp {
                     public void processData(QSProtInputsEntity projectEntity) {
                         // Update UI to show processing started
                         MainUtilities.getDisplayExecuter().submit(() -> {
-                            MainUtilities.QSProtWaitingHandler.startProgress();
+                            MainUtilities.QSProtWaitingHandler.startProgress();                            
                             MainUtilities.QSProtWaitingHandler.addMainStepMassage(
-                                    "*******  Start data processing  *******"
+                                    "----------  Start data processing  ----------"
                             );
                         });
 
