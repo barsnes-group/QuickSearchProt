@@ -52,7 +52,7 @@ Extract the contents to a folder of your choice.
 
 ### Execute QSProt
 
-QSProt requires Java 19 and Visual C++ Redistributable for Visual Studio 2012 Update 4 :
+QSProt requires Java 19 and Visual C++ Redistributable for Visual Studio 2012 Update 4.
 
 Ensure that JVM 19 is installed on your computer. You can download it from the official Oracle website.
 
