@@ -233,7 +233,7 @@ public class QSPDatasetHandler {
                     MainUtilities.QSProtWaitingHandler.addLogMassage(" done (Sequence number from nover " + sequences.size() + ")" + " time used : " + total);
                     MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(75);
                     long start4 = System.currentTimeMillis();
-                    MainUtilities.QSProtWaitingHandler.addMainStepMassage("Generate filtered-FASTA file (#sequences fron Novor:" + sequences.size() + ")");
+                    MainUtilities.QSProtWaitingHandler.addMainStepMassage("Generate filtered-FASTA file (#sequences from Novor:" + sequences.size() + ")");
                     File newSubFasta = new File(subFastaFile.getParent(), subFastaFile.getName().replace(".fasta", "_subFastaFile.fasta"));
                     newSubFasta = initSubFastaFile(newSubFasta, fastaFile, sequences);
                     FastaParameters fastaParameters = FastaParameters.inferParameters(subFastaFile.getAbsolutePath(), MainUtilities.QSProtWaitingHandler);

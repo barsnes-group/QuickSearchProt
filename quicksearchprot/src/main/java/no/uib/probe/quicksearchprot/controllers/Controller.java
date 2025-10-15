@@ -123,7 +123,7 @@ public class Controller {
 
                 MainUtilities.QSProtWaitingHandler.addMainStepMassage(
                         "Total time for process data with " + searchEngine.getName() + " search engine  : " + totalSETime);
-                MainUtilities.QSProtWaitingHandler.addMainStepMassage("*******done *******");
+                
                 System.gc();
             }
         } catch (Exception e) {
@@ -132,9 +132,9 @@ public class Controller {
             MainUtilities.QSProtWaitingHandler.endProgress();
             long end = System.currentTimeMillis();
             String totalTime = MainUtilities.msToTime(end - start);
-            MainUtilities.QSProtWaitingHandler.addMainStepMassage(
+            MainUtilities.QSProtWaitingHandler.addLogMassage(
                     "Total elapsed time for process all the data : " + totalTime);
-            MainUtilities.QSProtWaitingHandler.addMainStepMassage("Done!");
+            MainUtilities.QSProtWaitingHandler.addMainStepMassage("---------- Successfully completed ----------");
         }
     }
 
@@ -162,8 +162,6 @@ public class Controller {
         File searchParamFile = new File(projectEntity.getSearchParameterFilePath());
         File fastaFile = new File(projectEntity.getInputFastaFilePath());
 
-        System.out.println("Path to Configurations.SUBSET_DATA_FOLDER " + Configurations.SUBSET_DATA_FOLDER);
-
         File subDataFolder = new File(
                 Configurations.SUBSET_DATA_FOLDER,
                 optProtDatasetHandler.getSearchInputSetting().getSelectedSearchEngine().getName()
@@ -190,10 +188,8 @@ public class Controller {
 
         long endDsInit = System.currentTimeMillis();
         String totalDsTime = MainUtilities.msToTime(endDsInit - startDsInit);
-
         MainUtilities.QSProtWaitingHandler.addMainStepMassage(
                 " ---------- Done generating sub-set files and initial reference search (" + totalDsTime + ") ----------");
-
         optProtDataset.setSubDataFolder(subDataFolder);
         optProtDataset.setFullDataSpectaInput(wholeDataTest);
 
@@ -208,10 +204,7 @@ public class Controller {
         // Start the parameter optimization process
         SearchController optProtSearchHandler = new SearchController();
         long start = System.currentTimeMillis();
-        MainUtilities.QSProtWaitingHandler.addMainStepMassage("\n\n\nStart adjusting parameters process");
-        if (true) {
-            return;
-        }
+        MainUtilities.QSProtWaitingHandler.addMainStepMassage("\n");      
         File generatedFile = optProtSearchHandler.startAutoSelectParamProcess(
                 optProtDataset,
                 optProtDatasetHandler.getSearchInputSetting(),
@@ -220,8 +213,7 @@ public class Controller {
         long end = System.currentTimeMillis();
         String totalTime = MainUtilities.msToTime(end - start);
 
-        MainUtilities.QSProtWaitingHandler.addMainStepMassage(
-                "done adjusting process (" + totalDsTime + ")");
+        MainUtilities.QSProtWaitingHandler.addMainStepMassage("Parameter adjustment has been successfully completed.\nTotal time used (" + totalDsTime + ")");
 
         if (generatedFile != null) {
 

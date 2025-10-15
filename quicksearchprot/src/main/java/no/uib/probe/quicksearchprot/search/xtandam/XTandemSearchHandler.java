@@ -124,11 +124,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         searchInputSetting.setDigestionParameterOpt(digestionParameterOpt);
         MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
         runReferenceRun(optProtDataset, identificationParameters, searchInputSetting);
-
         for (String param : paramOrder) {
-
             //empty param score list
-            MainUtilities.QSProtWaitingHandler.addMainStepMassage("Start to adjust " + param);
+            MainUtilities.QSProtWaitingHandler.addMainStepMassage("Starting adjustment for " + param+" parameter");
             if (param.equalsIgnoreCase("DigestionParameter") && searchInputSetting.isOptimizeDigestionParameter()) {
                 String[] values = this.optimizeEnzymeParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("EnzymeParameter"));
                 System.out.println("Selected enzyme " + values[0] + "  " + values[1] + "  " + values[2]);
@@ -419,13 +417,14 @@ public class XTandemSearchHandler extends CommonSearchHandler {
     public synchronized RawScoreModel excuteSearch(SearchingSubDataset optProtDataset, String defaultOutputFileName, String paramOption, IdentificationParameters tempIdParam, boolean addSpectraList, SearchInputSetting optProtSearchSettings, File identificationParametersFile) {
 
         if (!optProtSearchSettings.getXTandemEnabledParameters().getParamsToOptimize().isEnabledParam(paramOption.split("_")[0])) {
-            MainUtilities.QSProtWaitingHandler.addLogMassage("param " + paramOption + " is not supported " + paramOption);
-            MainUtilities.QSProtWaitingHandler.addMainStepMassage("param " + paramOption + " is not supported " + paramOption);
+            MainUtilities.QSProtWaitingHandler.addLogMassage("Parameter value (" + paramOption + ") is not supported " + paramOption);
+//            MainUtilities.QSProtWaitingHandler.addMainStepMassage("param " + paramOption + " is not supported " + paramOption);
             return new RawScoreModel(paramOption);
         }
+        
+        System.out.println("for paramter value in xtandem "+paramOption+" "+defaultOutputFileName);
 
         if (paramOption.contains("Pyrolidone from")) {
-
             XtandemParameters xtandemParameters = (XtandemParameters) tempIdParam.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
             System.out.println("the mod name is " + paramOption + "   isQuick pyro " + xtandemParameters.isQuickPyrolidone());
             if (xtandemParameters.isQuickPyrolidone()) {

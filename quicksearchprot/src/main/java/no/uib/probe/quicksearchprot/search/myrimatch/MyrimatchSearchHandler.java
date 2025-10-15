@@ -479,7 +479,7 @@ public class MyrimatchSearchHandler extends CommonSearchHandler {
     }
 
     @Override
-    public synchronized RawScoreModel excuteSearch(SearchingSubDataset optProtDataset, String defaultOutputFileName, String paramOption, IdentificationParameters tempIdParam, boolean addSpectraList, SearchInputSetting optProtSearchSettings, File identificationParametersFile) {
+    public synchronized RawScoreModel excuteSearch(SearchingSubDataset optProtDataset, String defaultOutputFileName, String paramOption, IdentificationParameters tempIdParam, boolean addSpectraList, SearchInputSetting optProtSearchSettings, File identificationParametersFile,String paramValue) {
 
         if (!optProtSearchSettings.getMyriMatchEnabledParameters().getParamsToOptimize().isEnabledParam(paramOption.split("_")[0])) {
             System.out.println("param " + paramOption + " is not supported " + paramOption);

@@ -100,7 +100,7 @@ public class SearchController {
                     sageParameters.setMaxVariableMods(2);
                 }
                 IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
-
+                
                 SageSearchHandler sageHandler = new SageSearchHandler(
                         searchingSubDataset, searchInputSetting, generatedIdentificationParametersFile
                 );

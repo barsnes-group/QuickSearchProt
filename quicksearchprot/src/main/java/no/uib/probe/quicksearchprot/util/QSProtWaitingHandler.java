@@ -466,12 +466,15 @@ public class QSProtWaitingHandler extends WaitingHandlerCLIImpl {
     public void setCurrentProgressValue(int progress) {
         SwingUtilities.invokeLater(() -> {
 //            this.mainPrgressBar.setIndeterminate(false);
-            for(int i=mainPrgressBar.getValue();i<=progress;i++){
-            this.mainPrgressBar.setValue(progress);
-            this.mainPrgressBar.setString("Progress " + progress + " %");
+            for (int i = mainPrgressBar.getValue(); i <= progress; i++) {
+                this.mainPrgressBar.setValue(progress);
+                this.mainPrgressBar.setString("Progress " + progress + " %");
+                if (progress >= 100) {
+                    this.mainPrgressBar.setValue(0);
+                    this.mainPrgressBar.setString("Completed :)");
+                }
             }
-            
-            
+
         });
 
     }
