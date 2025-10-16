@@ -118,18 +118,24 @@ public class XTandemSearchHandler extends CommonSearchHandler {
     private String digestionParameterOpt;
     private boolean simiEnzymaticCleavage = false;
     private String enzymeSpecificityOpt = "specific";
+    private int currentValue = 5;
+    private int step = 0;
 
     public void startProcess(List<String> paramOrder) throws IOException {
+        currentValue = 0;
+        step = 100 / paramOrder.size();
         digestionParameterOpt = identificationParameters.getSearchParameters().getDigestionParameters().getCleavageParameter().name();
         searchInputSetting.setDigestionParameterOpt(digestionParameterOpt);
         MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
         runReferenceRun(optProtDataset, identificationParameters, searchInputSetting);
         for (String param : paramOrder) {
+            MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(currentValue);
+            currentValue += step;
+            MainUtilities.QSProtWaitingHandler.addMainStepMassage("Start to adjust " + param.replace("XtandemAdvancedParameter", "Advanced parameters (1)").replace("XtandemAdvancedParameter_A", "Advanced parameters (2)").replace("XtandemAdvancedParameter_B", "Advanced parameters (3)").replace("Parameter", ""));
             //empty param score list
-            MainUtilities.QSProtWaitingHandler.addMainStepMassage("Starting adjustment for " + param+" parameter");
             if (param.equalsIgnoreCase("DigestionParameter") && searchInputSetting.isOptimizeDigestionParameter()) {
                 String[] values = this.optimizeEnzymeParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("EnzymeParameter"));
-                System.out.println("Selected enzyme " + values[0] + "  " + values[1] + "  " + values[2]);
+
                 if (!values[0].equalsIgnoreCase("")) {
                     identificationParameters.getSearchParameters().getDigestionParameters().clearEnzymes();
                     optimisedSearchResults.setEnzymeName(values[0]);
@@ -409,20 +415,21 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                 : parameterScoreMap.keySet()) {
             System.out.println(key + "  " + parameterScoreMap.get(key));
         }
+        MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(100);
 
     }
     private boolean useRefinment = false;
 
     @Override
-    public synchronized RawScoreModel excuteSearch(SearchingSubDataset optProtDataset, String defaultOutputFileName, String paramOption, IdentificationParameters tempIdParam, boolean addSpectraList, SearchInputSetting optProtSearchSettings, File identificationParametersFile) {
+    public synchronized RawScoreModel excuteSearch(SearchingSubDataset optProtDataset, String defaultOutputFileName, String paramOption, IdentificationParameters tempIdParam, boolean addSpectraList, SearchInputSetting optProtSearchSettings, File identificationParametersFile, String paramValue) {
 
         if (!optProtSearchSettings.getXTandemEnabledParameters().getParamsToOptimize().isEnabledParam(paramOption.split("_")[0])) {
-            MainUtilities.QSProtWaitingHandler.addLogMassage("Parameter value (" + paramOption + ") is not supported " + paramOption);
+            MainUtilities.QSProtWaitingHandler.addLogMassage("Parameter value (" + paramOption + ") is not supported " + paramValue);
 //            MainUtilities.QSProtWaitingHandler.addMainStepMassage("param " + paramOption + " is not supported " + paramOption);
             return new RawScoreModel(paramOption);
         }
-        
-        System.out.println("for paramter value in xtandem "+paramOption+" "+defaultOutputFileName);
+
+        MainUtilities.QSProtWaitingHandler.addMainStepMassage(paramValue);
 
         if (paramOption.contains("Pyrolidone from")) {
             XtandemParameters xtandemParameters = (XtandemParameters) tempIdParam.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
@@ -471,8 +478,8 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         if (addSpectraList && rawScore.isSensitiveChange()) {
             rawScore.setSpectrumMatchResult(validatedMaches);
         }
-         MainUtilities.QSProtWaitingHandler.addLogMassage("Parameter" + paramOption + "  " + validatedMaches.size());
-         MainUtilities.QSProtWaitingHandler.addMainStepMassage("done!");
+        MainUtilities.QSProtWaitingHandler.addLogMassage("Parameter" + paramValue + "  " + validatedMaches.size());
+
         return (rawScore);
 
     }
@@ -484,7 +491,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + option + "_" + msFileName;
 
         Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
-            RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, true, optimisedSearchParameter, generatedIdentificationParametersFile);
+            RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, true, optimisedSearchParameter, generatedIdentificationParametersFile, "");
             return scoreModel;
         });
         try {
@@ -518,7 +525,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             System.out.println("---->>> test " + optProtDataset.getCurrentScoreModel());
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
 
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, true, optimisedSearchParameter, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, true, optimisedSearchParameter, generatedIdentificationParametersFile, "Spectrum Dynamic Range: " + j);
                 return scoreModel;
             });
             try {
@@ -583,7 +590,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
 
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, true, optimisedSearchParameter, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, true, optimisedSearchParameter, generatedIdentificationParametersFile, "Peaks num: " + j);
                 return scoreModel;
             });
             try {
@@ -638,12 +645,11 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             final double j = i;
 
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, tempIdParam, true, optimisedSearchParameter, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, tempIdParam, true, optimisedSearchParameter, generatedIdentificationParametersFile, "Min fragment mz: " + j);
                 return scoreModel;
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                System.out.println("MinimumFragmentMz " + j + "  " + scoreModel);
                 if (scoreModel.isAcceptedChange()) {
 //                if (scoreModel.isSensitiveChange() && (scoreModel.getSpectrumMatchResult().size() >= spectraCounter)) {
 //                    if (scoreModel.getSpectrumMatchResult().size() <= spectraCounter) {
@@ -692,7 +698,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             xtandemParameters.setMinPeaksPerSpectrum(i);
             final int j = i;
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "Min peaks num: " + j);
                 return scoreModel;
             });
             try {
@@ -740,7 +746,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         if (selectedOption1 != false) {
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
 
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "Noise supression: " + true);
                 return scoreModel;
             });
             try {
@@ -762,7 +768,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             xtandemParameters.setMinPrecursorMass(j);
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
 
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, subupdatedName, suboption, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, subupdatedName, suboption, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "Noise supression: " + false);
                 return scoreModel;
             });
 
@@ -814,13 +820,12 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             final int j = i;
 
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "Parent monoisotopic mass isotope error: " + (j == 1));
                 return scoreModel;
             });
             try {
 
                 RawScoreModel scoreModel = f.get();
-                System.out.println("parent istop " + scoreModel);
                 if (scoreModel.isSensitiveChange()) {
                     resultsMap.put(j, scoreModel);
                 }
@@ -864,7 +869,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             final int j = i;
 
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "Quick acetyl " + useQuickAcetyl);
                 return scoreModel;
             });
             try {
@@ -915,7 +920,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
 
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "Quick pyrolidone " + useQuickPyrolidone);
                 return scoreModel;
             });
             try {
@@ -968,7 +973,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
 
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, " Use Stp bais: " + useStpBias);
                 return scoreModel;
             });
             try {
@@ -1012,7 +1017,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + option + "_" + msFileName;
         xtandemParameters.setRefine(useRefine);
         Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
-            RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, true, optimisedSearchParameter, generatedIdentificationParametersFile);
+            RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, true, optimisedSearchParameter, generatedIdentificationParametersFile, "Enable refinement stage: " + useRefine);
             return scoreModel;
         });
         try {
@@ -1062,7 +1067,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             final String updatedName = Configurations.DEFAULT_RESULT_NAME + "rv_" + option + "_" + msFileName;
 
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, searchInputSetting, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, searchInputSetting, generatedIdentificationParametersFile, "Refinement variable modifications: " + vMod);
                 return scoreModel;
             });
             try {
@@ -1089,7 +1094,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                     final String updatedName = Configurations.DEFAULT_RESULT_NAME + "rv_" + option + "_" + msFileName;
 
                     Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
-                        RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, searchInputSetting, generatedIdentificationParametersFile);
+                        RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, searchInputSetting, generatedIdentificationParametersFile, "Refinement variable modifications: " + vMod + "," + selectedRef);
                         return scoreModel;
                     });
                     try {
@@ -1124,7 +1129,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                     final String option = vMod + "_" + selectedRef;
                     final String updatedName = Configurations.DEFAULT_RESULT_NAME + "rv_" + option + "_" + msFileName;
                     Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
-                        RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, searchInputSetting, generatedIdentificationParametersFile);
+                        RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, searchInputSetting, generatedIdentificationParametersFile, "Refinement variable modifications: " + vMod.replace("_", ",") + "," + selectedRef);
                         return scoreModel;
                     });
                     try {
@@ -1162,7 +1167,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                     final String option = vMod + "_" + selectedRef;
                     final String updatedName = Configurations.DEFAULT_RESULT_NAME + "rv_" + option + "_" + msFileName;
                     Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
-                        RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, searchInputSetting, generatedIdentificationParametersFile);
+                        RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, searchInputSetting, generatedIdentificationParametersFile, "Refinement variable modifications: " + vMod.replace("_", ",") + "," + selectedRef);
                         return scoreModel;
                     });
                     try {
@@ -1229,7 +1234,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
 
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "Refinement unanticipated cleavages: " + (j == 1));
                 return scoreModel;
             });
             try {
@@ -1279,7 +1284,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
 
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, true, optimisedSearchParameter, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, true, optimisedSearchParameter, generatedIdentificationParametersFile, "Refinement simi-enzymatic cleavages: " + (j == 1));
                 return scoreModel;
             });
             try {
@@ -1331,7 +1336,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             MainUtilities.resetExecutorService();
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
 
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "Potintial modification: " + (j == 1));
                 return scoreModel;
             });
             try {
@@ -1386,7 +1391,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             final int j = i;
 
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "Point mutations: " + (j == 1));
                 return scoreModel;
             });
             try {
@@ -1439,7 +1444,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
 
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "SnAPs: " + (j == 1));
                 return scoreModel;
             });
             try {
@@ -1491,7 +1496,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
 
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "Spectrum synthesis: " + (j == 1));
                 return scoreModel;
             });
             try {

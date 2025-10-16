@@ -119,18 +119,19 @@ public class SageSearchHandler extends CommonSearchHandler {
     private double precursorTol = 10.0;
     private boolean wideWindow = false;
     private String enzymeSpecificityOpt = "specific";
-    int currentValue=5;
-    int step=0;
+    private int currentValue = 5;
+    private int step = 0;
 
     public void startProcess(List<String> paramOrder) throws IOException {
+        currentValue = 0;
         digestionParameterOpt = identificationParameters.getSearchParameters().getDigestionParameters().getCleavageParameter().name();
         searchInputSetting.setDigestionParameterOpt(digestionParameterOpt);
         MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
         runReferenceRun(optProtDataset, identificationParameters, searchInputSetting);
-        step=100/paramOrder.size();
+        step = 100 / paramOrder.size();
         for (String param : paramOrder) {
             MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(currentValue);
-            currentValue+=step;
+            currentValue += step;
             MainUtilities.QSProtWaitingHandler.addMainStepMassage("Start to adjust " + param.replace("SageAdvancedParameter_B", "Advanced parameters (2)").replace("SageAdvancedParameter_A", "Advanced parameters (1)").replace("Parameter", ""));
             MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
             if (param.equalsIgnoreCase("DigestionParameter") && searchInputSetting.isOptimizeDigestionParameter()) {
@@ -354,7 +355,7 @@ public class SageSearchHandler extends CommonSearchHandler {
     @Override
     public synchronized RawScoreModel excuteSearch(SearchingSubDataset optProtDataset, String defaultOutputFileName, String paramOption, IdentificationParameters tempIdParam, boolean addSpectraList, SearchInputSetting optProtSearchSettings, File identificationParametersFile, String paramValue) {
         if (!optProtSearchSettings.getSageEnabledParameters().getParamsToOptimize().isEnabledParam(paramOption.split("_")[0])) {
-            MainUtilities.QSProtWaitingHandler.addLogMassage("param " + paramOption + " is not supported " + paramOption);
+            MainUtilities.QSProtWaitingHandler.addLogMassage("param " + paramOption + " is not supported " + paramValue);
 //             MainUtilities.QSProtWaitingHandler.addMainStepMassage("param " + paramOption + " is not supported " + paramOption);
             return new RawScoreModel(paramOption);
         }
@@ -376,7 +377,6 @@ public class SageSearchHandler extends CommonSearchHandler {
         boolean potintialFP = false;
         if (potintialFalsePostiveParamSet.contains(paramOption.split("_")[0]) && !defaultOutputFileName.contains("optsearch_results0v_") && !defaultOutputFileName.contains("optsearch_results1v_")) {
             potintialFP = true;
-            MainUtilities.QSProtWaitingHandler.addLogMassage(paramValue+ " validated maches size " + validatedMaches.size());
         }
         if (paramOption.contains("charge-")) {
 //            potintialFP = true;
@@ -387,10 +387,11 @@ public class SageSearchHandler extends CommonSearchHandler {
         }
 
         RawScoreModel rawScore = SpectraUtilities.getComparableRawScore(optProtDataset, validatedMaches, Advocate.sage, addSpectraList, paramOption, potintialFP);//(optProtDataset, resultOutput, optProtDataset.getSubMsFile(), Advocate.sage, tempIdParam, updateDataReference);
-
+       
         if (addSpectraList || rawScore.isSensitiveChange()) {
             rawScore.setSpectrumMatchResult(validatedMaches);
         }
+         MainUtilities.QSProtWaitingHandler.addLogMassage("Parameter" + paramValue + "  " + validatedMaches.size());
         return (rawScore);
     }
 
