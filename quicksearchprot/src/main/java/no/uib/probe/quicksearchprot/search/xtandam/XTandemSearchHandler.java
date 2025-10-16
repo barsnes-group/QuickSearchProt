@@ -457,7 +457,6 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         if (paramOption.contains("_")) {
             paramOption = paramOption.split("_")[1];
         }
-        MainUtilities.QSProtWaitingHandler.addMainStepMassage("Parameter option --> " + paramOption);
         Future<File> f = MainUtilities.getLongExecutorService().submit(() -> {
             File resultOutput = SearchExecuter.executeSearch(defaultOutputFileName, optProtSearchSettings, optProtDataset.getSubMsFile(), optProtDataset.getSubFastaFile(), tempIdParam, identificationParametersFile);
             return resultOutput;

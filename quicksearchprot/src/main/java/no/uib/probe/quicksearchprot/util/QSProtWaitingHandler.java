@@ -449,6 +449,7 @@ public class QSProtWaitingHandler extends WaitingHandlerCLIImpl {
 
     public void addMainStepMassage(String massage) {
         mainProcessesTextPanel.append(massage + lineBreak);
+        addLogMassage(massage);
     }
 
     public void printMainStepMassage(String massage) {

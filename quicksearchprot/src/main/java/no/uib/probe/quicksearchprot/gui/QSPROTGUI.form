@@ -149,7 +149,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Arial" size="24" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;&lt;b style=&quot;color:#0B78A2&quot;&gt;Q&lt;/b&gt;uick&lt;b style=&quot;color:#E6580B&quot;&gt;S&lt;/b&gt;earchProt&lt;/b&gt;&lt;p style=&quot;font-size: 12px;margin-top: 10px;&quot;&gt;Automatic selection of search parameter values for mass spectrometry-based search engines.&lt;/p&gt;&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;&lt;b style=&quot;color:#0B78A2&quot;&gt;Q&lt;/b&gt;uick&lt;b style=&quot;color:#E6580B&quot;&gt;S&lt;/b&gt;earchProt&lt;/b&gt;&lt;p style=&quot;font-size: 11px;margin-top: 10px;&quot;&gt;Automatic selection of search parameter values for mass spectrometry-based search engines.&lt;/p&gt;&lt;/html&gt;"/>
           </Properties>
         </Component>
         <Container class="javax.swing.JPanel" name="inputOutputPanel">
