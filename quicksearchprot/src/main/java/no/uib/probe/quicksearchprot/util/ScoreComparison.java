@@ -779,14 +779,12 @@ public class ScoreComparison {
     }
 
     public static double compareReferenceToTest(double[] referenceData, double[] testData, Map<String, Double> sharedReferenceData, Map<String, Double> uniqueReferenceData, Map<String, Double> sharedTestData, Map<String, Double> uniqueTestData, boolean potintialFP, boolean fdrApplied) {
-        double finalScore = 0;
-//            potintialFP = false;
+        double finalScore;
         if (potintialFP && (referenceData.length * 1.05 > testData.length)) {
             return testData.length - (referenceData.length * 1.05);
         }
 
         DescriptiveStatistics refernceDescriptiveStatistics = new DescriptiveStatistics(referenceData);
-
         double referenceQ1 = refernceDescriptiveStatistics.getPercentile(25);
         double referenceMedian = refernceDescriptiveStatistics.getPercentile(50);
         double referenceQ3 = refernceDescriptiveStatistics.getPercentile(75);
@@ -816,13 +814,10 @@ public class ScoreComparison {
                 gainedScoreData += scoreRank;
             }
         }
+        System.out.println("SC: "+sharedDataScore +" GS: "+ gainedScoreData +"  LS: "+ lostScoreData);
 
         finalScore = sharedDataScore + gainedScoreData + lostScoreData;
-        double updatedScore = testData.length - (referenceData.length);
-
-//            finalScore=finalScore/Math.max(updatedScore,1);
-//        System.out.println("------------------->>>" + finalScore + " VS " + updatedScore + " ---score shared " + sharedDataScore + "  reference lost " + lostScoreData + "   test gained " + gainedScoreData + "  ###  " + referenceData.length + " vs  " + testData.length);
-        if (potintialFP && finalScore == 0) {
+        double updatedScore = testData.length - (referenceData.length); if (potintialFP && finalScore == 0) {
             return -1;
         }
         if ((finalScore > 0 && updatedScore == 0) || (finalScore < 0 && updatedScore == 0)) {

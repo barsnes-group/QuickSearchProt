@@ -101,10 +101,12 @@ public class Controller {
                 long startSE = System.currentTimeMillis();
                 searchInputSetting.setSelectedSearchEngine(searchEngine);
                 searchInputSetting.setDatasetId(projectEntity.getDatasetId());
+                searchInputSetting.setParametersToAdjust(projectEntity.getParamsToAdjust());
 
                 MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
 
                 this.optProtDatasetHandler = new QSPDatasetHandler(searchInputSetting);
+                MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(5);
                 MainUtilities.QSProtWaitingHandler.addMainStepMassage(
                         "---------- Start the process for ( " + searchEngine.getName() + " ) ----------");
 
@@ -123,7 +125,7 @@ public class Controller {
 
                 MainUtilities.QSProtWaitingHandler.addMainStepMassage(
                         "Total time for process data with " + searchEngine.getName() + " search engine  : " + totalSETime);
-                
+
                 System.gc();
             }
         } catch (Exception e) {
@@ -170,6 +172,10 @@ public class Controller {
         if (!subDataFolder.exists()) {
             subDataFolder.mkdir();
         }
+        if (projectEntity.isReGenerateSubset()) {
+            MainUtilities.cleanFolder(subDataFolder.getAbsolutePath());
+
+        }
         MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
         long startDsInit = System.currentTimeMillis();
         MainUtilities.QSProtWaitingHandler.addMainStepMassage("Loading spectra data");
@@ -192,6 +198,10 @@ public class Controller {
                 " ---------- Done generating sub-set files and initial reference search (" + totalDsTime + ") ----------");
         optProtDataset.setSubDataFolder(subDataFolder);
         optProtDataset.setFullDataSpectaInput(wholeDataTest);
+        searchInputSetting.setRunDirecTag(false);
+        searchInputSetting.setRunNovor(false);
+        searchInputSetting.setRunSage(false);
+        searchInputSetting.setRunXTandem(false);
 
         // Set the search settings file
         File selectedSearchSettingsFile = projectEntity.isAdjustAllSearchParameters()
@@ -204,7 +214,7 @@ public class Controller {
         // Start the parameter optimization process
         SearchController optProtSearchHandler = new SearchController();
         long start = System.currentTimeMillis();
-        MainUtilities.QSProtWaitingHandler.addMainStepMassage("\n");      
+        MainUtilities.QSProtWaitingHandler.addMainStepMassage("\n");
         File generatedFile = optProtSearchHandler.startAutoSelectParamProcess(
                 optProtDataset,
                 optProtDatasetHandler.getSearchInputSetting(),

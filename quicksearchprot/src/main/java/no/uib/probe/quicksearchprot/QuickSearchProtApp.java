@@ -81,7 +81,6 @@ public class QuickSearchProtApp {
                                     "----------  Start data processing  ----------"
                             );
                         });
-
                         // Process data in the background
                         MainUtilities.getDisplayExecuter().submit(() -> {
                             mainController.initializedController(projectEntity);

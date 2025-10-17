@@ -17,7 +17,7 @@ public class SelectedSearchParametersEntity {
 
     private boolean digestion = false;
     private boolean enzyme = true;
-    private boolean specificity = true;
+    private boolean specificity = false;
     private boolean maxMissCleavages = true;
     private boolean fragmentIonTypes = true;
 

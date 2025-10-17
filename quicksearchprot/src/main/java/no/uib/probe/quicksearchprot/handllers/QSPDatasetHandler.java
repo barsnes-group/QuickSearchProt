@@ -111,12 +111,12 @@ public class QSPDatasetHandler {
      * @param useOreginalInputs use original input files without subsetting
      * @param subsetSize size of subset (-1 to auto select)
      * @param fullFasta use full fasta file
+     * @param cleanIfExist
      * @return SearchingSubDataset with relevant information for further
      * analysis
      */
     public SearchingSubDataset generateQSProtDataset(String datasetId, File msFile, File fastaFile, Advocate searchEngineToOptimise, File subDataFolder, File identificationParametersFile, boolean wholeDataTest, boolean fullFasta, boolean useOreginalInputs, int subsetSize) {
         long start1 = System.currentTimeMillis();
-        Advocate standeredReferenceSearchEngine = searchEngineToOptimise;
         SearchingSubDataset optProtDataset = new SearchingSubDataset();
         optProtDataset.setSubMsFile(msFile);
         optProtDataset.setSubFastaFile(fastaFile);
@@ -147,8 +147,8 @@ public class QSPDatasetHandler {
             // Set up subset file names
             if (!wholeDataTest) {
                 subFastaFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_" + fastaFile.getName());
-                subMsFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_" + msFile.getName());
-
+                subMsFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_" + msFile.getName());             
+                  
             } else {
                 subFastaFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_Full_" + fastaFile.getName());
                 subMsFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_Full_" + msFile.getName());
@@ -190,8 +190,6 @@ public class QSPDatasetHandler {
                     //Case use default recommeneded dataset setsize                    
                     if (subsetSize == -1) {
                         subsetSize = this.calculateRecommendSubsetSize(searchEngineToOptimise, optProtDataset.getOreginalDatasetSpectraSize());
-                        System.out.println("subset seize is " + subsetSize);
-
                     }
                     MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(5);
                     //calculate #sections                
@@ -209,12 +207,23 @@ public class QSPDatasetHandler {
                     MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(30);
                     MainUtilities.QSProtWaitingHandler.addMainStepMassage("Generate subset file (#spectra:" + subsetSize + ")");
 
-                    //create stabkle subMs file
+                    //create subMs file
                     System.out.println("----------generate subms file-------------------");
                     subMsFile = generateMsSubFile(spectraMap, subMsFile);
                     MainUtilities.QSProtWaitingHandler.addMainStepMassage("done!");
                     MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(50);
+                    optProtDataset.setSubsetSize(subsetSize);
                     subFastaFile.delete();
+                } else {
+                    MsFileHandler msFileHandler2 = new MsFileHandler();
+                    try {
+                        msFileHandler2.register(subMsFile, new QSProtWaitingHandler());
+                    } catch (IOException ex) {
+                        MainUtilities.QSProtWaitingHandler.addLogMassage(ex.getMessage());
+                    }
+                    final String fileNameWithoutExtension2 = IoUtil.removeExtension(subMsFile.getName());
+                    String[] spectrumTitles2 = msFileHandler.getSpectrumTitles(fileNameWithoutExtension2);
+                    optProtDataset.setSubsetSize(spectrumTitles2.length);
                 }
                 //create stabkle subfasta file
                 if (!fullFasta && (!subFastaFile.exists() || update)) {
@@ -242,13 +251,13 @@ public class QSPDatasetHandler {
 
                     long end4th = System.currentTimeMillis();
                     total = MainUtilities.msToTime(end4th - start4);
-                    MainUtilities.QSProtWaitingHandler.addLogMassage("---------- Done genertaing subset and filtered input data(time used : " + total+") ----------");
+                    MainUtilities.QSProtWaitingHandler.addLogMassage("---------- Done genertaing subset and filtered input data(time used : " + total + ") ----------");
                     MainUtilities.QSProtWaitingHandler.addMainStepMassage("Done");
                     long end = System.currentTimeMillis();
                     total = MainUtilities.msToTime(end - start1);
                     System.out.println("Done processing the sub-data files, total time used : " + total);
                     MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(100);
-                                    }
+                }
             } catch (IOException ex) {
                 if (subMsFile != null) {
                     subMsFile.delete();
@@ -265,59 +274,6 @@ public class QSPDatasetHandler {
         }
         if (subMsFile != null) {
             optProtDataset.setSubMsFile(subMsFile);
-        }
-        try {
-
-            MainUtilities.QSProtWaitingHandler.addMainStepMassage("Conduct initial reference search using  (" + searchEngineToOptimise+")");
-
-            // Run initial identification with user-selected SE
-            final IdentificationParameters identificationParameters = IdentificationParameters.getIdentificationParameters(new File(Configurations.DEFAULT_QSPROT_SEARCH_PARAM_FILE));
-            searchInputSetting.setSelectedSearchEngine(searchEngineToOptimise);
-            final String option = "reference_run_default_" + searchEngineToOptimise;
-            final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + option + "_" + fileNameWithoutExtension;
-
-            if (standeredReferenceSearchEngine.getIndex() == Advocate.sage.getIndex()) {
-                SageParameters sageParameters = (SageParameters) identificationParameters.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.sage.getIndex());
-                sageParameters.setMaxVariableMods(0);
-                sageParameters.setNumPsmsPerSpectrum(1);
-                sageParameters.setGenerateDecoys(false);
-            } else if (standeredReferenceSearchEngine.getIndex() == Advocate.xtandem.getIndex()) {
-                XtandemParameters xtandemParameters = (XtandemParameters) identificationParameters.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
-                xtandemParameters.setProteinQuickAcetyl(false);
-                xtandemParameters.setQuickPyrolidone(false);
-                xtandemParameters.setStpBias(false);
-                xtandemParameters.setRefine(false);
-                xtandemParameters.setOutputResults("all");
-            }
-            String subfileNameWithoutExtension = IoUtil.removeExtension(subMsFile.getName());
-            MsFileHandler subMsFileHandler = new MsFileHandler();
-            subMsFileHandler.register(subMsFile, new QSProtWaitingHandler());
-            optProtDataset.setSpectraTitiles(subMsFileHandler.getSpectrumTitles(subfileNameWithoutExtension));
-            File resultsFolder = SearchExecuter.executeSearch(updatedName, searchInputSetting, subMsFile, subFastaFile, identificationParameters, new File(Configurations.DEFAULT_QSPROT_SEARCH_PARAM_FILE));
-
-            List<SpectrumMatch> validatedMaches = SpectraUtilities.getValidatedIdentificationResults(resultsFolder, subMsFile, searchEngineToOptimise, identificationParameters);
-
-            if (validatedMaches == null || validatedMaches.isEmpty()) {
-                System.out.println("Error in the system please restart!");
-                System.exit(0);
-            }
-            optProtDataset.setDefaultSettingIdentificationNum(validatedMaches.size());
-            optProtDataset.updateValidatedIdRefrenceData(validatedMaches);
-            MainUtilities.deleteFolder(resultsFolder);
-
-            int total = subMsFileHandler.getSpectrumTitles(subfileNameWithoutExtension).length;
-            optProtDataset.setSubsetSize(total);
-            MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
-            MainUtilities.QSProtWaitingHandler.addMainStepMassage("done!");
-
-        } catch (IOException ex) {
-            if (subMsFile != null) {
-                subMsFile.delete();
-            }
-            if (subFastaFile != null) {
-                subFastaFile.delete();
-            }
-            ex.printStackTrace();
         }
         return optProtDataset;
     }

@@ -111,7 +111,6 @@ public class SelectParametersPanel extends javax.swing.JFrame {
             }
         });
 
-        jCheckBox3.setSelected(true);
         jCheckBox3.setText("Specificity");
         jCheckBox3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -274,8 +273,7 @@ public class SelectParametersPanel extends javax.swing.JFrame {
                         .addGap(20, 20, 20))))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(108, 108, 108)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0))
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -363,7 +361,7 @@ public class SelectParametersPanel extends javax.swing.JFrame {
      * Handles Specificity checkbox selection.
      */
     private void jCheckBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox3ActionPerformed
-        parametersToAdjust.setSpecificity(jCheckBox3.isSelected());          // TODO add your handling code here:
+        parametersToAdjust.setSpecificity(jCheckBox3.isSelected());  
     }//GEN-LAST:event_jCheckBox3ActionPerformed
     /**
      * Handles Max missed cleavages checkbox selection.
@@ -429,7 +427,7 @@ public class SelectParametersPanel extends javax.swing.JFrame {
         adjustDigestionActionPerformed(null);
         jCheckBox2.setSelected(true);
         jCheckBox2ActionPerformed(null);
-        jCheckBox3.setSelected(true);
+        jCheckBox3.setSelected(false);
         jCheckBox3ActionPerformed(null);
         jCheckBox4.setSelected(true);
         jCheckBox4ActionPerformed(null);

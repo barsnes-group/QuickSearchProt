@@ -112,6 +112,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             xtandemParameters.setRefineSpectrumSynthesis(true);
             xtandemParameters.setRefineSnaps(true);
         }
+        
 
     }
 
@@ -131,9 +132,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         for (String param : paramOrder) {
             MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(currentValue);
             currentValue += step;
-            MainUtilities.QSProtWaitingHandler.addMainStepMassage("Start to adjust " + param.replace("XtandemAdvancedParameter", "Advanced parameters (1)").replace("XtandemAdvancedParameter_A", "Advanced parameters (2)").replace("XtandemAdvancedParameter_B", "Advanced parameters (3)").replace("Parameter", ""));
+            MainUtilities.QSProtWaitingHandler.addMainStepMassage("---------- Start to adjust " + param.replace("XtandemAdvancedParameter", "Advanced parameters (1)").replace("XtandemAdvancedParameter_A", "Advanced parameters (2)").replace("XtandemAdvancedParameter_B", "Advanced parameters (3)").replace("Parameter", "").toLowerCase()+" ----------");
             //empty param score list
-            if (param.equalsIgnoreCase("DigestionParameter") && searchInputSetting.isOptimizeDigestionParameter()) {
+            if (param.equalsIgnoreCase("DigestionParameter") && (searchInputSetting.isOptimizeDigestionParameter()||searchInputSetting.isOptimizeEnzymeParameter()||searchInputSetting.isOptimizeSpecificityParameter()||searchInputSetting.isOptimizeMaxMissCleavagesParameter())) {
                 String[] values = this.optimizeEnzymeParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("EnzymeParameter"));
 
                 if (!values[0].equalsIgnoreCase("")) {
@@ -496,6 +497,8 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         try {
             RawScoreModel scoreModel = f.get();
             optProtDataset.setActiveScoreModel(scoreModel);
+            optProtDataset.setDefaultSettingIdentificationNum(scoreModel.getIdPSMNumber());
+            optProtDataset.updateValidatedIdRefrenceData(scoreModel.getSpectrumMatchResult());
         } catch (ExecutionException | InterruptedException ex) {
             ex.printStackTrace();
         }
@@ -521,10 +524,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + option + "_" + msFileName;
             xtandemParameters.setDynamicRange(i);
             final double j = i;
-            System.out.println("---->>> test " + optProtDataset.getCurrentScoreModel());
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
 
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, true, optimisedSearchParameter, generatedIdentificationParametersFile, "Spectrum Dynamic Range: " + j);
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, true, optimisedSearchParameter, generatedIdentificationParametersFile, "Spectrum dynamic range: " + j);
                 return scoreModel;
             });
             try {

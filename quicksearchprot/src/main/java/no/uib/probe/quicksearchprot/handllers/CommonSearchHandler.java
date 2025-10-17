@@ -152,7 +152,7 @@ public abstract class CommonSearchHandler {
                 });
                 try {
                     RawScoreModel scoreModel = f.get();
-                                     if (scoreModel.isSensitiveChange()) {
+                    if (scoreModel.isSensitiveChange()) {
                         resultsMapI.put(option, scoreModel);
                     }
                 } catch (InterruptedException | ExecutionException ex) {
@@ -164,17 +164,20 @@ public abstract class CommonSearchHandler {
                 String enzymeName = SpectraUtilities.compareScoresSet(resultsMapI, optProtDataset.getSubsetSize(), false, optimisedSearchParameter.getSelectedSearchEngine().getName().equalsIgnoreCase(Advocate.sage.getName()));
                 values[0] = enzymeName;
                 optProtDataset.setActiveScoreModel(resultsMapI.get(enzymeName));
-            } 
+            }
             //optimize specifty 
             oreginaltempIdParam.getSearchParameters().getDigestionParameters().clearEnzymes();
             oreginaltempIdParam.getSearchParameters().getDigestionParameters().addEnzyme(EnzymeFactory.getInstance().getEnzyme(values[0]));
             oreginaltempIdParam.getSearchParameters().getDigestionParameters().setnMissedCleavages(values[0], missedClavageNumb);
             oreginaltempIdParam.getSearchParameters().getDigestionParameters().setSpecificity(values[0], DigestionParameters.Specificity.valueOf(values[1]));
+            System.out.println("set specificity " + values[0] + "  " + optProtDataset.getCurrentScoreModel());
         }
         resultsMapI.clear();
+        System.out.println("Before anything specifity name " + oreginaltempIdParam.getSearchParameters().getDigestionParameters().getEnzymes() + "  " + oreginaltempIdParam.getSearchParameters().getDigestionParameters().getSpecificity(values[0]) + "  " + oreginaltempIdParam.getSearchParameters().getDigestionParameters().getnMissedCleavages(values[0]) + "   " + values[0]);
         if (optimisedSearchParameter.isOptimizeSpecificityParameter()) {
             for (int i = 0; i < DigestionParameters.Specificity.values().length; i++) {
                 final String option = DigestionParameters.Specificity.getSpecificity(i).name();
+                System.out.println("specifity name " + option + "  " + values[0] + "  " + DigestionParameters.Specificity.getSpecificity(i).name);
                 oreginaltempIdParam.getSearchParameters().getDigestionParameters().setSpecificity(values[0], DigestionParameters.Specificity.getSpecificity(i));
                 final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + option + "_" + msFileName;
                 Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
@@ -183,6 +186,8 @@ public abstract class CommonSearchHandler {
                 });
                 try {
                     RawScoreModel scoreModel = f.get();
+                    System.out.println("Enz spec " + option + " -- " + scoreModel);
+
                     if (scoreModel.getFinalScore() > 0) {
                         resultsMapI.put(option, scoreModel);
                     }
@@ -191,6 +196,7 @@ public abstract class CommonSearchHandler {
                     ex.printStackTrace();
                 }
             }
+//            System.exit(0);
             if (!resultsMapI.isEmpty()) {
                 String specifty = SpectraUtilities.compareScoresSet(resultsMapI, optProtDataset.getSubsetSize(), false, optimisedSearchParameter.getSelectedSearchEngine().getName().equalsIgnoreCase(Advocate.sage.getName()));
                 values[1] = specifty;
@@ -898,7 +904,7 @@ public abstract class CommonSearchHandler {
                     resultsMap.remove(remove);
                 }
                 String bestMod = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, optimisedSearchParameter.getSelectedSearchEngine().getName().equalsIgnoreCase(Advocate.sage.getName()));
-               
+
                 if (resultsMap.get(bestMod).isAcceptedChange()) {
                     selectedVariableModificationOption.add(bestMod);
                     optProtDataset.setActiveScoreModel(resultsMap.get(bestMod));
@@ -989,7 +995,7 @@ public abstract class CommonSearchHandler {
                     resultsMap.remove(remove);
                 }
                 String bestMod = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, optimisedSearchParameter.getSelectedSearchEngine().getName().equalsIgnoreCase(Advocate.sage.getName()));
-             
+
                 if (resultsMap.get(bestMod).isSensitiveChange()) {
                     selectedVariableModificationOption.add(bestMod);
                     optProtDataset.setActiveScoreModel(resultsMap.get(bestMod));
@@ -1064,7 +1070,7 @@ public abstract class CommonSearchHandler {
                 tempIdParam.getSearchParameters().getModificationParameters().addVariableModification(ptmFactory.getModification(modId));
             }
             paramoption += "\t Included fixed modifications: " + selectedFixedModificationOption + " Included Variable modifications: " + selectedVariableModificationOption;
-            final String op=paramoption.replace("[", " ").replace("]","");
+            final String op = paramoption.replace("[", " ").replace("]", "");
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
                 RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, tempIdParam, true, searchInputSetting, identificationParametersFile, op);
                 return scoreModel;

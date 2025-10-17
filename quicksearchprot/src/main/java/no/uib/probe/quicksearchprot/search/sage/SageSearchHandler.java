@@ -374,6 +374,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             ex.printStackTrace();
         }
         List<SpectrumMatch> validatedMaches = SpectraUtilities.getValidatedIdentificationResults(resultOutput, optProtDataset.getSubMsFile(), Advocate.sage, tempIdParam);
+
         boolean potintialFP = false;
         if (potintialFalsePostiveParamSet.contains(paramOption.split("_")[0]) && !defaultOutputFileName.contains("optsearch_results0v_") && !defaultOutputFileName.contains("optsearch_results1v_")) {
             potintialFP = true;
@@ -387,11 +388,11 @@ public class SageSearchHandler extends CommonSearchHandler {
         }
 
         RawScoreModel rawScore = SpectraUtilities.getComparableRawScore(optProtDataset, validatedMaches, Advocate.sage, addSpectraList, paramOption, potintialFP);//(optProtDataset, resultOutput, optProtDataset.getSubMsFile(), Advocate.sage, tempIdParam, updateDataReference);
-       
+
         if (addSpectraList || rawScore.isSensitiveChange()) {
             rawScore.setSpectrumMatchResult(validatedMaches);
         }
-         MainUtilities.QSProtWaitingHandler.addLogMassage("Parameter" + paramValue + "  " + validatedMaches.size());
+        MainUtilities.QSProtWaitingHandler.addLogMassage("Parameter" + paramValue + "  " + validatedMaches.size());
         return (rawScore);
     }
 
@@ -1178,6 +1179,8 @@ public class SageSearchHandler extends CommonSearchHandler {
         try {
             RawScoreModel scoreModel = f.get();
             optProtDataset.setActiveScoreModel(scoreModel);
+            optProtDataset.setDefaultSettingIdentificationNum(scoreModel.getIdPSMNumber());
+            optProtDataset.updateValidatedIdRefrenceData(scoreModel.getSpectrumMatchResult());
         } catch (ExecutionException | InterruptedException ex) {
             ex.printStackTrace();
         }

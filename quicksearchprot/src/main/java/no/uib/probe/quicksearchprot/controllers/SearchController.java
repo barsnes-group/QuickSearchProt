@@ -66,6 +66,7 @@ public class SearchController {
 
             // XTandem Engine
             if (selectedEngineIndex == Advocate.xtandem.getIndex()) {
+                searchInputSetting.setRunXTandem(true);
                 XTandemSearchHandler xtandemHandler = new XTandemSearchHandler(
                         searchingSubDataset, searchInputSetting, generatedIdentificationParametersFile
                 );
@@ -73,6 +74,7 @@ public class SearchController {
 
                 // MyriMatch Engine
             } else if (selectedEngineIndex == Advocate.myriMatch.getIndex()) {
+                searchInputSetting.setRunMyriMatch(true);
                 MyriMatchParameters myriMatchParameters = (MyriMatchParameters) identificationParameters.getSearchParameters()
                         .getAlgorithmSpecificParameters()
                         .get(Advocate.myriMatch.getIndex());
@@ -91,6 +93,7 @@ public class SearchController {
 
                 // Sage Engine
             } else if (selectedEngineIndex == Advocate.sage.getIndex()) {
+                searchInputSetting.setRunSage(true);
                 SageParameters sageParameters = (SageParameters) identificationParameters.getSearchParameters()
                         .getAlgorithmSpecificParameters()
                         .get(Advocate.sage.getIndex());

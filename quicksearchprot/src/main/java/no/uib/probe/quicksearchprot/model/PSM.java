@@ -4,6 +4,8 @@
  */
 package no.uib.probe.quicksearchprot.model;
 
+import com.compomics.util.experiment.identification.matches.SpectrumMatch;
+
 /**
  *
  * @author yfa041
@@ -12,10 +14,12 @@ public class PSM implements Comparable<PSM> {
 
     private double score;
     private boolean isTarget;
+    private final SpectrumMatch spectrumMach;
 
-   public  PSM(double score, boolean isTarget) {
+   public  PSM(double score, boolean isTarget,SpectrumMatch spectrumMach) {
         this.score = score;
         this.isTarget = isTarget;
+        this.spectrumMach=spectrumMach;
     }
 
     @Override
@@ -37,5 +41,9 @@ public class PSM implements Comparable<PSM> {
 
     public void setIsTarget(boolean isTarget) {
         this.isTarget = isTarget;
+    }
+
+    public SpectrumMatch getSpectrumMach() {
+        return spectrumMach;
     }
 }

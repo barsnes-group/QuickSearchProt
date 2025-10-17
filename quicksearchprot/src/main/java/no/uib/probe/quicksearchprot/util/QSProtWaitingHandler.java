@@ -439,6 +439,12 @@ public class QSProtWaitingHandler extends WaitingHandlerCLIImpl {
         this.mainLogTextPanel = mainLogTextPanel;
     }
 
+    public void addMainErrorMassage(String massage) {
+        addLogMassage(massage);
+        addMainStepMassage(massage);
+        setCurrentProgressValue(-100);
+    }
+
     public void addLogMassage(String massage) {
         mainLogTextPanel.append(massage + lineBreak);
     }
@@ -473,7 +479,11 @@ public class QSProtWaitingHandler extends WaitingHandlerCLIImpl {
                 if (progress >= 100) {
                     this.mainPrgressBar.setValue(0);
                     this.mainPrgressBar.setString("Completed :)");
+                } else if (progress == -100) {
+                    this.mainPrgressBar.setValue(0);
+                    this.mainPrgressBar.setString("Error restart the process :)");
                 }
+
             }
 
         });

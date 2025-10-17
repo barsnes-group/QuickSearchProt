@@ -4,6 +4,8 @@
  */
 package no.uib.probe.quicksearchprot.util;
 
+import com.compomics.util.experiment.identification.matches.SpectrumMatch;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -225,7 +227,7 @@ public class StatisticsTests {
 //            return false;
 //        } else if (resultScores.length * 1.02 > referenceScore.length && tStatistic > 0) {
 //            System.out.println("-------------------------------------------->>> the t-test  " + tStatistic + "   pvalue " + pValueForZTest + "  case 5  TRUE");
-////            Configurations.VALIDATED_ID_REF_DATA = resultScores;
+        ////            Configurations.VALIDATED_ID_REF_DATA = resultScores;
 //            return true;
 //        }
 //        System.out.println("-------------------------------------------->>> the t-test  " + tStatistic + "   pvalue " + pValue + "  case 6  TRUE");
@@ -471,9 +473,10 @@ public class StatisticsTests {
         Collections.sort(psms);
         double decoyHits = 0;
         double targetHits = 0;
-        double fdr=0;
+        double fdr = 0;
 
         for (PSM psm : psms) {
+
 //            if (psm.getScore() < threshold) break;
             if (psm.isIsTarget()) {
                 targetHits++;
@@ -490,4 +493,29 @@ public class StatisticsTests {
         return fdr;
     }
 
+    public static List<SpectrumMatch> filterByFDR(List<PSM> psms, double targetFDR) { // Sort PSMs by descending score 
+          
+        
+        
+        Collections.sort(psms);
+          List<SpectrumMatch> accepted = new ArrayList<>();
+        int targetCount = 0;
+        int decoyCount = 0;
+        for (PSM psm : psms) {
+            if (psm.isIsTarget()) {
+                targetCount++;
+            } else {
+                decoyCount++;
+            }
+            double fdr = (targetCount == 0) ? 1.0 : (double) decoyCount / targetCount;
+            if (fdr <= targetFDR && psm.isIsTarget()) {
+                accepted.add(psm.getSpectrumMach());
+            } else {
+                break; // Stop once FDR exceeds target } } return accepted; }
+
+            }
+
+        }
+        return accepted;
+    }
 }

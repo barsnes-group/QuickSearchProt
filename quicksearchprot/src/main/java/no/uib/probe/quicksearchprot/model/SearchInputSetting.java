@@ -84,9 +84,10 @@ public class SearchInputSetting {
     private boolean optimizeMyriMatchAdvancedParameter;
     private boolean optimizeSageAdvancedParameter;
     private boolean optimizeCleavageParameter = false;
+    private SelectedSearchParametersEntity parametersToAdjust = new SelectedSearchParametersEntity();
 
     public boolean isOptimizeCleavageParameter() {
-        return optimizeCleavageParameter;
+        return parametersToAdjust.isDigestion();
     }
 
     public void setOptimizeCleavageParameter(boolean optimizeCleavageParameter) {
@@ -94,7 +95,7 @@ public class SearchInputSetting {
     }
 
     public boolean isOptimizeSageAdvancedParameter() {
-        return optimizeSageAdvancedParameter || optimizeAllParameters;
+        return parametersToAdjust.isSageAdvanced() || optimizeAllParameters;
     }
 
     public SageParameterOrderSettings getSageOptProtAdvancedSearchParameters() {
@@ -135,7 +136,7 @@ public class SearchInputSetting {
     private final XtandemParameterOrderSettings xtandemOptProtAdvancedSearchParameters = new XtandemParameterOrderSettings();
 
     public boolean isOptimizeXtandemAdvancedParameter() {
-        return optimizeXtandemAdvancedParameter || optimizeAllParameters;
+        return parametersToAdjust.isXtandemAdvanced() || optimizeAllParameters;
     }
 
     public boolean isOptimizeMyriMatchAdvancedParameter() {
@@ -163,7 +164,7 @@ public class SearchInputSetting {
     }
 
     public boolean isOptimizeModificationParameter() {
-        return optimizeModificationParameter || optimizeAllParameters;
+        return parametersToAdjust.isModifications() || optimizeAllParameters;
     }
 
     public void setOptimizeModificationParameter(boolean optimizeModificationParameter) {
@@ -172,7 +173,7 @@ public class SearchInputSetting {
     private boolean optimizePrecursorChargeParameter;
 
     public boolean isOptimizeFragmentToleranceParameter() {
-        return optimizeFragmentToleranceParameter || optimizeAllParameters;
+        return parametersToAdjust.isFragmentTolerance() || optimizeAllParameters;
     }
 
     public void setOptimizeFragmentToleranceParameter(boolean optimizeFragmentToleranceParameter) {
@@ -180,7 +181,7 @@ public class SearchInputSetting {
     }
 
     public boolean isOptimizePrecursorToleranceParameter() {
-        return optimizePrecursorToleranceParameter || optimizeAllParameters;
+        return parametersToAdjust.isPrecursorTolerance() || optimizeAllParameters;
     }
 
     public void setOptimizePrecursorToleranceParameter(boolean optimizePrecursorToleranceParameter) {
@@ -188,12 +189,16 @@ public class SearchInputSetting {
     }
 
     public boolean isOptimizeDigestionParameter() {
-        return optimizeDigestionParameter || optimizeAllParameters;
+        return parametersToAdjust.isDigestion() || optimizeAllParameters;
     }
 
     public void setOptimizeDigestionParameter(boolean optimizeDigestionParameter) {
         this.optimizeDigestionParameter = optimizeDigestionParameter;
     }
+    public void setParametersToAdjust(SelectedSearchParametersEntity parametersToAdjust){
+       this.parametersToAdjust=parametersToAdjust;
+    }
+    
 
 //    public boolean isOptimizeEnzymeParameter() {
 //        return optimizeEnzymeParameter || optimizeAllParameters;
@@ -219,7 +224,7 @@ public class SearchInputSetting {
 //        this.optimizeMaxMissCleavagesParameter = optimizeMaxMissCleavagesParameter || optimizeAllParameters;
 //    }
     public boolean isOptimizeFragmentIonTypesParameter() {
-        return optimizeFragmentIonTypesParameter || optimizeAllParameters;
+        return parametersToAdjust.isFragmentIonTypes() || optimizeAllParameters;
     }
 
     public void setOptimizeFragmentIonTypesParameter(boolean optimizeFragmentIonTypesParameter) {
@@ -443,7 +448,7 @@ public class SearchInputSetting {
     }
 
     public boolean isOptimizePrecursorChargeParameter() {
-        return optimizePrecursorChargeParameter || optimizeAllParameters;
+        return parametersToAdjust.isPrecursorCharge() || optimizeAllParameters;
     }
 
     public void setOptimizePrecursorChargeParameter(boolean optimizePrecursorChargeParameter) {
@@ -451,7 +456,7 @@ public class SearchInputSetting {
     }
 
     public boolean isOptimizeIsotopsParameter() {
-        return optimizeIsotopsParameter || optimizeAllParameters;
+        return parametersToAdjust.isIsotops() || optimizeAllParameters;
     }
 
     public void setOptimizeIsotopsParameter(boolean optimizeIsotopsParameter) {
@@ -471,7 +476,7 @@ public class SearchInputSetting {
     }
 
     public boolean isOptimizeMaxMissCleavagesParameter() {
-        return optimizeMaxMissCleavagesParameter;//||isOptimizeEnzymeParameter();
+        return parametersToAdjust.isMaxMissCleavages()||optimizeAllParameters;
     }
 
     public void setOptimizeMaxMissCleavagesParameter(boolean optimizeMaxMissCleavagesParameter) {
@@ -479,7 +484,7 @@ public class SearchInputSetting {
     }
 
     public boolean isOptimizeEnzymeParameter() {
-        return optimizeEnzymeParameter;
+        return parametersToAdjust.isEnzyme();
     }
 
     public void setOptimizeEnzymeParameter(boolean optimizeEnzymeParameter) {
@@ -487,7 +492,7 @@ public class SearchInputSetting {
     }
 
     public boolean isOptimizeSpecificityParameter() {
-        return optimizeSpecificityParameter;
+        return parametersToAdjust.isSpecificity();
     }
 
     public void setOptimizeSpecificityParameter(boolean optimizeSpecificityParameter) {

@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -76,8 +77,6 @@ public class SpectraUtilities {
     private IdentificationParameters identificationParameters;
     private int startIndex = 0;
     private final Map<String, Spectrum> spectrumMap = new LinkedHashMap<>();
-
- 
 
     public File[] initInputSubSetFiles(File msFile, File fastaFile, File identificationParametersFile, int fullSpectrumSize) {
         try {
@@ -208,8 +207,9 @@ public class SpectraUtilities {
     }
 
     public static int scaleValue(double x, double originalMin, double originalMax, double targetMin, double targetMax) {
-        return (int)Math.round((targetMin + ((x - originalMin) * (targetMax - targetMin)) / (originalMax - originalMin)));
+        return (int) Math.round((targetMin + ((x - originalMin) * (targetMax - targetMin)) / (originalMax - originalMin)));
     }
+
     private File subsetSpectraFile(File oreginalMsFile, Set<String> spectraTags) {
 
         try {
@@ -694,122 +694,13 @@ public class SpectraUtilities {
 
     public static RawScoreModel getComparableRawScore(SearchingSubDataset optProtDataset, List<SpectrumMatch> matches, Advocate searchEngine, boolean addData, String scoreId, boolean potintialFP) {
 
-//        List<Double> sharedTestData = new ArrayList<>();
-//        List<Double> sharedReferenceData = new ArrayList<>();
-//        List<Double> uniqueReferenceData = new ArrayList<>();
-//        List<Double> uniqueTestData = new ArrayList<>();
-//        Map<String, Double> testPsmScores = new HashMap<>();
         RawScoreModel rawScore = new RawScoreModel(scoreId);
         rawScore.setDiffrentInSize(matches.size() - optProtDataset.getVaildatedPsmMaches().size());
-//        for (SpectrumMatch sm : matches) {
-//            testPsmScores.put(sm.getSpectrumTitle(), sm.getBestPeptideAssumption().getRawScore());
-//        }
 
         double score = compareDataScores(optProtDataset.getVaildatedPsmMaches(), matches, optProtDataset.getSubsetSize(), potintialFP, searchEngine.getName().equalsIgnoreCase(Advocate.sage.getName()));
-
-//        for (String titile : optProtDataset.getFullSpectraScore().keySet()) {
-//            double referenceScore = optProtDataset.getFullSpectraScore().get(titile);
-//            if (testPsmScores.containsKey(titile)) {
-//                double toScore = testPsmScores.get(titile);
-//                if (referenceScore > 0) {
-//                    sharedTestData.add(toScore);
-//                    sharedReferenceData.add(referenceScore);
-//                } else {
-//                    uniqueTestData.add(toScore);
-//                }
-//
-//            } else if (referenceScore > 0) {
-//                uniqueReferenceData.add(referenceScore);
-//            }
-//        }
-//        if (sharedReferenceData.isEmpty() && matches.size() < ((double) uniqueReferenceData.size() * 0.2)) {
-//            rawScore.setIdPSMNumber(matches.size());
-//            rawScore.setFinalScore(-10);
-//            return rawScore;
-//        }
-//        Collections.sort(sharedReferenceData);
-//        //devide the TODATA data into 3 category         
-//        double[] referenceSharedData = sharedReferenceData.stream().mapToDouble(Double::doubleValue).toArray();
-//        double[] toSharedData = sharedTestData.stream().mapToDouble(Double::doubleValue).toArray();
-//        double[] referenceUniqueData = (uniqueReferenceData.stream().mapToDouble(Double::doubleValue).toArray());
-//        double[] testUniqueData = (uniqueTestData.stream().mapToDouble(Double::doubleValue).toArray());
-//        boolean escapeScore = false;
-//        if (potintialFP) {//(referenceUniqueData.length <10 && toOnlyData.length > 10 && potintialFP) {
-//            DescriptiveStatistics ds2 = new DescriptiveStatistics(referenceSharedData);
-//            for (double d : referenceUniqueData) {
-//                ds2.addValue(d);
-//            }
-//            int counter = 0;
-//            for (double d : testUniqueData) {
-//                if (d > ds2.getPercentile(50)) {
-//                    counter++;
-//                }
-//            }
-//            double noiseData = testUniqueData.length - counter;
-//
-//            if (counter < (0.05 * referenceSharedData.length) || noiseData > counter) {
-//                rawScore.setS1(-1);
-//                rawScore.setS2(-1);
-//                rawScore.setIdPSMNumber(matches.size());
-//                rawScore.setFinalScore(-1);
-//                escapeScore = true;
-//            } else {
-//                double[] updatedToOnlyData = new double[counter];
-//                int i = 0;
-//                for (double d : testUniqueData) {
-//                    if (d > ds2.getPercentile(50)) {
-//                        updatedToOnlyData[i] = d;
-//                        i++;
-//                    }
-//                }
-//
-//                System.out.println(counter + " noise  " + noiseData + "  reference size " + (referenceSharedData.length) + "    test size  " + testUniqueData.length + "   to --> " + updatedToOnlyData.length + "----------------------------------------------------------------------------------------------------------------------------------------->>> adding new spec only potintial fb " + testUniqueData.length + "  ");
-//
-//                testUniqueData = updatedToOnlyData;
-//
-//            }
-//        }
-//        if (!escapeScore) {
-//            double score1 = SpectraUtilities.performcomparison(referenceSharedData, toSharedData, true);
-        ////        double totalSampleSize = toSharedData.length + uniqueReferenceData.size();
-////        double ratio1 = (double) sharedReferenceData.size() / totalSampleSize; //1;//
-////        double ratio2 = (double) Math.max(onlyToData.size(), uniqueReferenceData.size()) / totalSampleSize; //Math.max(onlyToData.size(), onlyFromData.size()) / (double) optProtDataset.getSubsetSize(); //
-////        
-//
-//            double totalSampleSize = 2.0 * optProtDataset.getSubsetSize();// uniqueReferenceData.size() + uniqueTestData.size() + sharedTestData.size() + sharedReferenceData.size();// toSharedData.length + uniqueReferenceData.size();
-//            double ratio1 = (double) (2.0 * sharedReferenceData.size()) / totalSampleSize; //1;//
-////        double ratio2 = (1.0 - ratio1);// (double) Math.max(onlyToData.size(), uniqueReferenceData.size()) / totalSampleSize;   //Math.max(onlyToData.size(), onlyFromData.size()) / (double) optProtDataset.getSubsetSize();//Math.max(onlyToData.size(), onlyFromData.size()) / totalSampleSize;   //
-//
-//            double uniqueSize = (testUniqueData.length + referenceUniqueData.length);
-//            if (testUniqueData.length <= 4 && referenceUniqueData.length > 4) {
-//                uniqueSize = (2.0 * referenceUniqueData.length);
-//            } else if (referenceUniqueData.length <= 4 && testUniqueData.length > 4) {
-//                uniqueSize = (2.0 * testUniqueData.length);
-//            }
-//
-//            double ratio2 = uniqueSize / totalSampleSize;// (double) Math.max(onlyToData.size(), uniqueReferenceData.size()) / totalSampleSize;   //Math.max(onlyToData.size(), onlyFromData.size()) / (double) optProtDataset.getSubsetSize();//Math.max(onlyToData.size(), onlyFromData.size()) / totalSampleSize;   //
-//
-//            double score2 = SpectraUtilities.performcomparison(referenceUniqueData, testUniqueData, false);
-//            double adjustedScore1 = score1 * ratio1;
-//            double adjustedScore2 = score2 * ratio2;
-//            if (referenceUniqueData.length <= 4 && testUniqueData.length <= 4) {
-//                System.out.println("------------------------------ignor S2 ");
-//                adjustedScore2 = adjustedScore1;
-//            }
-//
-//            double finalScore = adjustedScore1 + adjustedScore2;
-//            System.out.println("at uniqueTestData.size() " + uniqueTestData.size() + "   uniqueReferenceData.size() " + uniqueReferenceData.size() + "  sharedReferenceData " + sharedReferenceData.size());
-////     
-////        finalScore = logScaleNormalize(finalScore, 2);
-//            MainUtilities.addToParamScoreSet(finalScore);
-//            System.out.println("------------------------------------------------------------>>>> final scaled score " + finalScore + "  " + score);
-//            rawScore.setS1(adjustedScore1);
-//            rawScore.setS2(adjustedScore2);
         rawScore.setIdPSMNumber(matches.size());
         rawScore.setFinalScore(score);
 
-//        }
-//        rawScore.setSharedDataSize(referenceSharedData.length);
         rawScore.setSameData(rawScore.getFinalScore() == 0.0 && matches.size() == (optProtDataset.getVaildatedPsmMaches().size()));
         if (!rawScore.isSameData()) {
             boolean senstive = rawScore.getRawFinalScore() > 0;
@@ -1095,10 +986,12 @@ public class SpectraUtilities {
         Map<String, Double> testPsmScores = new HashMap<>();
         Map<String, Double> referencePsmScores = new HashMap<>();
 
-        for (SpectrumMatch sm : referencePsmList) {
+        for (Iterator<SpectrumMatch> it = referencePsmList.iterator(); it.hasNext();) {
+            SpectrumMatch sm = it.next();
             referencePsmScores.put(sm.getSpectrumTitle(), sm.getBestPeptideAssumption().getRawScore());
         }
-        for (SpectrumMatch sm : testPsmList) {
+        for (Iterator<SpectrumMatch> it = testPsmList.iterator(); it.hasNext();) {
+            SpectrumMatch sm = it.next();
             testPsmScores.put(sm.getSpectrumTitle(), sm.getBestPeptideAssumption().getRawScore());
         }
 
@@ -1710,9 +1603,8 @@ public class SpectraUtilities {
 //        return finalScore;
 //
 //    }
-    public static List<Double> getTagSectionRatios(int sectionNum,String[] titiles, List<SpectrumMatch> matches) {
+    public static List<Double> getTagSectionRatios(int sectionNum, String[] titiles, List<SpectrumMatch> matches) {
 
-       
         System.out.println("suggestedTag section number " + sectionNum);
 
         Map<String, Double> fullSpectraMap = new LinkedHashMap<>();
@@ -1762,90 +1654,68 @@ public class SpectraUtilities {
 
     public static List<SpectrumMatch> getValidatedIdentificationResults(File resultOutput, File msFile, Advocate searchEngine, IdentificationParameters identificationParameters) {
         List<SpectrumMatch> validatedMaches = Collections.synchronizedList(new ArrayList<>());
-
         if (resultOutput == null) {
             System.out.println("output result file was null");
-            return validatedMaches;
+            throw new RuntimeException("Error during the data processing...Re-process the data!");
+
         }
         try {
-            boolean enableEScore = false;
-            boolean enableFDRCalculation = false;
+            boolean enableE = false;
             File idResultsFile = null;
             if (searchEngine.getIndex() == Advocate.myriMatch.getIndex()) {
                 MyriMatchParameters myriMatchParameters = (MyriMatchParameters) identificationParameters.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.myriMatch.getIndex());
                 idResultsFile = new File(resultOutput, SearchHandler.getMyriMatchFileName(IoUtil.removeExtension(msFile.getName()), myriMatchParameters));
             } else if (searchEngine.getIndex() == Advocate.xtandem.getIndex()) {
+                enableE = true;
                 idResultsFile = new File(resultOutput, SearchHandler.getXTandemFileName(IoUtil.removeExtension(msFile.getName())));
-                enableEScore = true;
             } else if (searchEngine.getIndex() == Advocate.sage.getIndex()) {
                 idResultsFile = new File(resultOutput, (IoUtil.removeExtension(msFile.getName()) + ".sage.tsv"));
-                enableFDRCalculation = true;
             }
             if (idResultsFile == null || !idResultsFile.exists()) {
-                System.out.println("id result file was null " + resultOutput.getAbsolutePath() + "   ---  " + searchEngine.getName() + "  " + idResultsFile);
-                System.exit(0);
-                return validatedMaches;
+                throw new RuntimeException("Error during the data processing...Re-process the data!");
             }
             IdfileReader idReader = IdfileReaderFactory.getInstance().getFileReader(idResultsFile);
             MsFileHandler subMsFileHandler = new MsFileHandler();
             subMsFileHandler.register(msFile, MainUtilities.QSProtWaitingHandler);
             ArrayList<SpectrumMatch> matches = idReader.getAllSpectrumMatches(subMsFileHandler, MainUtilities.QSProtWaitingHandler, identificationParameters.getSearchParameters());
-
-            List<PSM> targetDecoyMaches = Collections.synchronizedList(new ArrayList<>());
-//            System.out.println("maches size "+matches.size());
-            for (SpectrumMatch sm : matches) {
-                for (PeptideAssumption peptideAssumtion : sm.getAllPeptideAssumptions().toList()) {
-                    if (peptideAssumtion.getRank() != 1) {
-                        continue;
-                    }
-                    sm.setBestPeptideAssumption(peptideAssumtion);
-//                    if (peptideAssumtion.getRawScore() > 0) {
-//                        testData.addValue(peptideAssumtion.getRawScore());
-//                        if (enableEScore && peptideAssumtion.getScore() <= 0.05) {
-//                            if (peptideAssumtion.getScore() < 0) {
-//                                decoyCounter++;
-//                            }
-//
-//                            validatedMaches.add(sm);
-//                        } else if (!enableEScore) {
-//                            validatedMaches.add(sm);
-//                            targetDecoyMaches.add(new PSM(peptideAssumtion.getRawScore(), true));
-//                        }
-//                    } 
-                    if (peptideAssumtion.getRawScore() > 0) {
-                        if (enableEScore) {
-                            targetDecoyMaches.add(new PSM(peptideAssumtion.getRawScore(), (peptideAssumtion.getScore() > 0.0)));
+            validatedMaches.clear();
+            if (enableE) {
+                for (SpectrumMatch sm : matches) {
+                    for (PeptideAssumption peptideAssumtion : sm.getAllPeptideAssumptions().toList()) {
+                        if (peptideAssumtion.getRank() != 1) {
+                            continue;
+                        }
+                        sm.setBestPeptideAssumption(peptideAssumtion);//                 
+                        if (peptideAssumtion.getScore() <= 0.01) {//                    
                             validatedMaches.add(sm);
+                            System.out.println("raw scorw "+sm.getBestPeptideAssumption().getRawScore());
+                        } 
+                        break;
+                    }
+                }
+            } else {
+                List<PSM> targetDecoyMaches = Collections.synchronizedList(new ArrayList<>());
+                for (SpectrumMatch sm : matches) {
+                    for (PeptideAssumption peptideAssumtion : sm.getAllPeptideAssumptions().toList()) {
+                        if (peptideAssumtion.getRank() != 1) {
+                            continue;
+                        }
+                        sm.setBestPeptideAssumption(peptideAssumtion);//                 
+                        if (peptideAssumtion.getRawScore() > 0) {//                    
+                            targetDecoyMaches.add(new PSM(peptideAssumtion.getRawScore(), true, sm));
                         } else {
-                            validatedMaches.add(sm);
-                            targetDecoyMaches.add(new PSM(peptideAssumtion.getRawScore(), true));
+                            targetDecoyMaches.add(new PSM(peptideAssumtion.getRawScore() * -1.0, false, null));
                         }
-                    } else {
-
-                        targetDecoyMaches.add(new PSM(peptideAssumtion.getRawScore() * -1.0, false));
-                    }
-                    break;
-                }
-            }
-            if (true) {//!targetDecoyMaches.isEmpty() && enableFDRCalculation) {
-                double thr = StatisticsTests.findThresholdForFDR(targetDecoyMaches, 0.01);
-//                System.out.println("thr is " + thr + "   " + validatedMaches.size());
-                if (thr > 0) {
-                    List<SpectrumMatch> uvalidatedMaches = Collections.synchronizedList(new ArrayList<>(validatedMaches));
-                    validatedMaches.clear();
-                    for (SpectrumMatch sm : uvalidatedMaches) {
-                        if (sm.getBestPeptideAssumption().getRawScore() >= thr) {
-                            validatedMaches.add(sm);
-                        }
-
+                        break;
                     }
                 }
-//                System.out.println("thr is  after " + thr + "   " + validatedMaches.size());
+
+                validatedMaches.addAll(StatisticsTests.filterByFDR(targetDecoyMaches, 0.01));
             }
 
+            System.out.println("fdr filtered is  after " + validatedMaches.size() + " in compare with   " + validatedMaches.size());
         } catch (IOException | SQLException | ClassNotFoundException | InterruptedException | JAXBException | XmlPullParserException | XMLStreamException ex) {
-            System.out.println("no.uib.probe.optprot.util.SpectraFileUtilities.getValidatedIdentificationResults() " + ex.getLocalizedMessage());
-            ex.printStackTrace();
+            throw new RuntimeException("Error during the data processing...Re-process the data!");
         }
         return validatedMaches;
     }
