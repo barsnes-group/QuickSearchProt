@@ -137,7 +137,6 @@ public class QSPDatasetHandler {
         }
 
         String[] spectrumTitles = msFileHandler.getSpectrumTitles(fileNameWithoutExtension);
-
         optProtDataset.setOreginalDatasetSpectraSize(spectrumTitles.length);
         //used for analysis only not in the production version
         if (useOreginalInputs) {
@@ -220,9 +219,11 @@ public class QSPDatasetHandler {
                         msFileHandler2.register(subMsFile, new QSProtWaitingHandler());
                     } catch (IOException ex) {
                         MainUtilities.QSProtWaitingHandler.addLogMassage(ex.getMessage());
+                        throw new RuntimeException();
+                        
                     }
                     final String fileNameWithoutExtension2 = IoUtil.removeExtension(subMsFile.getName());
-                    String[] spectrumTitles2 = msFileHandler.getSpectrumTitles(fileNameWithoutExtension2);
+                    String[] spectrumTitles2 = msFileHandler2.getSpectrumTitles(fileNameWithoutExtension2);
                     optProtDataset.setSubsetSize(spectrumTitles2.length);
                 }
                 //create stabkle subfasta file

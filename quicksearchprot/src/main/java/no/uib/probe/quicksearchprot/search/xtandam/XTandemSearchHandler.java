@@ -112,7 +112,6 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             xtandemParameters.setRefineSpectrumSynthesis(true);
             xtandemParameters.setRefineSnaps(true);
         }
-        
 
     }
 
@@ -132,9 +131,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         for (String param : paramOrder) {
             MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(currentValue);
             currentValue += step;
-            MainUtilities.QSProtWaitingHandler.addMainStepMassage("---------- Start to adjust " + param.replace("XtandemAdvancedParameter", "Advanced parameters (1)").replace("XtandemAdvancedParameter_A", "Advanced parameters (2)").replace("XtandemAdvancedParameter_B", "Advanced parameters (3)").replace("Parameter", "").toLowerCase()+" ----------");
+            MainUtilities.QSProtWaitingHandler.addMainStepMassage("\u2605 Adjust " + param.replace("XtandemAdvancedParameter", "Advanced parameters (1)").replace("XtandemAdvancedParameter_A", "Advanced parameters (2)").replace("XtandemAdvancedParameter_B", "Advanced parameters (3)").replace("Parameter", "").toLowerCase() + " ----------");
             //empty param score list
-            if (param.equalsIgnoreCase("DigestionParameter") && (searchInputSetting.isOptimizeDigestionParameter()||searchInputSetting.isOptimizeEnzymeParameter()||searchInputSetting.isOptimizeSpecificityParameter()||searchInputSetting.isOptimizeMaxMissCleavagesParameter())) {
+            if (param.equalsIgnoreCase("DigestionParameter") && (searchInputSetting.isOptimizeDigestionParameter() || searchInputSetting.isOptimizeEnzymeParameter() || searchInputSetting.isOptimizeSpecificityParameter() || searchInputSetting.isOptimizeMaxMissCleavagesParameter())) {
                 String[] values = this.optimizeEnzymeParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("EnzymeParameter"));
 
                 if (!values[0].equalsIgnoreCase("")) {
@@ -430,8 +429,6 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             return new RawScoreModel(paramOption);
         }
 
-        MainUtilities.QSProtWaitingHandler.addMainStepMassage(paramValue);
-
         if (paramOption.contains("Pyrolidone from")) {
             XtandemParameters xtandemParameters = (XtandemParameters) tempIdParam.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
             System.out.println("the mod name is " + paramOption + "   isQuick pyro " + xtandemParameters.isQuickPyrolidone());
@@ -479,7 +476,25 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             rawScore.setSpectrumMatchResult(validatedMaches);
         }
         MainUtilities.QSProtWaitingHandler.addLogMassage("Parameter" + paramValue + "  " + validatedMaches.size());
+        if (!paramValue.trim().isEmpty()) {
+            double fullDataIdent = optProtDataset.getSubsetSize() * 4;//(testData.length*4.0)+(referenceData.length*4);
+            double cScorePers = Math.round((rawScore.getcScore() * 100.0 / fullDataIdent) * 100.0) / 100.0;
+            String symbol;
+            if (cScorePers > 0) {
+                symbol = "\u25B2";
+            } else if (cScorePers == 0) {
+                symbol = "\u25a0";
+            } else {
+                symbol = "\u25Bc";
+            }
+            String scoreText = symbol + " Score:" + cScorePers + "%";
+            String tap = "\t";
+            if (scoreText.length() < 15) {
+                tap += tap;
+            }
 
+            MainUtilities.QSProtWaitingHandler.addMainStepMassage(scoreText + tap + paramValue);
+        }
         return (rawScore);
 
     }
@@ -533,7 +548,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                 RawScoreModel scoreModel = f.get();
                 System.out.println("---->>> DR " + j + "  " + spectraCounter + "  " + scoreModel);
 
-                if (scoreModel.getFinalScore() > 0 && (scoreModel.getSpectrumMatchResult().size() >= spectraCounter)) {
+                if (scoreModel.getcScore() > 0 && (scoreModel.getSpectrumMatchResult().size() >= spectraCounter)) {
                     resultsMap.put(j + "", scoreModel);
                     if (scoreModel.getSpectrumMatchResult().size() <= spectraCounter) {
                         break;
@@ -875,7 +890,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                if (scoreModel.getFinalScore() > 0 || scoreModel.isSameData() || scoreModel.isAcceptedChange()) {
+                if (scoreModel.getcScore() > 0 || scoreModel.isSameData() || scoreModel.isAcceptedChange()) {
                     resultsMap.put(j, scoreModel);
                 }
             } catch (ExecutionException | InterruptedException ex) {
@@ -1290,9 +1305,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                boolean oversenstive = scoreModel.getFinalScore() > (0) && scoreModel.getIdPSMNumber() >= optProtDataset.getIdentifiedPSMsNumber();
+                boolean oversenstive = scoreModel.getcScore() > (0) && scoreModel.getIdPSMNumber() >= optProtDataset.getIdentifiedPSMsNumber();
 //                System.out.println("Simi enzymatic " + scoreModel.getRawFinalScore() + "    ----   " + oversenstive + "  " + scoreModel);
-                if (scoreModel.getFinalScore() >= 0 || (oversenstive)) {
+                if (scoreModel.getcScore() >= 0 || (oversenstive)) {
                     resultsMap.put(j, scoreModel);
                     paramScore.setComments("Cause slow searching");
                 }
@@ -1502,7 +1517,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                if (scoreModel.getFinalScore() > 0 && scoreModel.getDiffrentInSize() > 0) {
+                if (scoreModel.getcScore() > 0 && scoreModel.getDiffrentInSize() > 0) {
                     resultsMap.put(j, scoreModel);
                 }
             } catch (ExecutionException | InterruptedException ex) {

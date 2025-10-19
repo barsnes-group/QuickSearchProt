@@ -433,7 +433,7 @@ public class ScoreComparison {
                 double referenceMedian = referenceData.getGeometricMean();// referenceData.getPercentile(50);
                 double improvedMedian = improvedData.getGeometricMean();//improvedData.getPercentile(50);
 //                if (referenceMedian == 0 || improvedMedian == 0) {
-////                    System.out.println("swich to mean before " + referenceMedian + "  " + improvedMedian);
+                ////                    System.out.println("swich to mean before " + referenceMedian + "  " + improvedMedian);
 //                    referenceMedian = referenceData.getMean();
 //                    improvedMedian = improvedData.getMean();
 ////                    System.out.println("swich to mean after " + referenceMedian + "  " + improvedMedian);
@@ -457,7 +457,9 @@ public class ScoreComparison {
 //            double improvmentScorePersentage2 = percentageImprovementIndependenet(referenceMedian, improvedMedian);
 //            System.out.println("updated use avg  scores " + improvmentScorePersentage2);
 //
-////            for (double d : referenceInputData) {
+    
+
+    ////            for (double d : referenceInputData) {
 ////                System.out.print(d + ",");
 ////            }
 ////            System.out.println("");
@@ -555,7 +557,7 @@ public class ScoreComparison {
 //            int n2 = sample2.length;
 //            double N = n1 + n2;
         double U = mannWhitneyUTest.mannWhitneyU(sample1, sample2);
-////            Calculate rank  -biserial correlation
+        ////            Calculate rank  -biserial correlation
 //            double rankBiserial = 1 - (2 * U) / (n1 * n2);
 //
 //            // Calculate Z-score (approximation)
@@ -605,7 +607,10 @@ public class ScoreComparison {
 //        double finalScore = (cohenD + normZ + normImpro) / 3.0;
 //        double finalScore2 = (dMedian + normZ + normImpro) / 3.0;
 //
-////        double normZ2 = sc.mannWhitneyTestIndependent(ds1.getValues(), ds2.getValues());
+
+    
+
+    ////        double normZ2 = sc.mannWhitneyTestIndependent(ds1.getValues(), ds2.getValues());
 //        double normZ3 = sc.wilcoxonSignedRankTestPair(scores3, scores2);
 //        double normZ4 = StatisticsTests.WilcoxonSignedRankTest(scores3, scores2);
 ////        System.out.println("Final Score: " + normImpro + "  " + normZ + "  " + cohenD + "   " + dMedian + "------------>> " + finalScore + "  vs " + finalScore2);
@@ -733,7 +738,7 @@ public class ScoreComparison {
             scoreQ3 = scoreQ4 * 2.0;
             finalScore = scoreQ4 + scoreQ3 + scoreQ2 + scoreQ1;
         }
-////check if data comparable 
+        ////check if data comparable 
 //        double rightSideScore = 0;
 //        double[] referenceoverData = refOverAvg.stream().mapToDouble(Double::doubleValue).toArray();
 //        double[] testOverData = testOverAvg.stream().mapToDouble(Double::doubleValue).toArray();
@@ -779,16 +784,18 @@ public class ScoreComparison {
     }
 
     public static double compareReferenceToTest(double[] referenceData, double[] testData, Map<String, Double> sharedReferenceData, Map<String, Double> uniqueReferenceData, Map<String, Double> sharedTestData, Map<String, Double> uniqueTestData, boolean potintialFP, boolean fdrApplied) {
-        double finalScore;
+        double cScore;
         if (potintialFP && (referenceData.length * 1.05 > testData.length)) {
             return testData.length - (referenceData.length * 1.05);
         }
 
+        
         DescriptiveStatistics refernceDescriptiveStatistics = new DescriptiveStatistics(referenceData);
         double referenceQ1 = refernceDescriptiveStatistics.getPercentile(25);
         double referenceMedian = refernceDescriptiveStatistics.getPercentile(50);
         double referenceQ3 = refernceDescriptiveStatistics.getPercentile(75);
         int sharedDataScore = 0;
+        
         for (String sharedKey : sharedTestData.keySet()) {
             double refScore = sharedReferenceData.get(sharedKey);
             int beforeCat = mapScoreToQuartil(refScore, referenceQ1, referenceMedian, referenceQ3);
@@ -814,18 +821,11 @@ public class ScoreComparison {
                 gainedScoreData += scoreRank;
             }
         }
-        System.out.println("SC: "+sharedDataScore +" GS: "+ gainedScoreData +"  LS: "+ lostScoreData);
-
-        finalScore = sharedDataScore + gainedScoreData + lostScoreData;
-        double updatedScore = testData.length - (referenceData.length); if (potintialFP && finalScore == 0) {
+        cScore = sharedDataScore + gainedScoreData + lostScoreData;
+        if (potintialFP && cScore == 0) {
             return -1;
-        }
-        if ((finalScore > 0 && updatedScore == 0) || (finalScore < 0 && updatedScore == 0)) {
-            System.out.println("here is the case ");
-          
-        }
-
-        return finalScore;
+        }      
+        return cScore;
     }
 
     public static boolean isSegnificantDifferent(List<Double> reference, List<Double> test) {

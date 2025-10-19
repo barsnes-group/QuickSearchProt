@@ -699,9 +699,9 @@ public class SpectraUtilities {
 
         double score = compareDataScores(optProtDataset.getVaildatedPsmMaches(), matches, optProtDataset.getSubsetSize(), potintialFP, searchEngine.getName().equalsIgnoreCase(Advocate.sage.getName()));
         rawScore.setIdPSMNumber(matches.size());
-        rawScore.setFinalScore(score);
+        rawScore.setcScore(score);
 
-        rawScore.setSameData(rawScore.getFinalScore() == 0.0 && matches.size() == (optProtDataset.getVaildatedPsmMaches().size()));
+        rawScore.setSameData(rawScore.getcScore() == 0.0 && matches.size() == (optProtDataset.getVaildatedPsmMaches().size()));
         if (!rawScore.isSameData()) {
             boolean senstive = rawScore.getRawFinalScore() > 0;
             if (rawScore.getRawFinalScore() == 0 && matches.size() > (optProtDataset.getVaildatedPsmMaches().size()) && !potintialFP) {
@@ -986,14 +986,12 @@ public class SpectraUtilities {
         Map<String, Double> testPsmScores = new HashMap<>();
         Map<String, Double> referencePsmScores = new HashMap<>();
 
-        for (Iterator<SpectrumMatch> it = referencePsmList.iterator(); it.hasNext();) {
-            SpectrumMatch sm = it.next();
+        referencePsmList.forEach(sm -> {
             referencePsmScores.put(sm.getSpectrumTitle(), sm.getBestPeptideAssumption().getRawScore());
-        }
-        for (Iterator<SpectrumMatch> it = testPsmList.iterator(); it.hasNext();) {
-            SpectrumMatch sm = it.next();
+        });
+        testPsmList.forEach(sm -> {
             testPsmScores.put(sm.getSpectrumTitle(), sm.getBestPeptideAssumption().getRawScore());
-        }
+        });
 
         Set<String> combinedSpecHeader = new LinkedHashSet<>(testPsmScores.keySet());
         combinedSpecHeader.addAll(referencePsmScores.keySet());
@@ -2003,10 +2001,10 @@ public class SpectraUtilities {
                     topScoreSet.remove(rs1Key);
                     break;
                 } else {
-                    if (score2.getFinalScore() > score1.getFinalScore()) {
+                    if (score2.getcScore() > score1.getcScore()) {
                         topScoreSet.remove(rs1Key);
                         break;
-                    } else if (score2.getFinalScore() < score1.getFinalScore()) {
+                    } else if (score2.getcScore() < score1.getcScore()) {
                         topScoreSet.remove(rs2Key);
                     } else if (score2.getIdPSMNumber() > score1.getIdPSMNumber()) {
                         topScoreSet.remove(rs1Key);

@@ -8,11 +8,10 @@ import com.compomics.util.experiment.identification.Advocate;
 import java.io.File;
 import no.uib.probe.quicksearchprot.configurations.Configurations;
 import no.uib.probe.quicksearchprot.search.myrimatch.MyriMatchEnabledParameters;
-import no.uib.probe.quicksearchprot.search.sage.SageParameterOrderSettings;
+//import no.uib.probe.quicksearchprot.search.sage.SageParameterOrderSettings;
 import no.uib.probe.quicksearchprot.search.sage.SageEnabledParameters;
 import no.uib.probe.quicksearchprot.search.xtandam.XtandemParameterOrderSettings;
 import no.uib.probe.quicksearchprot.search.xtandam.XTandemEnabledParameters;
-import no.uib.probe.quicksearchprot.util.ConfigurationsUtility;
 
 /**
  *
@@ -98,9 +97,9 @@ public class SearchInputSetting {
         return parametersToAdjust.isSageAdvanced() || optimizeAllParameters;
     }
 
-    public SageParameterOrderSettings getSageOptProtAdvancedSearchParameters() {
-        return sageOptProtAdvancedSearchParameters;
-    }
+//    public SageParameterOrderSettings getSageOptProtAdvancedSearchParameters() {
+//        return sageOptProtAdvancedSearchParameters;
+//    }
 
     public void setOptimizeSageAdvancedParameter(boolean optimizeSageAdvancedParameter) {
         this.optimizeSageAdvancedParameter = optimizeSageAdvancedParameter;
@@ -132,7 +131,7 @@ public class SearchInputSetting {
             this.setRunSage(true);
         }
     }
-    private final SageParameterOrderSettings sageOptProtAdvancedSearchParameters = new SageParameterOrderSettings();
+//    private final SageParameterOrderSettings sageOptProtAdvancedSearchParameters = new SageParameterOrderSettings();
     private final XtandemParameterOrderSettings xtandemOptProtAdvancedSearchParameters = new XtandemParameterOrderSettings();
 
     public boolean isOptimizeXtandemAdvancedParameter() {

@@ -47,7 +47,7 @@ public class RawScoreModel implements Comparable<RawScoreModel> {
         if (sameData) {
             s1 = 0;
             s2 = 0;
-            finalScore = 0;
+            cScore = 0;
             this.setSensitiveChange(false);
         }
 
@@ -64,7 +64,7 @@ public class RawScoreModel implements Comparable<RawScoreModel> {
     }
     private List<SpectrumMatch> spectrumMatchResult = new ArrayList<>();
     private double improvmentScore;
-    private double finalScore;
+    private double cScore;
     private double rawFinalScore;
 
     public double getRawFinalScore() {
@@ -81,14 +81,14 @@ public class RawScoreModel implements Comparable<RawScoreModel> {
         this.sizeEffect = Math.round(sizeEffect * 100.0) / 100.0;
     }
 
-    public double getFinalScore() {
-        return finalScore;
+    public double getcScore() {
+        return cScore;
     }
 
-    public void setFinalScore(double finalScore) {
-        this.rawFinalScore = finalScore;
-        this.finalScore = Math.round(finalScore * 1000.0) / 1000.0;
-//        MainUtilities.fullScoreSet.add( this.finalScore);
+    public void setcScore(double cScore) {
+        this.rawFinalScore = cScore;
+        this.cScore = Math.round(cScore * 1000.0) / 1000.0;
+//        MainUtilities.fullScoreSet.add( this.cScore);
     }
     private Set<String> specTitles;
 
@@ -170,7 +170,7 @@ public class RawScoreModel implements Comparable<RawScoreModel> {
         if (potintialFalsePostive) {
             return Double.compare(idPSMNumber, rs.idPSMNumber);
         }
-        if (finalScore == rs.finalScore) {
+        if (cScore == rs.cScore) {
             return Double.compare(idPSMNumber, rs.idPSMNumber);
         }
 //        double compscore = SpectraUtilities.isBetterScore(spectrumMatchResult, rs.spectrumMatchResult, fullSpectraSize);
@@ -187,7 +187,7 @@ public class RawScoreModel implements Comparable<RawScoreModel> {
 
     @Override
     public String toString() {
-        return "Param accepted: " + acceptedChange + "  final score: " + finalScore + " shared data size: " + sharedDataSize + "  #Spectra: " + idPSMNumber + "  senstive improvment " + sensitiveChange + "  same data " + sameData + "   S1: " + s1 + "   S2:" + s2;
+        return "Param accepted: " + acceptedChange + "  final score: " + cScore + " shared data size: " + sharedDataSize + "  #Spectra: " + idPSMNumber + "  senstive improvment " + sensitiveChange + "  same data " + sameData + "   S1: " + s1 + "   S2:" + s2;
     }
 
     public double getDataLengthFactor() {

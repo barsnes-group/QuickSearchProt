@@ -132,9 +132,9 @@ public class SageSearchHandler extends CommonSearchHandler {
         for (String param : paramOrder) {
             MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(currentValue);
             currentValue += step;
-            MainUtilities.QSProtWaitingHandler.addMainStepMassage("Start to adjust " + param.replace("SageAdvancedParameter_B", "Advanced parameters (2)").replace("SageAdvancedParameter_A", "Advanced parameters (1)").replace("Parameter", ""));
+            MainUtilities.QSProtWaitingHandler.addMainStepMassage("\u2605 Adjust " + param.replace("SageAdvancedParameter_B", "Advanced parameters (2)").replace("SageAdvancedParameter_A", "Advanced parameters (1)").replace("Parameter", "") + "\u2605");
             MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
-            if (param.equalsIgnoreCase("DigestionParameter") && searchInputSetting.isOptimizeDigestionParameter()) {
+            if (param.equalsIgnoreCase("DigestionParameter") && (searchInputSetting.isOptimizeDigestionParameter() || searchInputSetting.isOptimizeEnzymeParameter() || searchInputSetting.isOptimizeSpecificityParameter() || searchInputSetting.isOptimizeMaxMissCleavagesParameter())) {
                 String[] values = this.optimizeEnzymeParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("EnzymeParameter"));
                 if (!values[0].equalsIgnoreCase("")) {
                     identificationParameters.getSearchParameters().getDigestionParameters().clearEnzymes();
@@ -360,7 +360,6 @@ public class SageSearchHandler extends CommonSearchHandler {
             return new RawScoreModel(paramOption);
         }
 
-        MainUtilities.QSProtWaitingHandler.addMainStepMassage(paramValue);
         Future<File> f = MainUtilities.getLongExecutorService().submit(() -> {
             File resultOutput = SearchExecuter.executeSearch(defaultOutputFileName, optProtSearchSettings, optProtDataset.getSubMsFile(), optProtDataset.getSubFastaFile(), tempIdParam, identificationParametersFile);
             return resultOutput;
@@ -393,6 +392,25 @@ public class SageSearchHandler extends CommonSearchHandler {
             rawScore.setSpectrumMatchResult(validatedMaches);
         }
         MainUtilities.QSProtWaitingHandler.addLogMassage("Parameter" + paramValue + "  " + validatedMaches.size());
+  if (!paramValue.trim().isEmpty()) {
+        double fullDataIdent = optProtDataset.getSubsetSize() * 4;//(testData.length*4.0)+(referenceData.length*4);
+        double cScorePers = Math.round((rawScore.getcScore() * 100.0 / fullDataIdent) * 100.0) / 100.0;
+        String symbol;
+        if (cScorePers > 0) {
+            symbol = "\u25B2";
+        } else if (cScorePers == 0) {
+            symbol = "\u25a0";
+        } else {
+            symbol = "\u25Bc";
+        }
+        String scoreText = symbol + " Score:" + cScorePers + "%";
+        String tap = "\t";
+        if (scoreText.length() < 15) {
+            tap += tap;
+        }
+      
+            MainUtilities.QSProtWaitingHandler.addMainStepMassage(scoreText + tap + paramValue);
+        }
         return (rawScore);
     }
 
@@ -507,8 +525,8 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                if (scoreModel.isSensitiveChange() && lastScore < scoreModel.getFinalScore()) {
-                    lastScore = scoreModel.getFinalScore();
+                if (scoreModel.isSensitiveChange() && lastScore < scoreModel.getcScore()) {
+                    lastScore = scoreModel.getcScore();
                     resultsMap.put(j + "", scoreModel);
                 } else {
                     break;
@@ -633,7 +651,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                System.out.println("Min Fragment MZ " + j + "  " + scoreModel.getFinalScore() + "   " + scoreModel.getIdPSMNumber());
+                System.out.println("Min Fragment MZ " + j + "  " + scoreModel.getcScore() + "   " + scoreModel.getIdPSMNumber());
                 if (scoreModel.isAcceptedChange()) {
 //                if (scoreModel.isSensitiveChange() && scoreModel.getSpectrumMatchResult().size() >= optProtDataset.getCurrentScoreModel().getSpectrumMatchResult().size()) {
                     resultsMap.put(j + "", scoreModel);
@@ -670,7 +688,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                System.out.println("Max Fragment MZ " + j + "  " + scoreModel.getFinalScore() + "   " + scoreModel.getIdPSMNumber());
+                System.out.println("Max Fragment MZ " + j + "  " + scoreModel.getcScore() + "   " + scoreModel.getIdPSMNumber());
                 if (j < selectedMaxFragmentMzOption && (scoreModel.isAcceptedChange() && scoreModel.getSpectrumMatchResult().size() >= optProtDataset.getCurrentScoreModel().getSpectrumMatchResult().size())) {
                     resultsMap.put(j + "", scoreModel);
                 } else if (j > selectedMaxFragmentMzOption && !scoreModel.isSensitiveChange()) {
@@ -777,8 +795,8 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                System.out.println("generate decoy result " + generateDecoy + "  " + scoreModel);
-                if (scoreModel.getFinalScore() >= 0 || scoreModel.getDiffrentInSize() >= 0) {
+                System.out.println("generate decoy result " + generateDecoy + "  " + scoreModel + "   " + optProtDataset.getCurrentScoreModel());
+                if (scoreModel.getcScore() >= 0 || scoreModel.getDiffrentInSize() >= 0) {
                     resultsMap.put(j + "", scoreModel);
                 }
             } catch (ExecutionException | InterruptedException ex) {
@@ -1144,7 +1162,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                if (scoreModel.getFinalScore() > 0) {
+                if (scoreModel.getcScore() > 0) {
                     resultsMap.put(j + "", scoreModel);
                 } else if (j > selectedOption) {
                     break;

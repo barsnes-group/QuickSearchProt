@@ -85,7 +85,7 @@ public abstract class CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                if (scoreModel.getFinalScore() > 1) {
+                if (scoreModel.getcScore() > 1) {
                     spectraCounter = Math.max(spectraCounter, scoreModel.getSpectrumMatchResult().size());
                     resultsMap.put(option, f.get());
 
@@ -188,7 +188,7 @@ public abstract class CommonSearchHandler {
                     RawScoreModel scoreModel = f.get();
                     System.out.println("Enz spec " + option + " -- " + scoreModel);
 
-                    if (scoreModel.getFinalScore() > 0) {
+                    if (scoreModel.getcScore() > 0) {
                         resultsMapI.put(option, scoreModel);
                     }
 
@@ -222,7 +222,7 @@ public abstract class CommonSearchHandler {
                 });
                 try {
                     RawScoreModel scoreModel = f.get();
-                    if (scoreModel.getFinalScore() > 0) {
+                    if (scoreModel.getcScore() > 0) {
                         if (i < missedClavageNumb && scoreModel.getSharedDataSize() == optProtDataset.getCurrentScoreModel().getIdPSMNumber()) {
                             resultsMapI.put(i + "", scoreModel);
                         } else if (i > missedClavageNumb && scoreModel.getSharedDataSize() == optProtDataset.getCurrentScoreModel().getIdPSMNumber() && scoreModel.getIdPSMNumber() >= 1.05 * optProtDataset.getCurrentScoreModel().getIdPSMNumber()) {
@@ -299,7 +299,7 @@ public abstract class CommonSearchHandler {
                 try {
                     RawScoreModel scoreModel = f.get();
 
-                    if (scoreModel.getFinalScore() > 0) {
+                    if (scoreModel.getcScore() > 0) {
                         resultsMap.put(option, scoreModel);
                     }
                 } catch (ExecutionException | InterruptedException ex) {
@@ -458,7 +458,7 @@ public abstract class CommonSearchHandler {
                 try {
 
                     RawScoreModel scoreModel = f.get();
-                    if (scoreModel.getFinalScore() > 0) {
+                    if (scoreModel.getcScore() > 0) {
                         if (scoreModel.getSpectrumMatchResult().size() < spectraCounter) {
                             continue;
                         }
@@ -571,7 +571,7 @@ public abstract class CommonSearchHandler {
             try {
 
                 RawScoreModel scoreModel = f.get();
-                if (scoreModel.isAcceptedChange() && scoreModel.getFinalScore() > 0) {
+                if (scoreModel.isAcceptedChange() && scoreModel.getcScore() > 0) {
                     counter++;
                     resultsMap.put(i + "", scoreModel);
                 } else if (i > selectedOption) {
@@ -600,7 +600,7 @@ public abstract class CommonSearchHandler {
                     });
                     try {
                         RawScoreModel scoreModel = f.get();
-                        if (scoreModel.getFinalScore() > 0) {
+                        if (scoreModel.getcScore() > 0) {
                             counter++;
 //                            threshold = optProtDataset.getComparisonsThreshold(counter);
                             resultsMap.put(i + "", scoreModel);
@@ -685,7 +685,7 @@ public abstract class CommonSearchHandler {
         resultsMap.putAll(this.checkModificationsScores(selectedFixedModificationOption, selectedVariableModificationOption, potintialMods, true, msFileName, tempIdParam, optProtDataset, identificationParametersFile, optimisedSearchParameter, prefix, true));
         if (!resultsMap.isEmpty()) {
             String bestMod = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, optimisedSearchParameter.getSelectedSearchEngine().getName().equalsIgnoreCase(Advocate.sage.getName()));
-            if (resultsMap.get(bestMod).isSensitiveChange() || resultsMap.get(bestMod).getRawFinalScore() > 0 || (resultsMap.get(bestMod).getFinalScore() < 0.0 && (resultsMap.get(bestMod).getFinalScore() * -1.0) < 0.1)) {
+            if (resultsMap.get(bestMod).isSensitiveChange() || resultsMap.get(bestMod).getRawFinalScore() > 0 || (resultsMap.get(bestMod).getcScore() < 0.0 && (resultsMap.get(bestMod).getcScore() * -1.0) < 0.1)) {
                 selectedFixedModificationOption.add(bestMod);
                 optProtDataset.setActiveScoreModel(resultsMap.get(bestMod));
                 potintialMods.clear();
@@ -760,7 +760,7 @@ public abstract class CommonSearchHandler {
             if ((ptmFactory.getModification(modId).getModificationType().isNTerm() || ptmFactory.getModification(modId).getModificationType().isCTerm())) {
                 resultsMap.remove(modId);
             } else if (vScore.isSensitiveChange()) {
-                if (vScore.getFinalScore() > 1.1 * resultsMap.get(modId).getFinalScore() && vScore.getIdPSMNumber() > 1.02 * resultsMap.get(modId).getIdPSMNumber()) {
+                if (vScore.getcScore() > 1.1 * resultsMap.get(modId).getcScore() && vScore.getIdPSMNumber() > 1.02 * resultsMap.get(modId).getIdPSMNumber()) {
                     resultsMap.remove(modId);
                 }
             }
@@ -883,7 +883,7 @@ public abstract class CommonSearchHandler {
                     if (!filterVMMap.containsKey(modPattern)) {
                         filterVMMap.put(modPattern, new TreeMap<>(Collections.reverseOrder()));
                     }
-                    filterVMMap.get(modPattern).put(resultsMap.get(modId).getFinalScore(), modId);
+                    filterVMMap.get(modPattern).put(resultsMap.get(modId).getcScore(), modId);
                 }
                 Set<String> toRemove = new HashSet();
                 for (String patteren : filterVMMap.keySet()) {
@@ -976,7 +976,7 @@ public abstract class CommonSearchHandler {
                     if (!filterVMMap.containsKey(modPattern)) {
                         filterVMMap.put(modPattern, new TreeMap<>(Collections.reverseOrder()));
                     }
-                    filterVMMap.get(modPattern).put(resultsMap.get(modId).getFinalScore(), modId);
+                    filterVMMap.get(modPattern).put(resultsMap.get(modId).getcScore(), modId);
 
                 }
                 Set<String> toRemove = new HashSet();
