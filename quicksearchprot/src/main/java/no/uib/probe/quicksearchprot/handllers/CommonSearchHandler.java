@@ -156,6 +156,7 @@ public abstract class CommonSearchHandler {
                         resultsMapI.put(option, scoreModel);
                     }
                 } catch (InterruptedException | ExecutionException ex) {
+                    MainUtilities.QSProtWaitingHandler.addLogMassage(ex.getMessage());
                     ex.printStackTrace();
                 }
             }

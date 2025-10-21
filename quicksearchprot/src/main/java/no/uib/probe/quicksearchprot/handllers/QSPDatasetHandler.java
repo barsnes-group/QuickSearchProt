@@ -14,8 +14,6 @@ import com.compomics.util.io.IoUtil;
 import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.compomics.util.parameters.identification.search.SearchParameters;
 import com.compomics.util.parameters.identification.tool_specific.DirecTagParameters;
-import com.compomics.util.parameters.identification.tool_specific.SageParameters;
-import com.compomics.util.parameters.identification.tool_specific.XtandemParameters;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -33,7 +31,6 @@ import no.uib.probe.quicksearchprot.util.MainUtilities;
 import no.uib.probe.quicksearchprot.util.QSProtWaitingHandler;
 import no.uib.probe.quicksearchprot.util.SpectraUtilities;
 import org.apache.commons.collections15.map.LinkedMap;
-import org.apache.poi.ss.formula.atp.Switch;
 import org.xmlpull.v1.XmlPullParserException;
 
 /**
@@ -115,7 +112,7 @@ public class QSPDatasetHandler {
      * @return SearchingSubDataset with relevant information for further
      * analysis
      */
-    public SearchingSubDataset generateQSProtDataset(String datasetId, File msFile, File fastaFile, Advocate searchEngineToOptimise, File subDataFolder, File identificationParametersFile, boolean wholeDataTest, boolean fullFasta, boolean useOreginalInputs, int subsetSize) {
+    public SearchingSubDataset generateQSProtDataset(String datasetId, File msFile, File fastaFile, Advocate searchEngineToOptimise, File subDataFolder, File identificationParametersFile, boolean fullFasta, boolean useOreginalInputs, int subsetSize) {
         long start1 = System.currentTimeMillis();
         SearchingSubDataset optProtDataset = new SearchingSubDataset();
         optProtDataset.setSubMsFile(msFile);
@@ -134,8 +131,8 @@ public class QSPDatasetHandler {
                 subFastaFile.delete();
             }
             MainUtilities.QSProtWaitingHandler.addLogMassage(ex.getMessage());
+            ex.printStackTrace();
         }
-
         String[] spectrumTitles = msFileHandler.getSpectrumTitles(fileNameWithoutExtension);
         optProtDataset.setOreginalDatasetSpectraSize(spectrumTitles.length);
         //used for analysis only not in the production version
@@ -143,16 +140,10 @@ public class QSPDatasetHandler {
             subFastaFile = fastaFile;
             subMsFile = msFile;
         } else {
-            // Set up subset file names
-            if (!wholeDataTest) {
-                subFastaFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_" + fastaFile.getName());
-                subMsFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_" + msFile.getName());             
-                  
-            } else {
-                subFastaFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_Full_" + fastaFile.getName());
-                subMsFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_Full_" + msFile.getName());
 
-            }
+            subFastaFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_" + fastaFile.getName());
+            subMsFile = new File(subDataFolder, Configurations.DEFAULT_RESULT_NAME + Configurations.getCurrentFileFingerprint() + "_" + msFile.getName());
+
             if (fullFasta) {
                 subFastaFile = fastaFile;
             }
@@ -164,12 +155,11 @@ public class QSPDatasetHandler {
                     f.delete();
                 }
             }
-
-            boolean update = false;
+            boolean update = false;         
             try {
                 final IdentificationParameters identificationParameters = IdentificationParameters.getIdentificationParameters(new File(Configurations.DEFAULT_QSPROT_SEARCH_PARAM_FILE));
                 // Generate subset MGF if needed
-                if (!subMsFile.exists()) {
+                if (!subMsFile.exists()|| subMsFile.length()==0) {
                     update = true;
                     subMsFile.createNewFile();
                     //initial param to handel only one time
@@ -189,6 +179,7 @@ public class QSPDatasetHandler {
                     //Case use default recommeneded dataset setsize                    
                     if (subsetSize == -1) {
                         subsetSize = this.calculateRecommendSubsetSize(searchEngineToOptimise, optProtDataset.getOreginalDatasetSpectraSize());
+                        System.out.println("subset size calculated " + subsetSize);
                     }
                     MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(5);
                     //calculate #sections                
@@ -197,11 +188,11 @@ public class QSPDatasetHandler {
                     quartileSizeRatios = this.getSectionRatios(sectionNum, msFile, fastaFile, identificationParameters);
                     Map<String, Spectrum> spectraMap = generatFilteredData(msFile, msFileHandler, quartileSizeRatios);
                     MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(15);
-                    if (!wholeDataTest) {
-                        MainUtilities.QSProtWaitingHandler.addLogMassage("Selected subset size " + subsetSize + " spectra");
-                        MainUtilities.QSProtWaitingHandler.addMainStepMassage("Select spectra subset data");
-                        spectraMap = generateSubset(fileNameWithoutExtension, spectraMap, subsetSize, fastaFile, identificationParameters);
-                    }
+
+                    MainUtilities.QSProtWaitingHandler.addLogMassage("Selected subset size " + subsetSize + " spectra");
+                    MainUtilities.QSProtWaitingHandler.addMainStepMassage("Select spectra subset data");
+                    spectraMap = generateSubset(fileNameWithoutExtension, spectraMap, subsetSize, fastaFile, identificationParameters);
+
                     MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
                     MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(30);
                     MainUtilities.QSProtWaitingHandler.addMainStepMassage("Generate subset file (#spectra:" + subsetSize + ")");
@@ -214,19 +205,21 @@ public class QSPDatasetHandler {
                     optProtDataset.setSubsetSize(subsetSize);
                     subFastaFile.delete();
                 } else {
-                    MsFileHandler msFileHandler2 = new MsFileHandler();
                     try {
+                        MsFileHandler msFileHandler2 = new MsFileHandler();
                         msFileHandler2.register(subMsFile, new QSProtWaitingHandler());
+                        final String fileNameWithoutExtension2 = IoUtil.removeExtension(subMsFile.getName());
+                        String[] spectrumTitles2 = msFileHandler2.getSpectrumTitles(fileNameWithoutExtension2);
+                        optProtDataset.setSubsetSize(spectrumTitles2.length);
+
                     } catch (IOException ex) {
-                        MainUtilities.QSProtWaitingHandler.addLogMassage(ex.getMessage());
+                        MainUtilities.QSProtWaitingHandler.addLogMassage("Error  "+ex.getMessage());
                         throw new RuntimeException();
-                        
+
                     }
-                    final String fileNameWithoutExtension2 = IoUtil.removeExtension(subMsFile.getName());
-                    String[] spectrumTitles2 = msFileHandler2.getSpectrumTitles(fileNameWithoutExtension2);
-                    optProtDataset.setSubsetSize(spectrumTitles2.length);
+
                 }
-                //create stabkle subfasta file
+                //create filtered fasta file
                 if (!fullFasta && (!subFastaFile.exists() || update)) {
                     MainUtilities.QSProtWaitingHandler.addMainStepMassage("Start processing filtered-FASTA data");
                     subFastaFile.createNewFile();
@@ -521,47 +514,55 @@ public class QSPDatasetHandler {
             cms.delete();
             double highQualitylimit = (double) spectraSizeLimit * highQualityRatio;
             double avgQualityLimit = spectraSizeLimit - highQualitylimit;
+            System.out.println("hquality limit " + highQualityRatio + "  " + highQualitylimit);
+            System.out.println("avgQualityLimit limit " + "  " + avgQualityLimit);
             double highQualityCounter = 0;
             double avgQualityCounter = 0;
             double totalCounter = 0;
 
+            Set<ConfidentTagSorter> addedTags = new HashSet<>();
             for (ConfidentTagSorter tag : confidentSpectraSet) {
                 if (tag.getValue() <= 0.01 && highQualityCounter <= highQualitylimit) {
                     highQualityCounter++;
                     totalCounter++;
                     subSpectraMap.put(tag.getTitle(), tag.getSpectrum());
+                    addedTags.add(tag);
                 } else if (tag.getValue() > 0.01 && tag.getValue() <= 0.1 && avgQualityCounter <= avgQualityLimit) {
+                    addedTags.add(tag);
                     avgQualityCounter++;
                     totalCounter++;
                     subSpectraMap.put(tag.getTitle(), tag.getSpectrum());
-                } else if (totalCounter <= spectraSizeLimit) {
+                }
+            }
+            confidentSpectraSet.removeAll(addedTags);
+            for (ConfidentTagSorter tag : confidentSpectraSet) {
+                if (subSpectraMap.size() < spectraSizeLimit) {
                     subSpectraMap.put(tag.getTitle(), tag.getSpectrum());
-                    totalCounter++;
                 }
             }
 
-            if (subSpectraMap.size() < spectraSizeLimit) {
-                String[] titiles = subMsFileHandler.getSpectrumTitles(msFileNameWithoutExtension);
-                for (String str : titiles) {
-                    if (!subSpectraMap.containsKey(str)) {
-                        subSpectraMap.put(str, subMsFileHandler.getSpectrum(msFileNameWithoutExtension, str));
-                    }
-                    if (subSpectraMap.size() >= spectraSizeLimit) {
-                        break;
-                    }
-                }
-            }
-            if (subSpectraMap.size() < spectraSizeLimit) {
-                String[] titiles = subMsFileHandler.getSpectrumTitles(msFileNameWithoutExtension);
-                for (String str : titiles) {
-                    if (!subSpectraMap.containsKey(str)) {
-                        subSpectraMap.put(str, subMsFileHandler.getSpectrum(msFileNameWithoutExtension, str));
-                    }
-                    if (subSpectraMap.size() >= spectraSizeLimit) {
-                        break;
-                    }
-                }
-            }
+//            if (subSpectraMap.size() < spectraSizeLimit) {
+//                String[] titiles = subMsFileHandler.getSpectrumTitles(msFileNameWithoutExtension);
+//                for (String str : titiles) {
+//                    if (!subSpectraMap.containsKey(str)) {
+//                        subSpectraMap.put(str, subMsFileHandler.getSpectrum(msFileNameWithoutExtension, str));
+//                    }
+//                    if (subSpectraMap.size() >= spectraSizeLimit) {
+//                        break;
+//                    }
+//                }
+//            }
+//            if (subSpectraMap.size() < spectraSizeLimit) {
+//                String[] titiles = subMsFileHandler.getSpectrumTitles(msFileNameWithoutExtension);
+//                for (String str : titiles) {
+//                    if (!subSpectraMap.containsKey(str)) {
+//                        subSpectraMap.put(str, subMsFileHandler.getSpectrum(msFileNameWithoutExtension, str));
+//                    }
+//                    if (subSpectraMap.size() >= spectraSizeLimit) {
+//                        break;
+//                    }
+//                }
+//            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }

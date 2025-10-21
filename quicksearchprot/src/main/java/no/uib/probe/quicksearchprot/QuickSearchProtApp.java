@@ -4,6 +4,10 @@ import com.compomics.util.gui.UtilitiesGUIDefaults;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.LookAndFeel;
 import javax.swing.UIDefaults;
@@ -82,11 +86,18 @@ public class QuickSearchProtApp {
                             );
                         });
                         // Process data in the background
-                        MainUtilities.getDisplayExecuter().submit(() -> {
-                            mainController.initializedController(projectEntity);
-                            mainController.startDataProcessing();
-                            updatePanelView(2);
+                        Future f =   MainUtilities.getLongExecutorService().submit(() -> {
+                           updatePanelView(2);  
+                           mainController.initializedController(projectEntity);                             
+                           mainController.startDataProcessing();
+                          
                         });
+                        try {
+                            f.get();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            MainUtilities.QSProtWaitingHandler.addLogMassage(ex.getMessage());
+                        }
+                        reactivateProcessingBtn();
                     }
                 };
                 qsProtView.setVisible(true);

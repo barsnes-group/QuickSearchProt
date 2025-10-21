@@ -41,7 +41,7 @@ public class ReportExporter {
             ex.printStackTrace();
             return;
         }
-       MainUtilities.QSProtWaitingHandler.addOutputMassage("-------------------------------" + datasetId + "(" + searchEngine.getName() + ")-----------------------------------------");
+       MainUtilities.QSProtWaitingHandler.addOutputMassage("------------------------------- " + datasetId + " ( " + searchEngine.getName().toUpperCase() + " ) -----------------------------------------");
         if (dataset != null) {
        MainUtilities.QSProtWaitingHandler.addOutputMassage("Spectra size:\t\t" + dataset.getSubsetSize());
         }
@@ -74,7 +74,7 @@ public class ReportExporter {
         MainUtilities.QSProtWaitingHandler.addOutputMassage("Variable Modifications:\n" + fm);
         if (searchEngine.getIndex() == Advocate.xtandem.getIndex()) {
             XtandemParameters xtandemParameters = (XtandemParameters) optimisedSearchParameter.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
-            MainUtilities.QSProtWaitingHandler.addOutputMassage("---------------------------xtandem advanced-----------------------------");
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("--------------------------- X! Tandem advanced -----------------------------");
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Spectrum Dynamic Range:\t" + xtandemParameters.getDynamicRange());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Number of Peaks:\t" + xtandemParameters.getnPeaks());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Minimum FragmentMz:\t" + xtandemParameters.getMinFragmentMz());
@@ -108,7 +108,7 @@ public class ReportExporter {
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Refined Variable Modification:\n" + rfm);
         } else if (searchEngine.getIndex() == Advocate.myriMatch.getIndex()) {
             MyriMatchParameters myriMatchParameters = (MyriMatchParameters) optimisedSearchParameter.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.myriMatch.getIndex());
-            MainUtilities.QSProtWaitingHandler.addOutputMassage("---------------------------MyriMatch advanced-----------------------------");
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("--------------------------- MyriMatch advanced -----------------------------");
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Peptide Length (min-max):\t" + myriMatchParameters.getMinPeptideLength() + "-" + myriMatchParameters.getMaxPeptideLength());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Precursor Mass (min-max):\t" + myriMatchParameters.getMinPrecursorMass() + "-" + myriMatchParameters.getMaxPrecursorMass());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Max Variable PTM        :\t" + myriMatchParameters.getMaxDynamicMods());
@@ -123,7 +123,7 @@ public class ReportExporter {
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Max Peak Count          :\t" + myriMatchParameters.getMaxPeakCount());
         } else if (searchEngine.getIndex() == Advocate.sage.getIndex()) {
             SageParameters sageParameters = (SageParameters) optimisedSearchParameter.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.sage.getIndex());
-            MainUtilities.QSProtWaitingHandler.addOutputMassage("---------------------------Sage advanced-----------------------------");
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("--------------------------- Sage advanced -----------------------------");
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Peptide Length (min-max):\t" + sageParameters.getMinPeptideLength() + "-" + sageParameters.getMaxPeptideLength());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragment MZ    (min-max):\t" + sageParameters.getMinFragmentMz() + "-" + sageParameters.getMaxFragmentMz());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Peptide Mass:\t\t" + sageParameters.getMinPeptideMass() + "-" + sageParameters.getMaxPeptideMass());
@@ -163,7 +163,7 @@ public class ReportExporter {
         try {
             try (FileWriter myWriter = new FileWriter(reportFile)) {
                 myWriter.write(
-                        "-------------------------------" + datasetId + "(" + searchEngine.getName() + ")-----------------------------------------\n");
+                        "------------------------------- " + datasetId + " ( " + searchEngine.getName().toUpperCase() + " ) -----------------------------------------\n");
                 myWriter.write(
                         "Used Time  to generate subset :\t" + initDsTime + "  Minutes\n");
                 myWriter.write(
@@ -216,7 +216,7 @@ public class ReportExporter {
                 if (searchEngine.getIndex()
                         == Advocate.xtandem.getIndex()) {
                     XtandemParameters xtandemParameters = (XtandemParameters) optimisedSearchParameter.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
-                    myWriter.write("---------------------------xtandem advanced-----------------------------\n");
+                    myWriter.write("--------------------------- X! Tandem advanced -----------------------------\n");
                     myWriter.write("Spectrum Dynamic Range:\t" + xtandemParameters.getDynamicRange() + "\n");
                     myWriter.write("Number of Peaks:\t" + xtandemParameters.getnPeaks() + "\n");
                     myWriter.write("Minimum Fragment Mz:\t" + xtandemParameters.getMinFragmentMz() + "\n");
@@ -254,7 +254,7 @@ public class ReportExporter {
                 } else if (searchEngine.getIndex()
                         == Advocate.myriMatch.getIndex()) {
                     MyriMatchParameters myriMatchParameters = (MyriMatchParameters) optimisedSearchParameter.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.myriMatch.getIndex());
-                    myWriter.write("---------------------------MyriMatch advanced-----------------------------\n");
+                    myWriter.write("--------------------------- MyriMatch advanced -----------------------------\n");
                     myWriter.write("Peptide Length (min-max):\t" + myriMatchParameters.getMinPeptideLength() + "-" + myriMatchParameters.getMaxPeptideLength() + "\n");
                     myWriter.write("Precursor Mass (min-max):\t" + myriMatchParameters.getMinPrecursorMass() + "-" + myriMatchParameters.getMaxPrecursorMass() + "\n");
                     myWriter.write("Max Variable PTM        :\t" + myriMatchParameters.getMaxDynamicMods() + "\n");
@@ -270,7 +270,7 @@ public class ReportExporter {
                     myWriter.write("Max Peak Count:\t" + myriMatchParameters.getMaxPeakCount() + "\n");
                 } else if (searchEngine.getIndex() == Advocate.sage.getIndex()) {
                     SageParameters sageParameters = (SageParameters) optimisedSearchParameter.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.sage.getIndex());
-                    myWriter.write("---------------------------Sage advanced-----------------------------\n");
+                    myWriter.write("--------------------------- Sage advanced -----------------------------\n");
                     myWriter.write("Peptide Length(min-max):\t" + sageParameters.getMinPeptideLength() + "-" + sageParameters.getMaxPeptideLength() + "\n");
                     myWriter.write("Fragment MZ(min-max):\t\t" + sageParameters.getMinFragmentMz() + "-" + sageParameters.getMaxFragmentMz() + "\n");
                     myWriter.write("Peptide Mass:\t\t\t" + sageParameters.getMinPeptideMass() + "-" + sageParameters.getMaxPeptideMass() + "\n");

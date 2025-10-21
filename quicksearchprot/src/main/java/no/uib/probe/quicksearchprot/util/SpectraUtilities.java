@@ -273,8 +273,6 @@ public class SpectraUtilities {
 
             int initiSize = Math.min((int) maxSpectNum, (int) Math.round(spectrumTitles.length * 20 / 100));
             initiSize = Math.max(initiSize, (int) minSpectNum);
-//            System.out.println("initial zer " + initiSize + "  vs " + maxSpectNum);
-
             int n = (int) Math.round(spectrumTitles.length / initiSize);
             if (spectrumTitles == null) {
                 throw new IllegalArgumentException(
@@ -329,7 +327,6 @@ public class SpectraUtilities {
                     counter++;
                 }
             }
-//            System.out.println("total filtered subset mgf " + counter);
             writer.close();
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -1686,7 +1683,6 @@ public class SpectraUtilities {
                         sm.setBestPeptideAssumption(peptideAssumtion);//                 
                         if (peptideAssumtion.getScore() <= 0.01) {//                    
                             validatedMaches.add(sm);
-                            System.out.println("raw scorw "+sm.getBestPeptideAssumption().getRawScore());
                         } 
                         break;
                     }
@@ -1711,7 +1707,6 @@ public class SpectraUtilities {
                 validatedMaches.addAll(StatisticsTests.filterByFDR(targetDecoyMaches, 0.01));
             }
 
-            System.out.println("fdr filtered is  after " + validatedMaches.size() + " in compare with   " + validatedMaches.size());
         } catch (IOException | SQLException | ClassNotFoundException | InterruptedException | JAXBException | XmlPullParserException | XMLStreamException ex) {
             throw new RuntimeException("Error during the data processing...Re-process the data!");
         }

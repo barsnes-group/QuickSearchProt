@@ -476,7 +476,14 @@
         17,
         18
       ],
+      "PRECURSOR_ION": [
+        0
+      ],
       "REPORTER_ION": [],
+      "TAG_FRAGMENT_ION": [
+        1,
+        4
+      ],
       "IMMONIUM_ION": [
         0,
         1,
@@ -501,13 +508,6 @@
         20
       ],
       "PEPTIDE_FRAGMENT_ION": [
-        1,
-        4
-      ],
-      "PRECURSOR_ION": [
-        0
-      ],
-      "TAG_FRAGMENT_ION": [
         1,
         4
       ]

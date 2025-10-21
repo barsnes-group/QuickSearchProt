@@ -10,7 +10,6 @@ import no.uib.probe.quicksearchprot.configurations.Configurations;
 import no.uib.probe.quicksearchprot.search.myrimatch.MyriMatchEnabledParameters;
 //import no.uib.probe.quicksearchprot.search.sage.SageParameterOrderSettings;
 import no.uib.probe.quicksearchprot.search.sage.SageEnabledParameters;
-import no.uib.probe.quicksearchprot.search.xtandam.XtandemParameterOrderSettings;
 import no.uib.probe.quicksearchprot.search.xtandam.XTandemEnabledParameters;
 
 /**
@@ -131,8 +130,6 @@ public class SearchInputSetting {
             this.setRunSage(true);
         }
     }
-//    private final SageParameterOrderSettings sageOptProtAdvancedSearchParameters = new SageParameterOrderSettings();
-    private final XtandemParameterOrderSettings xtandemOptProtAdvancedSearchParameters = new XtandemParameterOrderSettings();
 
     public boolean isOptimizeXtandemAdvancedParameter() {
         return parametersToAdjust.isXtandemAdvanced() || optimizeAllParameters;
@@ -462,10 +459,7 @@ public class SearchInputSetting {
         this.optimizeIsotopsParameter = optimizeIsotopsParameter;
     }
 
-    public XtandemParameterOrderSettings getXtandemOptProtAdvancedSearchParameters() {
-        return xtandemOptProtAdvancedSearchParameters;
-    }
-
+    
     public MyriMatchEnabledParameters getMyriMatchEnabledParameters() {
         return MyriMatchEnabledParameters;
     }

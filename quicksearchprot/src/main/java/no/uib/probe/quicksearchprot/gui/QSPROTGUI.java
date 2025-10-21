@@ -145,18 +145,31 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
      * @param viewIndex selected tab index (0: log, 1: main steps, 2: output)
      */
     public void updatePanelView(int viewIndex) {
-        jTabbedPane1.setSelectedIndex(viewIndex);
-        switch (viewIndex) {
-            case 0 ->
-                ((DefaultCaret) logTextArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-            case 1 ->
-                ((DefaultCaret) mainProcessTextArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-            case 2 ->
-                ((DefaultCaret) outputTextArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-            default ->
-                throw new AssertionError("Invalid tab index");
-        }
+        MainUtilities.getDisplayExecuter().submit(() -> {
+            jTabbedPane1.setSelectedIndex(viewIndex);
+            switch (viewIndex) {
+                case 0 ->
+                    ((DefaultCaret) logTextArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+                case 1 ->
+                    ((DefaultCaret) mainProcessTextArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+                case 2 ->
+                    ((DefaultCaret) outputTextArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+                default ->
+                    throw new AssertionError("Invalid tab index");
+            }
+            jTabbedPane1.repaint();
+        });
+
     }
+
+    /**
+     * Reactive processing button after the process is done
+     *
+     */
+    public void reactivateProcessingBtn() {
+        this.jButton5.setEnabled(true);
+    }
+
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -734,23 +747,27 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
     private void jCheckBox4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox4ActionPerformed
 
         inputEntity.setReGenerateSubset(jCheckBox4.isSelected());
+        inputEntity.setSubSetSize(-1);
     }//GEN-LAST:event_jCheckBox4ActionPerformed
     /**
      * Handle "Process" button click.
      */
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        progressBarContainer.add(updatedProgressBar); 
-        this.jButton5.setEnabled(false);
+        progressBarContainer.add(updatedProgressBar);
+
         Thread t = null;
         try {
 
             if (validateInputs()) {
-                MainUtilities.QSProtWaitingHandler.addLogMassage("Process started");
-                jTabbedPane1.setSelectedIndex(1);
+                MainUtilities.getDisplayExecuter().submit(() -> {
+                    this.jButton5.setEnabled(false);
+                    MainUtilities.QSProtWaitingHandler.addLogMassage("Process started");
+                    updatePanelView(1);
+                });
+
                 t = new Thread(() -> {
-                   
                     processData(inputEntity);
-                    this.jButton5.setEnabled(true);
+
                 });
                 t.start();
 
@@ -954,8 +971,6 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         // Search parameter file (if not adjusting all params)
         if (inputEntity.getSearchParameterFilePath() == null && !inputEntity.isAdjustAllSearchParameters()) {
             searchSettingsLabel.setForeground(Color.RED);
-            System.out.println("inputEntity.isAdjustAllSearchParameters() " + inputEntity.isAdjustAllSearchParameters());
-
             MainUtilities.QSProtWaitingHandler.addLogMassage("Error : Search Parameter File (.par) is required!");
             valid = false;
         }

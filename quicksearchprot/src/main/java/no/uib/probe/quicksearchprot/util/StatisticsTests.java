@@ -493,10 +493,8 @@ public class StatisticsTests {
         return fdr;
     }
 
-    public static List<SpectrumMatch> filterByFDR(List<PSM> psms, double targetFDR) { // Sort PSMs by descending score 
-          
-        
-        
+    public static List<SpectrumMatch> filterByFDR(List<PSM> psms, double targetFDR) { // Sort PSMs by descending score           
+                
         Collections.sort(psms);
           List<SpectrumMatch> accepted = new ArrayList<>();
         int targetCount = 0;

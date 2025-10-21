@@ -1,7 +1,6 @@
 package no.uib.probe.quicksearchprot.search.xtandam;
 
 import com.compomics.util.experiment.biology.enzymes.EnzymeFactory;
-import com.compomics.util.experiment.biology.modifications.ModificationCategory;
 import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
@@ -131,7 +130,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         for (String param : paramOrder) {
             MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(currentValue);
             currentValue += step;
-            MainUtilities.QSProtWaitingHandler.addMainStepMassage("\u2605 Adjust " + param.replace("XtandemAdvancedParameter", "Advanced parameters (1)").replace("XtandemAdvancedParameter_A", "Advanced parameters (2)").replace("XtandemAdvancedParameter_B", "Advanced parameters (3)").replace("Parameter", "").toLowerCase() + " ----------");
+            MainUtilities.QSProtWaitingHandler.addMainStepMassage("\u2605 Adjust " + param.replace("XtandemAdvancedParameter_A", "Advanced parameters (2)").replace("XtandemAdvancedParameter_B", "Advanced parameters (3)".replace("XtandemAdvancedParameter", "Advanced parameters (1)")).replace("Parameter", "").toLowerCase() + " \u2605");
             //empty param score list
             if (param.equalsIgnoreCase("DigestionParameter") && (searchInputSetting.isOptimizeDigestionParameter() || searchInputSetting.isOptimizeEnzymeParameter() || searchInputSetting.isOptimizeSpecificityParameter() || searchInputSetting.isOptimizeMaxMissCleavagesParameter())) {
                 String[] values = this.optimizeEnzymeParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("EnzymeParameter"));

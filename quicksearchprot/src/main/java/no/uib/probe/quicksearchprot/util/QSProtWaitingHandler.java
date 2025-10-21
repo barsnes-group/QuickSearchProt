@@ -467,7 +467,7 @@ public class QSProtWaitingHandler extends WaitingHandlerCLIImpl {
     }
 
     public void addOutputMassage(String massage) {
-        mainOutputTextPanel.append(massage + lineBreak);
+        mainOutputTextPanel.append(massage.replace("false", "No").replace("true","Yes") + lineBreak);
     }
 
     public void setCurrentProgressValue(int progress) {

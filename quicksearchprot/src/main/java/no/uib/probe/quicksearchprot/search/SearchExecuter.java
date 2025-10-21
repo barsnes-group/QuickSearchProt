@@ -111,6 +111,7 @@ public class SearchExecuter {
             searchHandler.startSearch(MainUtilities.QSProtWaitingHandler);
         } catch (InterruptedException ex) {
             ex.printStackTrace();
+            throw new RuntimeException();
         }
 
         File resultsFile = searchHandler.getResultsFolder();

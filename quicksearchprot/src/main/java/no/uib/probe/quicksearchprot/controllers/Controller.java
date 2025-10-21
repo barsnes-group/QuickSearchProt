@@ -185,13 +185,13 @@ public class Controller {
                 optProtDatasetHandler.getSearchInputSetting().getDatasetId(),
                 msFile, fastaFile, optProtDatasetHandler.getSearchInputSetting().getSelectedSearchEngine(),
                 subDataFolder,
-                searchParamFile,
-                wholeDataTest,
+                searchParamFile,                
                 fullFasta,
                 useOriginalInputs,
                 projectEntity.getSubSetSize()
         );
 
+        
         long endDsInit = System.currentTimeMillis();
         String totalDsTime = MainUtilities.msToTime(endDsInit - startDsInit);
         MainUtilities.QSProtWaitingHandler.addMainStepMassage(
