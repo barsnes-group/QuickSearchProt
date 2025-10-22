@@ -813,11 +813,11 @@ public class ScoreComparison {
             double refScore = uniqueReferenceData.get(uniqueReferenceKey);
             double scoreRank = mapScoreToQuartil(refScore, referenceQ1, referenceMedian, referenceQ3);
 //             System.out.println("lost score rank" + scoreRank);
-            if (potintialFP && scoreRank>2) {               
+//            if (potintialFP && scoreRank>2) {               
+//                lostScoreData -= scoreRank;
+//            } else {
                 lostScoreData -= scoreRank;
-            } else {
-                lostScoreData -= scoreRank;
-            }
+//            }
         }
         System.out.println("lost score " + lostScoreData);
         double gainedScoreData = 0;
