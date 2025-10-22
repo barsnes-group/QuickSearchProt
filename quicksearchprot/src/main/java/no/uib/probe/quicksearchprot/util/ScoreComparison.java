@@ -769,12 +769,12 @@ public class ScoreComparison {
         return finalScore;
     }
 
-    private static int mapScoreToQuartil(double score, double q1, double median, double q3) {
+    private static double mapScoreToQuartil(double score, double q1, double median, double q3) {
 
         if (score < q1) {
-            return 1;
+            return 0.5;
         } else if (score >= q1 && score <= median) {
-            return 2;
+            return 1;
         } else if (score > median && score <= q3) {
             return 3;
         } else {
@@ -786,45 +786,52 @@ public class ScoreComparison {
     public static double compareReferenceToTest(double[] referenceData, double[] testData, Map<String, Double> sharedReferenceData, Map<String, Double> uniqueReferenceData, Map<String, Double> sharedTestData, Map<String, Double> uniqueTestData, boolean potintialFP, boolean fdrApplied) {
         double cScore;
         if (potintialFP && (referenceData.length * 1.05 > testData.length)) {
+
             return testData.length - (referenceData.length * 1.05);
         }
 
-        
+        System.out.println("Reference size " + referenceData.length + "    test size " + testData.length);
         DescriptiveStatistics refernceDescriptiveStatistics = new DescriptiveStatistics(referenceData);
         double referenceQ1 = refernceDescriptiveStatistics.getPercentile(25);
         double referenceMedian = refernceDescriptiveStatistics.getPercentile(50);
         double referenceQ3 = refernceDescriptiveStatistics.getPercentile(75);
         int sharedDataScore = 0;
-        
+
         for (String sharedKey : sharedTestData.keySet()) {
             double refScore = sharedReferenceData.get(sharedKey);
-            int beforeCat = mapScoreToQuartil(refScore, referenceQ1, referenceMedian, referenceQ3);
+            double beforeCat = mapScoreToQuartil(refScore, referenceQ1, referenceMedian, referenceQ3);
             double testScore = sharedTestData.get(sharedKey);
-            int afterCat = mapScoreToQuartil(testScore, referenceQ1, referenceMedian, referenceQ3);
+            double afterCat = mapScoreToQuartil(testScore, referenceQ1, referenceMedian, referenceQ3);
             if ((afterCat - beforeCat > 1)) {
                 sharedDataScore += (afterCat - beforeCat);
             }
         }
+        System.out.println("shared score is " + sharedDataScore);
         double lostScoreData = 0;
         for (String uniqueReferenceKey : uniqueReferenceData.keySet()) {
             double refScore = uniqueReferenceData.get(uniqueReferenceKey);
-            int scoreRank = mapScoreToQuartil(refScore, referenceQ1, referenceMedian, referenceQ3);
-            if (scoreRank > 2) {
+            double scoreRank = mapScoreToQuartil(refScore, referenceQ1, referenceMedian, referenceQ3);
+//             System.out.println("lost score rank" + scoreRank);
+//            if (scoreRank > 2) {
                 lostScoreData -= scoreRank;
-            }
+//            }
         }
+        System.out.println("lost score " + lostScoreData);
         double gainedScoreData = 0;
         for (String uniqueTestKey : uniqueTestData.keySet()) {
             double testScore = uniqueTestData.get(uniqueTestKey);
-            int scoreRank = mapScoreToQuartil(testScore, referenceQ1, referenceMedian, referenceQ3);
-            if (scoreRank > 1) {
+            double scoreRank = mapScoreToQuartil(testScore, referenceQ1, referenceMedian, referenceQ3);
+//             System.out.println("gain score rank" + scoreRank);
+//            if (scoreRank > 1) {
                 gainedScoreData += scoreRank;
-            }
+//            }
         }
+        System.out.println("gained  score " + gainedScoreData);
         cScore = sharedDataScore + gainedScoreData + lostScoreData;
-        if (potintialFP && cScore == 0) {
+        if (potintialFP && cScore == 0.0) {
+            System.out.println(" potintialFP && cScore == 0 return -1");
             return -1;
-        }      
+        }
         return cScore;
     }
 

@@ -157,7 +157,7 @@ public abstract class CommonSearchHandler {
                     }
                 } catch (InterruptedException | ExecutionException ex) {
                     MainUtilities.QSProtWaitingHandler.addLogMassage(ex.getMessage());
-                    ex.printStackTrace();
+//                    ex.printStackTrace();
                 }
             }
             if (!resultsMapI.isEmpty()) {
@@ -944,6 +944,10 @@ public abstract class CommonSearchHandler {
                 break;
             }
         }
+        
+        
+        System.out.println("before terminal "+optProtDataset.getCurrentScoreModel().getSpectrumMatchResult().size());
+        
         /**
          ********************************************
          * terminal test *******************************************

@@ -856,10 +856,9 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                System.out.println("deistop score " + scoreModel + "   " + selectedOption + "   " + (i == 1) + "   " + (selectedOption == (i == 1)));
+                System.out.println("deistop score " + optProtDataset.getCurrentScoreModel().getSpectrumMatchResult().size() + "   " + selectedOption + "   " + (selectedOption == (i == 1))+"  "+scoreModel.isAcceptedChange()+"   "+scoreModel.getcScore()+"  "+scoreModel.getSpectrumMatchResult().size());
                 if (scoreModel.isAcceptedChange()) {
                     resultsMap.put((j == 1) + "", scoreModel);
-//                resultsMap.put(0 + "", optProtDataset.getCurrentScoreModel());
                 }
             } catch (ExecutionException | InterruptedException ex) {
                 ex.printStackTrace();
@@ -1038,7 +1037,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             try {
                 RawScoreModel scoreModel = f.get();
 //                if (scoreModel.isSensitiveChange() && scoreModel.getSpectrumMatchResult().size() >= optProtDataset.getCurrentScoreModel().getSpectrumMatchResult().size()) {
-//                    System.out.println("add as selected score " + j);
+                    System.out.println("add as min peaks  score " + j+"   "+scoreModel+"   ts "+topScore);
                 if (scoreModel.isAcceptedChange() && scoreModel.getIdPSMNumber() > topScore) {
                     resultsMap.put(j + "", scoreModel);
                     topScore = scoreModel.getIdPSMNumber();
@@ -1072,6 +1071,8 @@ public class SageSearchHandler extends CommonSearchHandler {
         }
         resultsMap.clear();
         sageParameter.setMinPeaks(selectedMinPeaksNumberOption);
+        RawScoreModel selectedScoreModel= optProtDataset.getCurrentScoreModel();
+        int selectedMax = selectedMaxPeaksNumberOption;
         for (int i = 100; i <= 200;) {
             if (i == selectedMaxPeaksNumberOption) {
                 i += 10;
@@ -1089,7 +1090,9 @@ public class SageSearchHandler extends CommonSearchHandler {
                 RawScoreModel scoreModel = f.get();
                 System.out.println("max # " + j + " vs " + selectedMaxPeaksNumberOption + "   " + scoreModel);
                 if ((scoreModel.isAcceptedChange())) {
-                    resultsMap.put(j + "", scoreModel);
+                    selectedScoreModel = scoreModel;
+                    selectedMax=j;
+//                    resultsMap.put(j + "", scoreModel);
                 }
 //                else if (j > selectedMaxPeaksNumberOption) {
 //                    break;
@@ -1099,11 +1102,13 @@ public class SageSearchHandler extends CommonSearchHandler {
             }
             i += 10;
         }
+         optProtDataset.setActiveScoreModel(selectedScoreModel);
+         selectedMaxPeaksNumberOption=selectedMax;
 
-        if (!resultsMap.isEmpty()) {
-            selectedMaxPeaksNumberOption = Integer.parseInt(SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true));
-            optProtDataset.setActiveScoreModel(resultsMap.get(selectedMaxPeaksNumberOption + ""));
-        }
+//        if (!resultsMap.isEmpty()) {
+//            selectedMaxPeaksNumberOption = Integer.parseInt(SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true));
+//            optProtDataset.setActiveScoreModel(resultsMap.get(selectedMaxPeaksNumberOption + ""));
+//        }
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedMinPeaksNumberOption + "-" + selectedMaxPeaksNumberOption + "");
         parameterScoreSet.add(paramScore);

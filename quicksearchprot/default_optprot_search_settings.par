@@ -455,35 +455,6 @@
     "intensityLimit": 0.75,
     "automaticAnnotation": true,
     "selectedIonsMap": {
-      "RELATED_ION": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13,
-        14,
-        15,
-        16,
-        17,
-        18
-      ],
-      "PRECURSOR_ION": [
-        0
-      ],
-      "REPORTER_ION": [],
-      "TAG_FRAGMENT_ION": [
-        1,
-        4
-      ],
       "IMMONIUM_ION": [
         0,
         1,
@@ -507,7 +478,36 @@
         19,
         20
       ],
+      "RELATED_ION": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
       "PEPTIDE_FRAGMENT_ION": [
+        1,
+        4
+      ],
+      "PRECURSOR_ION": [
+        0
+      ],
+      "REPORTER_ION": [],
+      "TAG_FRAGMENT_ION": [
         1,
         4
       ]

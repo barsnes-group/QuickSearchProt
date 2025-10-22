@@ -158,6 +158,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
                     throw new AssertionError("Invalid tab index");
             }
             jTabbedPane1.repaint();
+            System.out.println("updated view to "+viewIndex);
         });
 
     }
@@ -754,15 +755,14 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
      */
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         progressBarContainer.add(updatedProgressBar);
-
+        updatePanelView(1);
         Thread t = null;
         try {
-
             if (validateInputs()) {
                 MainUtilities.getDisplayExecuter().submit(() -> {
                     this.jButton5.setEnabled(false);
                     MainUtilities.QSProtWaitingHandler.addLogMassage("Process started");
-                    updatePanelView(1);
+                    
                 });
 
                 t = new Thread(() -> {

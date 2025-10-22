@@ -20,20 +20,20 @@ import no.uib.probe.quicksearchprot.util.MainUtilities;
 /**
  * The main application class for QuickSearchProt.
  * <p>
- * QuickSearchProt is a search settings optimization workflow targeting the optimization of
- * search settings for different proteomics search engines.
+ * QuickSearchProt is a search settings optimization workflow targeting the
+ * optimization of search settings for different proteomics search engines.
  * </p>
  *
  * @author Yehia Mokhtar Farag
  */
 public class QuickSearchProtApp {
 
-     /**
+    /**
      * The main method to launch the QuickSearchProt application.
      *
      * @param args the command line arguments (unused)
      */
-     public static void main(String[] args) {
+    public static void main(String[] args) {
         // Set the Nimbus look and feel if available
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -51,7 +51,7 @@ public class QuickSearchProtApp {
         // Create and display the UI in the Event Dispatch Thread
         java.awt.EventQueue.invokeLater(() -> {
             boolean nimbusLookAndFeelSet = false;
-
+            
             try {
                 // Try to set the default look and feel via the utility method
                 nimbusLookAndFeelSet = UtilitiesGUIDefaults.setLookAndFeel();
@@ -86,26 +86,29 @@ public class QuickSearchProtApp {
                             );
                         });
                         // Process data in the background
-                        Future f =   MainUtilities.getLongExecutorService().submit(() -> {
-                           updatePanelView(2);  
-                           mainController.initializedController(projectEntity);                             
-                           mainController.startDataProcessing();
-                          
+                        Future f = MainUtilities.getLongExecutorService().submit(() -> {
+                            updatePanelView(1);                            
+                            mainController.initializedController(projectEntity);                            
+                            mainController.startDataProcessing();
+                            
                         });
                         try {
                             f.get();
+                            System.out.println("done processing");
                         } catch (InterruptedException | ExecutionException ex) {
                             MainUtilities.QSProtWaitingHandler.addLogMassage(ex.getMessage());
+                        } finally {
+                            reactivateProcessingBtn();
+                            updatePanelView(2);
                         }
-                        reactivateProcessingBtn();
                     }
                 };
                 qsProtView.setVisible(true);
-
+                
             } catch (HeadlessException | IOException e) {
                 // Log exception if any unexpected error occurs
-                java.util.logging.Logger.getLogger(QuickSearchProtApp.class.getName())
-                        .log(java.util.logging.Level.SEVERE, "Failed to start QuickSearchProtApp", e);
+                  MainUtilities.QSProtWaitingHandler.addLogMassage(e.getMessage());
+                 
             }
         });
     }

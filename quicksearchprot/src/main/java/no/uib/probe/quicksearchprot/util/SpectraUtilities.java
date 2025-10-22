@@ -697,6 +697,7 @@ public class SpectraUtilities {
         double score = compareDataScores(optProtDataset.getVaildatedPsmMaches(), matches, optProtDataset.getSubsetSize(), potintialFP, searchEngine.getName().equalsIgnoreCase(Advocate.sage.getName()));
         rawScore.setIdPSMNumber(matches.size());
         rawScore.setcScore(score);
+        System.out.println("score : "+score+"  potintial fb "+potintialFP);
 
         rawScore.setSameData(rawScore.getcScore() == 0.0 && matches.size() == (optProtDataset.getVaildatedPsmMaches().size()));
         if (!rawScore.isSameData()) {
