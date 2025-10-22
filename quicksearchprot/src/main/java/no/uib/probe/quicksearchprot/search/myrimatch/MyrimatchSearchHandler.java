@@ -498,7 +498,7 @@ public class MyrimatchSearchHandler extends CommonSearchHandler {
         if (paramOption.contains("_")) {
             paramOption = paramOption.split("_")[1];
         }
-        RawScoreModel rawScore = SpectraUtilities.getComparableRawScore(optProtDataset, validatedMaches, Advocate.myriMatch, addSpectraList, paramOption,potintialFP);//(optProtDataset, resultOutput, optProtDataset.getSubMsFile(), Advocate.sage, tempIdParam, updateDataReference);
+        RawScoreModel rawScore = SpectraUtilities.getComparableRawScore(optProtDataset, validatedMaches, Advocate.myriMatch, addSpectraList, paramOption,potintialFP,defaultOutputFileName.contains("qsprot_results2v_"));//(optProtDataset, resultOutput, optProtDataset.getSubMsFile(), Advocate.sage, tempIdParam, updateDataReference);
         MainUtilities.deleteFolder(resultOutput);
         if (addSpectraList && rawScore.isAcceptedChange()) {
             rawScore.setSpectrumMatchResult(validatedMaches);

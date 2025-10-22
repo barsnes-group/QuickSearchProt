@@ -789,6 +789,7 @@ public class ScoreComparison {
 
             return testData.length - (referenceData.length * 1.05);
         }
+        potintialFP = potintialFP||fdrApplied;
 
         System.out.println("Reference size " + referenceData.length + "    test size " + testData.length);
         DescriptiveStatistics refernceDescriptiveStatistics = new DescriptiveStatistics(referenceData);
@@ -812,9 +813,11 @@ public class ScoreComparison {
             double refScore = uniqueReferenceData.get(uniqueReferenceKey);
             double scoreRank = mapScoreToQuartil(refScore, referenceQ1, referenceMedian, referenceQ3);
 //             System.out.println("lost score rank" + scoreRank);
-//            if (scoreRank > 2) {
+            if (potintialFP && scoreRank>2) {               
                 lostScoreData -= scoreRank;
-//            }
+            } else {
+                lostScoreData -= scoreRank;
+            }
         }
         System.out.println("lost score " + lostScoreData);
         double gainedScoreData = 0;
@@ -822,9 +825,11 @@ public class ScoreComparison {
             double testScore = uniqueTestData.get(uniqueTestKey);
             double scoreRank = mapScoreToQuartil(testScore, referenceQ1, referenceMedian, referenceQ3);
 //             System.out.println("gain score rank" + scoreRank);
-//            if (scoreRank > 1) {
+            if (scoreRank > 1&& potintialFP) {
                 gainedScoreData += scoreRank;
-//            }
+            } else {
+                gainedScoreData += scoreRank;
+            }
         }
         System.out.println("gained  score " + gainedScoreData);
         cScore = sharedDataScore + gainedScoreData + lostScoreData;

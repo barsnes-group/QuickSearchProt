@@ -689,12 +689,12 @@ public class SpectraUtilities {
         return spectraMap;
     }
 
-    public static RawScoreModel getComparableRawScore(SearchingSubDataset optProtDataset, List<SpectrumMatch> matches, Advocate searchEngine, boolean addData, String scoreId, boolean potintialFP) {
+    public static RawScoreModel getComparableRawScore(SearchingSubDataset optProtDataset, List<SpectrumMatch> matches, Advocate searchEngine, boolean addData, String scoreId, boolean potintialFP,boolean senstiveMeasurment) {
 
         RawScoreModel rawScore = new RawScoreModel(scoreId);
         rawScore.setDiffrentInSize(matches.size() - optProtDataset.getVaildatedPsmMaches().size());
 
-        double score = compareDataScores(optProtDataset.getVaildatedPsmMaches(), matches, optProtDataset.getSubsetSize(), potintialFP, searchEngine.getName().equalsIgnoreCase(Advocate.sage.getName()));
+        double score = compareDataScores(optProtDataset.getVaildatedPsmMaches(), matches, optProtDataset.getSubsetSize(), potintialFP,senstiveMeasurment );
         rawScore.setIdPSMNumber(matches.size());
         rawScore.setcScore(score);
         System.out.println("score : "+score+"  potintial fb "+potintialFP);

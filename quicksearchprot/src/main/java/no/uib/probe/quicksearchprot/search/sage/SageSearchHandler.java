@@ -80,6 +80,7 @@ public class SageSearchHandler extends CommonSearchHandler {
         potintialFalsePostiveParamSet.add("fragmentAccuracy");
         potintialFalsePostiveParamSet.add("WideWindow");
         potintialFalsePostiveParamSet.add("maxFragmentCharge");
+         potintialFalsePostiveParamSet.add("maxFragmentCharge");
         for (int i = 0; i < DigestionParameters.Specificity.values().length; i++) {
             final String option = DigestionParameters.Specificity.getSpecificity(i).name();
             potintialFalsePostiveParamSet.add(option);
@@ -376,7 +377,7 @@ public class SageSearchHandler extends CommonSearchHandler {
         List<SpectrumMatch> validatedMaches = SpectraUtilities.getValidatedIdentificationResults(resultOutput, optProtDataset.getSubMsFile(), Advocate.sage, tempIdParam);
 
         boolean potintialFP = false;
-        if (potintialFalsePostiveParamSet.contains(paramOption.split("_")[0]) && !defaultOutputFileName.contains("optsearch_results0v_") && !defaultOutputFileName.contains("optsearch_results1v_")) {
+        if (potintialFalsePostiveParamSet.contains(paramOption.split("_")[0])) {
             potintialFP = true;
         }
         if (paramOption.contains("charge-")) {
@@ -387,7 +388,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             paramOption = paramOption.split("_")[1];
         }
 
-        RawScoreModel rawScore = SpectraUtilities.getComparableRawScore(optProtDataset, validatedMaches, Advocate.sage, addSpectraList, paramOption, potintialFP);//(optProtDataset, resultOutput, optProtDataset.getSubMsFile(), Advocate.sage, tempIdParam, updateDataReference);
+        RawScoreModel rawScore = SpectraUtilities.getComparableRawScore(optProtDataset, validatedMaches, Advocate.sage, addSpectraList, paramOption, potintialFP,defaultOutputFileName.contains("qsprot_results2v_") );//(optProtDataset, resultOutput, optProtDataset.getSubMsFile(), Advocate.sage, tempIdParam, updateDataReference);
 
         if (addSpectraList || rawScore.isSensitiveChange()) {
             rawScore.setSpectrumMatchResult(validatedMaches);

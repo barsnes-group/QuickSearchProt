@@ -478,6 +478,11 @@
         19,
         20
       ],
+      "REPORTER_ION": [],
+      "TAG_FRAGMENT_ION": [
+        1,
+        4
+      ],
       "RELATED_ION": [
         0,
         1,
@@ -505,11 +510,6 @@
       ],
       "PRECURSOR_ION": [
         0
-      ],
-      "REPORTER_ION": [],
-      "TAG_FRAGMENT_ION": [
-        1,
-        4
       ]
     },
     "neutralLossesList": [
