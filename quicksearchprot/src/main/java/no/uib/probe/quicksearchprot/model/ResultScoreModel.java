@@ -76,7 +76,7 @@ public class ResultScoreModel {
 //            else {
 //            conf = "";
 //        }
-        return ("\t"+percentage + " %\t" + conf + "");
+        return ("\t"+((int)percentage) + " %\t" + conf + "");
     }
 
     public boolean isDefaultParameterValue() {

@@ -470,6 +470,10 @@ public class QSProtWaitingHandler extends WaitingHandlerCLIImpl {
         mainOutputTextPanel.append(massage.replace("false", "No").replace("true","Yes") + lineBreak);
     }
 
+    public JTextArea getMainOutputTextPanel() {
+        return mainOutputTextPanel;
+    }
+
     public void setCurrentProgressValue(int progress) {
         SwingUtilities.invokeLater(() -> {
 //            this.mainPrgressBar.setIndeterminate(false);

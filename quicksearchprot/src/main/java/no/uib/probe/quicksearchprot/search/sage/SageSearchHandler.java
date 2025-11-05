@@ -51,6 +51,10 @@ public class SageSearchHandler extends CommonSearchHandler {
     private final IdentificationParameters identificationParameters;
     private final Map<String, TreeSet<ParameterScoreModel>> parameterScoreMap;
     private final Set<String> potintialFalsePostiveParamSet = new HashSet<>();
+    /**
+     * The score set is use to calculate score confidence
+     */
+    private final TreeSet<Double> scoresSet = new TreeSet<>();
 
     public Map<String, TreeSet<ParameterScoreModel>> getParameterScoreMap() {
         return parameterScoreMap;
@@ -80,7 +84,7 @@ public class SageSearchHandler extends CommonSearchHandler {
         potintialFalsePostiveParamSet.add("fragmentAccuracy");
         potintialFalsePostiveParamSet.add("WideWindow");
         potintialFalsePostiveParamSet.add("maxFragmentCharge");
-         potintialFalsePostiveParamSet.add("maxFragmentCharge");
+        potintialFalsePostiveParamSet.add("maxFragmentCharge");
         for (int i = 0; i < DigestionParameters.Specificity.values().length; i++) {
             final String option = DigestionParameters.Specificity.getSpecificity(i).name();
             potintialFalsePostiveParamSet.add(option);
@@ -135,7 +139,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             currentValue += step;
             MainUtilities.QSProtWaitingHandler.addMainStepMassage("\n\u2605\u2605\u2605\u2605\u2605 Adjust " + param.replace("SageAdvancedParameter_B", "Advanced parameters (2)").replace("SageAdvancedParameter_A", "Advanced parameters (1)").replace("Parameter", "") + "\u2605\u2605\u2605\u2605\u2605\n");
             MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
-            System.out.println(param+"   searchInputSetting.isOptimizeDigestionParameter() "+searchInputSetting.isOptimizeDigestionParameter()+"  "+(searchInputSetting.isOptimizeEnzymeParameter() || searchInputSetting.isOptimizeSpecificityParameter() || searchInputSetting.isOptimizeMaxMissCleavagesParameter()) );
+            System.out.println(param + "   searchInputSetting.isOptimizeDigestionParameter() " + searchInputSetting.isOptimizeDigestionParameter() + "  " + (searchInputSetting.isOptimizeEnzymeParameter() || searchInputSetting.isOptimizeSpecificityParameter() || searchInputSetting.isOptimizeMaxMissCleavagesParameter()));
             if (param.equalsIgnoreCase("DigestionParameter") && searchInputSetting.isOptimizeDigestionParameter() && (searchInputSetting.isOptimizeEnzymeParameter() || searchInputSetting.isOptimizeSpecificityParameter() || searchInputSetting.isOptimizeMaxMissCleavagesParameter())) {
                 String[] values = this.optimizeEnzymeParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("EnzymeParameter"));
                 if (!values[0].equalsIgnoreCase("")) {
@@ -149,7 +153,7 @@ public class SageSearchHandler extends CommonSearchHandler {
                 }
 
                 continue;
-            }           
+            }
 
             if (param.equalsIgnoreCase("FragmentIonTypesParameter") && searchInputSetting.isOptimizeFragmentIonTypesParameter()) {
                 String value = this.optimizeFragmentIonTypesParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("FragmentIonTypesParameter"));
@@ -351,9 +355,8 @@ public class SageSearchHandler extends CommonSearchHandler {
 
     @Override
     public synchronized RawScoreModel excuteSearch(SearchingSubDataset optProtDataset, String defaultOutputFileName, String paramOption, IdentificationParameters tempIdParam, boolean addSpectraList, SearchInputSetting optProtSearchSettings, File identificationParametersFile, String paramValue) {
-       
-        
-        System.out.println("excute search "+paramValue+"   "+paramOption);
+
+        System.out.println("excute search " + paramValue + "   " + paramOption);
         if (!optProtSearchSettings.getSageEnabledParameters().getParamsToOptimize().isEnabledParam(paramOption.split("_")[0])) {
             MainUtilities.QSProtWaitingHandler.addLogMassage("param " + paramOption + " is not supported " + paramValue);
 //             MainUtilities.QSProtWaitingHandler.addMainStepMassage("param " + paramOption + " is not supported " + paramOption);
@@ -387,7 +390,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             paramOption = paramOption.split("_")[1];
         }
 
-        RawScoreModel rawScore = SpectraUtilities.getComparableRawScore(optProtDataset, validatedMaches, Advocate.sage, addSpectraList, paramOption, potintialFP,defaultOutputFileName.contains("qsprot_results2v_") );//(optProtDataset, resultOutput, optProtDataset.getSubMsFile(), Advocate.sage, tempIdParam, updateDataReference);
+        RawScoreModel rawScore = SpectraUtilities.getComparableRawScore(optProtDataset, validatedMaches, Advocate.sage, addSpectraList, paramOption, potintialFP, defaultOutputFileName.contains("qsprot_results2v_"));//(optProtDataset, resultOutput, optProtDataset.getSubMsFile(), Advocate.sage, tempIdParam, updateDataReference);
 
         if (addSpectraList || rawScore.isSensitiveChange()) {
             rawScore.setSpectrumMatchResult(validatedMaches);
@@ -425,7 +428,9 @@ public class SageSearchHandler extends CommonSearchHandler {
         Map<String, RawScoreModel> resultsMap = Collections.synchronizedMap(new LinkedHashMap<>());
 
         sageParameter.setMaxPeptideLength(35);
-        int selectedV = selectedMinPeptideLengthOption;
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 5; i <= 10; i++) {
             if (i == selectedMinPeptideLengthOption) {
                 continue;
@@ -441,11 +446,9 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-//                if (scoreModel.isSensitiveChange() && scoreModel.getSpectrumMatchResult().size() >= optProtDataset.getCurrentScoreModel().getSpectrumMatchResult().size()) {
-//                    System.out.println("add as selected score " + j);
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange()) {
                     resultsMap.put(j + "", scoreModel);
-//                    selectedV = j;
                 } else {
                     break;
                 }
@@ -459,6 +462,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true);//  
             selectedMinPeptideLengthOption = Integer.parseInt(bestOption);
             optProtDataset.setActiveScoreModel(resultsMap.get(bestOption));
+
         }
 
         resultsMap.clear();
@@ -489,141 +493,15 @@ public class SageSearchHandler extends CommonSearchHandler {
         if (!resultsMap.isEmpty()) {
             selectedMaxPeptideLengthOption = Integer.parseInt(SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true));
             optProtDataset.setActiveScoreModel(resultsMap.get(selectedMaxPeptideLengthOption + ""));
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
         }
         sageParameter.setMaxPeptideLength(selectedMaxPeptideLengthOption);
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedMinPeptideLengthOption + "-" + selectedMaxPeptideLengthOption + "");
         parameterScoreSet.add(paramScore);
+        MainUtilities.addToParameterResults("PeptideLength", selectedMinPeptideLengthOption + " - " + selectedMaxPeptideLengthOption, targtedScore, scoresSet);
 
         return new int[]{selectedMinPeptideLengthOption, selectedMaxPeptideLengthOption};
-    }
-
-    public double[] optimizePeptideMassParameter(SearchingSubDataset optProtDataset, IdentificationParameters oreginaltempIdParam, SageParameters sageParameter, SearchInputSetting optimisedSearchParameter, TreeSet<ParameterScoreModel> parameterScoreSet) throws IOException {
-
-        final ParameterScoreModel paramScore = new ParameterScoreModel();
-        paramScore.setParamId("PeptideMass");
-        String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
-        double selectedMaxPeptideMassOption = sageParameter.getMaxPeptideMass();
-        double selectedMinPeptideMassOption = sageParameter.getMinPeptideMass();
-        Map<String, RawScoreModel> resultsMap = Collections.synchronizedMap(new LinkedHashMap<>());
-        sageParameter.setMaxPeptideMass(selectedMaxPeptideMassOption);
-        double lastScore = -100000.0;
-
-        for (double i = 400; i <= 600;) {
-            if (i == selectedMinPeptideMassOption) {
-                i += 50.0;
-            }
-            sageParameter.setMinPeptideMass(i);
-            final String option = "minPeptideMass_" + i;
-            final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + option + "_" + msFileName;
-            double j = i;
-
-            Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "Min peptide mass: " + j);
-                return scoreModel;
-            });
-            try {
-                RawScoreModel scoreModel = f.get();
-                if (scoreModel.isSensitiveChange() && lastScore < scoreModel.getcScore()) {
-                    lastScore = scoreModel.getcScore();
-                    resultsMap.put(j + "", scoreModel);
-                } else {
-                    break;
-                }
-
-            } catch (ExecutionException | InterruptedException ex) {
-                ex.printStackTrace();
-            }
-            i += 50.0;
-        }
-
-        if (!resultsMap.isEmpty()) {
-            String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true);//  
-            selectedMinPeptideMassOption = Double.parseDouble(bestOption);
-            optProtDataset.setActiveScoreModel(resultsMap.get(bestOption));
-        }
-        sageParameter.setMinPeptideMass(selectedMinPeptideMassOption);
-        resultsMap.clear();
-        for (double i = 4000; i <= 6000;) {
-            if (i == selectedMaxPeptideMassOption) {
-                i += 500;
-            }
-            sageParameter.setMaxPeptideMass(i);
-            final String option = "maxPeptideMass_" + i;
-            final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + option + "_" + msFileName;
-            double j = i;
-            Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "Max peptide mass: " + j);
-                return scoreModel;
-            });
-            try {
-                RawScoreModel scoreModel = f.get();
-                if (scoreModel.isSensitiveChange()) {
-                    resultsMap.put(j + "", scoreModel);
-                }
-            } catch (ExecutionException | InterruptedException ex) {
-                ex.printStackTrace();
-            }
-
-            i += 500;
-        }
-
-        if (!resultsMap.isEmpty()) {
-            String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true);//  
-            selectedMaxPeptideMassOption = Double.parseDouble(bestOption);
-            optProtDataset.setActiveScoreModel(resultsMap.get(bestOption));
-        }
-        paramScore.setScore(optProtDataset.getActiveIdentificationNum());
-        paramScore.setParamValue(selectedMinPeptideMassOption + " - " + selectedMaxPeptideMassOption + "");
-        parameterScoreSet.add(paramScore);
-        sageParameter.setMaxPeptideMass(selectedMaxPeptideMassOption);
-
-        return new double[]{selectedMinPeptideMassOption, selectedMaxPeptideMassOption};
-    }
-
-    public int optimizeMaxVariableModificationParameter(SearchingSubDataset optProtDataset, IdentificationParameters oreginaltempIdParam, SageParameters sageParameters, SearchInputSetting optimisedSearchParameter, TreeSet<ParameterScoreModel> parameterScoreSet) throws IOException {
-        final ParameterScoreModel paramScore = new ParameterScoreModel();
-        paramScore.setParamId("maxVarPTMs");
-
-        int selectedOption = sageParameters.getMaxVariableMods();
-        Map<String, RawScoreModel> resultsMap = Collections.synchronizedMap(new LinkedHashMap<>());
-        String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
-
-        for (int i = 1; i <= 3; i++) {
-            if (i == selectedOption) {
-                continue;
-            }
-            final String option = "maxVarPTMs_" + i;
-            final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + option + "_" + msFileName;
-            sageParameters.setMaxVariableMods(i);
-            final int j = i;
-
-            Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
-                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "Max variable modifications: " + j);
-                return scoreModel;
-            });
-            try {
-                RawScoreModel scoreModel = f.get();
-                if (scoreModel.isAcceptedChange() || (scoreModel.isSensitiveChange() && j < selectedOption)) {
-                    resultsMap.put(j + "", scoreModel);
-                }
-
-            } catch (ExecutionException | InterruptedException ex) {
-                ex.printStackTrace();
-            }
-        }
-        if (!resultsMap.isEmpty()) {
-            String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true);//  
-            selectedOption = Integer.parseInt(bestOption);
-            optProtDataset.setActiveScoreModel(resultsMap.get(bestOption));
-        }
-
-        paramScore.setScore(optProtDataset.getActiveIdentificationNum());
-        paramScore.setParamValue(selectedOption + "");
-        parameterScoreSet.add(paramScore);
-        sageParameters.setMaxVariableMods(selectedOption);
-
-        return selectedOption;
     }
 
     public double[] optimizeFragmentMzParameter(SearchingSubDataset optProtDataset, IdentificationParameters oreginaltempIdParam, SearchInputSetting optimisedSearchParameter, SageParameters sageParameter, TreeSet<ParameterScoreModel> parameterScoreSet) throws IOException {
@@ -636,7 +514,9 @@ public class SageSearchHandler extends CommonSearchHandler {
         sageParameter.setMaxFragmentMz(selectedMaxFragmentMzOption);
         int refSpectraScore = optProtDataset.getCurrentScoreModel().getSpectrumMatchResult().size();
         RawScoreModel selectedScoreModel = optProtDataset.getCurrentScoreModel();
-
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (double i = 150; i <= 300;) {
             if (i == sageParameter.getMinFragmentMz()) {
                 i += 25.0;
@@ -653,14 +533,15 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
 
 //                if (scoreModel.isAcceptedChange()) {
                 if (scoreModel.getcScore() > 0 || (scoreModel.isAcceptedChange() && scoreModel.getSpectrumMatchResult().size() >= refSpectraScore)) {
                     selectedScoreModel = scoreModel;
 //                    refSpectraScore = scoreModel.getSpectrumMatchResult().size();
-                    selectedMinFragmentMzOption=j;
+                    selectedMinFragmentMzOption = j;
 //                    resultsMap.put(j + "", scoreModel);
-                    System.out.println("Min Fragment MZ " + j + "  " + scoreModel.getcScore() + "   " + scoreModel.getIdPSMNumber() + "  " + scoreModel.isAcceptedChange()+"   sageParameter.getMinFragmentMz()");
+                    System.out.println("Min Fragment MZ " + j + "  " + scoreModel.getcScore() + "   " + scoreModel.getIdPSMNumber() + "  " + scoreModel.isAcceptedChange() + "   sageParameter.getMinFragmentMz()");
                 } else if (i > sageParameter.getMinFragmentMz()) {
                     break;
                 }
@@ -698,13 +579,13 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                System.out.println("Max Fragment MZ " + j + "  " + scoreModel.getcScore() + "   " + scoreModel.getIdPSMNumber() + "   " + refSpectraScore+"  "+sageParameter.getMaxFragmentMz());
-                if (scoreModel.getcScore() > 0 || (scoreModel.getcScore() == 0 && scoreModel.getSpectrumMatchResult().size() > refSpectraScore)) {                 
-                 selectedScoreModel = scoreModel;
-                 selectedMaxFragmentMzOption=j;
+                System.out.println("Max Fragment MZ " + j + "  " + scoreModel.getcScore() + "   " + scoreModel.getIdPSMNumber() + "   " + refSpectraScore + "  " + sageParameter.getMaxFragmentMz());
+                if (scoreModel.getcScore() > 0 || (scoreModel.getcScore() == 0 && scoreModel.getSpectrumMatchResult().size() > refSpectraScore)) {
+                    selectedScoreModel = scoreModel;
+                    selectedMaxFragmentMzOption = j;
 //                    refSpectraScore = scoreModel.getSpectrumMatchResult().size();
 //                    resultsMap.put(j + "", scoreModel);
-                   
+
                 } else if (j > sageParameter.getMaxFragmentMz() && !scoreModel.isSensitiveChange()) {
                     break;
                 }
@@ -716,7 +597,8 @@ public class SageSearchHandler extends CommonSearchHandler {
 
             i += 250;
         }
-         optProtDataset.setActiveScoreModel((selectedScoreModel));
+        optProtDataset.setActiveScoreModel((selectedScoreModel));
+        targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
 //        if (!resultsMap.isEmpty()) {
 //            String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true);//  
 //            selectedMaxFragmentMzOption = Double.parseDouble(bestOption);
@@ -726,8 +608,149 @@ public class SageSearchHandler extends CommonSearchHandler {
         paramScore.setParamValue(selectedMinFragmentMzOption + " - " + selectedMaxFragmentMzOption + "");
         parameterScoreSet.add(paramScore);
         sageParameter.setMaxFragmentMz(selectedMaxFragmentMzOption);
+        MainUtilities.addToParameterResults("FragmentMZ", selectedMinFragmentMzOption + " - " + selectedMaxFragmentMzOption + "" + "" + "", targtedScore, scoresSet);
 //        System.exit(0);
         return new double[]{selectedMinFragmentMzOption, selectedMaxFragmentMzOption};
+    }
+
+    public double[] optimizePeptideMassParameter(SearchingSubDataset optProtDataset, IdentificationParameters oreginaltempIdParam, SageParameters sageParameter, SearchInputSetting optimisedSearchParameter, TreeSet<ParameterScoreModel> parameterScoreSet) throws IOException {
+
+        final ParameterScoreModel paramScore = new ParameterScoreModel();
+        paramScore.setParamId("PeptideMass");
+        String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
+        double selectedMaxPeptideMassOption = sageParameter.getMaxPeptideMass();
+        double selectedMinPeptideMassOption = sageParameter.getMinPeptideMass();
+        Map<String, RawScoreModel> resultsMap = Collections.synchronizedMap(new LinkedHashMap<>());
+        sageParameter.setMaxPeptideMass(selectedMaxPeptideMassOption);
+        double lastScore = -100000.0;
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
+        for (double i = 400; i <= 600;) {
+            if (i == selectedMinPeptideMassOption) {
+                i += 50.0;
+            }
+            sageParameter.setMinPeptideMass(i);
+            final String option = "minPeptideMass_" + i;
+            final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + option + "_" + msFileName;
+            double j = i;
+
+            Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "Min peptide mass: " + j);
+                return scoreModel;
+            });
+            try {
+                RawScoreModel scoreModel = f.get();
+//                 scoresSet.add(scoreModel.getcScore());
+                if (scoreModel.isSensitiveChange() && lastScore < scoreModel.getcScore()) {
+                    lastScore = scoreModel.getcScore();
+                    resultsMap.put(j + "", scoreModel);
+                } else {
+                    break;
+                }
+
+            } catch (ExecutionException | InterruptedException ex) {
+                ex.printStackTrace();
+            }
+            i += 50.0;
+        }
+
+        if (!resultsMap.isEmpty()) {
+            String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true);//  
+            selectedMinPeptideMassOption = Double.parseDouble(bestOption);
+//            optProtDataset.setActiveScoreModel(resultsMap.get(bestOption));
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
+        }
+        sageParameter.setMinPeptideMass(selectedMinPeptideMassOption);
+        resultsMap.clear();
+
+        for (double i = 4000; i <= 6000;) {
+            if (i == selectedMaxPeptideMassOption) {
+                i += 500;
+            }
+            sageParameter.setMaxPeptideMass(i);
+            final String option = "maxPeptideMass_" + i;
+            final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + option + "_" + msFileName;
+            double j = i;
+            Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "Max peptide mass: " + j);
+                return scoreModel;
+            });
+            try {
+                RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
+                if (scoreModel.isSensitiveChange()) {
+                    resultsMap.put(j + "", scoreModel);
+                }
+            } catch (ExecutionException | InterruptedException ex) {
+                ex.printStackTrace();
+            }
+
+            i += 500;
+        }
+
+        if (!resultsMap.isEmpty()) {
+            String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true);//  
+            selectedMaxPeptideMassOption = Double.parseDouble(bestOption);
+            optProtDataset.setActiveScoreModel(resultsMap.get(bestOption));
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
+        }
+        paramScore.setScore(optProtDataset.getActiveIdentificationNum());
+        paramScore.setParamValue(selectedMinPeptideMassOption + " - " + selectedMaxPeptideMassOption + "");
+        parameterScoreSet.add(paramScore);
+        sageParameter.setMaxPeptideMass(selectedMaxPeptideMassOption);
+        MainUtilities.addToParameterResults("PeptideMass", selectedMinPeptideMassOption + " - " + selectedMaxPeptideMassOption, targtedScore, scoresSet);
+
+        return new double[]{selectedMinPeptideMassOption, selectedMaxPeptideMassOption};
+    }
+
+    public int optimizeMaxVariableModificationParameter(SearchingSubDataset optProtDataset, IdentificationParameters oreginaltempIdParam, SageParameters sageParameters, SearchInputSetting optimisedSearchParameter, TreeSet<ParameterScoreModel> parameterScoreSet) throws IOException {
+        final ParameterScoreModel paramScore = new ParameterScoreModel();
+        paramScore.setParamId("maxVarPTMs");
+
+        int selectedOption = sageParameters.getMaxVariableMods();
+        Map<String, RawScoreModel> resultsMap = Collections.synchronizedMap(new LinkedHashMap<>());
+        String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
+        for (int i = 1; i <= 3; i++) {
+            if (i == selectedOption) {
+                continue;
+            }
+            final String option = "maxVarPTMs_" + i;
+            final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + option + "_" + msFileName;
+            sageParameters.setMaxVariableMods(i);
+            final int j = i;
+
+            Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
+                RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, false, optimisedSearchParameter, generatedIdentificationParametersFile, "Max variable modifications: " + j);
+                return scoreModel;
+            });
+            try {
+                RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
+                if (scoreModel.isAcceptedChange() || (scoreModel.isSensitiveChange() && j < selectedOption)) {
+                    resultsMap.put(j + "", scoreModel);
+                }
+
+            } catch (ExecutionException | InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+        if (!resultsMap.isEmpty()) {
+            String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true);//  
+            selectedOption = Integer.parseInt(bestOption);
+            optProtDataset.setActiveScoreModel(resultsMap.get(bestOption));
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
+        }
+
+        paramScore.setScore(optProtDataset.getActiveIdentificationNum());
+        paramScore.setParamValue(selectedOption + "");
+        parameterScoreSet.add(paramScore);
+        sageParameters.setMaxVariableMods(selectedOption);
+        MainUtilities.addToParameterResults("MaxVariableModification", selectedOption + "" + "" + "", targtedScore, scoresSet);
+        return selectedOption;
     }
 
     public int optimizeIonMinIndexParameter(SearchingSubDataset optProtDataset, IdentificationParameters oreginaltempIdParam, SearchInputSetting optimisedSearchParameter, SageParameters sageParameters, TreeSet<ParameterScoreModel> parameterScoreSet) throws IOException {
@@ -737,6 +760,9 @@ public class SageSearchHandler extends CommonSearchHandler {
         Map<String, RawScoreModel> resultsMap = Collections.synchronizedMap(new LinkedHashMap<>());
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         int psmNum = 0;
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 0; i <= 5; i++) {
             if (i == selectedOption) {
                 continue;
@@ -752,7 +778,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                System.out.println("ionindex : " + i + "  " + scoreModel.isSensitiveChange() + "  current psm " + psmNum + "   " + (((double) scoreModel.getIdPSMNumber() * 1.01) >= psmNum));
+                scoresSet.add(scoreModel.getcScore());
 //                if (scoreModel.isSensitiveChange() && (((double)scoreModel.getIdPSMNumber()*1.01) >= psmNum)) {
 //                    resultsMap.put(j + "", scoreModel);
 //                    psmNum = scoreModel.getIdPSMNumber();
@@ -780,11 +806,14 @@ public class SageSearchHandler extends CommonSearchHandler {
             String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true);//  
             selectedOption = Integer.parseInt(bestOption);
             optProtDataset.setActiveScoreModel(resultsMap.get(bestOption));
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
         }
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
         sageParameters.setMinIonIndex(selectedOption);
+
+        MainUtilities.addToParameterResults("MaxVariableModification", selectedOption + "" + "", targtedScore, scoresSet);
         return selectedOption;
     }
 
@@ -794,7 +823,9 @@ public class SageSearchHandler extends CommonSearchHandler {
         paramScore.setParamId("generateDecoy");
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         boolean selectedOption = sageParameters.getGenerateDecoys();
-
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 0; i < 2; i++) {
             boolean generateDecoy = (i == 1);
             if (generateDecoy == selectedOption) {
@@ -811,7 +842,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                System.out.println("generate decoy result " + generateDecoy + "  " + scoreModel + "   " + optProtDataset.getCurrentScoreModel());
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.getcScore() >= 0 || scoreModel.getDiffrentInSize() >= 0) {
                     resultsMap.put(j + "", scoreModel);
                 }
@@ -826,11 +857,13 @@ public class SageSearchHandler extends CommonSearchHandler {
             double impact = Math.round((double) (resultsMap.get(bestOption + "").getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
             paramScore.setImpact(impact);
             optProtDataset.setActiveScoreModel(resultsMap.get(bestOption + ""));
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
         }
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
         sageParameters.setGenerateDecoys(selectedOption);
+        MainUtilities.addToParameterResults("GenerateDecoy", selectedOption + "" + "", targtedScore, scoresSet);
         return selectedOption;
 
     }
@@ -839,7 +872,9 @@ public class SageSearchHandler extends CommonSearchHandler {
         final ParameterScoreModel paramScore = new ParameterScoreModel();
         paramScore.setParamId("Deisotope");
         Map<String, RawScoreModel> resultsMap = Collections.synchronizedMap(new LinkedHashMap<>());
-
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         boolean selectedOption = sageParameters.getDeisotope();
         for (int i = 0; i < 2; i++) {
@@ -856,7 +891,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                System.out.println("deistop score " + optProtDataset.getCurrentScoreModel().getSpectrumMatchResult().size() + "   " + selectedOption + "   " + (selectedOption == (i == 1))+"  "+scoreModel.isAcceptedChange()+"   "+scoreModel.getcScore()+"  "+scoreModel.getSpectrumMatchResult().size());
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange()) {
                     resultsMap.put((j == 1) + "", scoreModel);
                 }
@@ -866,17 +901,18 @@ public class SageSearchHandler extends CommonSearchHandler {
         }
 
         if (!resultsMap.isEmpty()) {
-            String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true);//  
-            System.out.println("---->> best option is " + bestOption + "   " + resultsMap.keySet());
+            String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true);// 
             selectedOption = Boolean.parseBoolean(bestOption);
 
             optProtDataset.setActiveScoreModel(resultsMap.get(selectedOption + ""));
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
 
         }
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
         sageParameters.setDeisotope(selectedOption);
+        MainUtilities.addToParameterResults("Deisotope", selectedOption + "" + "", targtedScore, scoresSet);
         return selectedOption;
 
     }
@@ -887,6 +923,9 @@ public class SageSearchHandler extends CommonSearchHandler {
         Map<String, RawScoreModel> resultsMap = Collections.synchronizedMap(new LinkedHashMap<>());
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         boolean selectedOption = sageParameters.getChimera();
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 0; i < 2; i++) {
             if (selectedOption == (i == 1)) {
                 continue;
@@ -901,6 +940,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                 scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange()) {
                     resultsMap.put(j + "", scoreModel);
                 }
@@ -912,11 +952,13 @@ public class SageSearchHandler extends CommonSearchHandler {
             String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true);//  
             selectedOption = Integer.parseInt(bestOption) == 1;
             optProtDataset.setActiveScoreModel(resultsMap.get(bestOption));
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
         }
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
         sageParameters.setChimera(selectedOption);
+        MainUtilities.addToParameterResults("ChimericSpectra", selectedOption + "" + "", targtedScore, scoresSet);
         return selectedOption;
 
     }
@@ -928,7 +970,9 @@ public class SageSearchHandler extends CommonSearchHandler {
         Map<String, RawScoreModel> resultsMap = Collections.synchronizedMap(new LinkedHashMap<>());
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         boolean selectedOption = sageParameters.getWideWindow();
-
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 0; i < 2; i++) {
             if (selectedOption == (i == 1)) {
                 continue;
@@ -944,6 +988,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                 scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange()) {
                     resultsMap.put(j + "", scoreModel);
 
@@ -956,6 +1001,7 @@ public class SageSearchHandler extends CommonSearchHandler {
         if (!resultsMap.isEmpty()) {
             String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true);//  
             selectedOption = Integer.parseInt(bestOption) == 1;
+            targtedScore= resultsMap.get(bestOption).getcScore();
 //            optProtDataset.setActiveScoreModel(resultsMap.get(bestOption));
             paramScore.setComments("Slow processing");
         }
@@ -963,6 +1009,7 @@ public class SageSearchHandler extends CommonSearchHandler {
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
         sageParameters.setWideWindow(false);
+        MainUtilities.addToParameterResults("WideWindow", selectedOption + "" + "", targtedScore, scoresSet);
         return selectedOption;
 
     }
@@ -973,7 +1020,9 @@ public class SageSearchHandler extends CommonSearchHandler {
         Map<String, RawScoreModel> resultsMap = Collections.synchronizedMap(new LinkedHashMap<>());
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         boolean selectedOption = sageParameters.getPredictRt();
-
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 0; i < 2; i++) {
             if (selectedOption == (i == 1)) {
                 continue;
@@ -990,6 +1039,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                 scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange()) {
                     resultsMap.put(j + "", scoreModel);
                 }
@@ -1002,12 +1052,14 @@ public class SageSearchHandler extends CommonSearchHandler {
             String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true);//  
             selectedOption = Integer.parseInt(bestOption) == 1;
             optProtDataset.setActiveScoreModel(resultsMap.get(bestOption));
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
             sageParameters.setPredictRt(selectedOption);
         }
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
         sageParameters.setPredictRt(selectedOption);
+        MainUtilities.addToParameterResults("PredectRT", selectedOption + "" + "", targtedScore, scoresSet);
         return selectedOption;
 
     }
@@ -1021,6 +1073,9 @@ public class SageSearchHandler extends CommonSearchHandler {
         Map<String, RawScoreModel> resultsMap = Collections.synchronizedMap(new LinkedHashMap<>());
         sageParameter.setMaxPeaks(selectedMaxPeaksNumberOption);
         double topScore = 0;
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 10; i <= 20; i++) {
             if (i == selectedMinPeaksNumberOption) {
                 continue;
@@ -1036,8 +1091,9 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                 scoresSet.add(scoreModel.getcScore());
 //                if (scoreModel.isSensitiveChange() && scoreModel.getSpectrumMatchResult().size() >= optProtDataset.getCurrentScoreModel().getSpectrumMatchResult().size()) {
-                    System.out.println("add as min peaks  score " + j+"   "+scoreModel+"   ts "+topScore);
+                System.out.println("add as min peaks  score " + j + "   " + scoreModel + "   ts " + topScore);
                 if (scoreModel.isAcceptedChange() && scoreModel.getIdPSMNumber() > topScore) {
                     resultsMap.put(j + "", scoreModel);
                     topScore = scoreModel.getIdPSMNumber();
@@ -1071,7 +1127,7 @@ public class SageSearchHandler extends CommonSearchHandler {
         }
         resultsMap.clear();
         sageParameter.setMinPeaks(selectedMinPeaksNumberOption);
-        RawScoreModel selectedScoreModel= optProtDataset.getCurrentScoreModel();
+        RawScoreModel selectedScoreModel = optProtDataset.getCurrentScoreModel();
         int selectedMax = selectedMaxPeaksNumberOption;
         for (int i = 100; i <= 200;) {
             if (i == selectedMaxPeaksNumberOption) {
@@ -1088,10 +1144,11 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                 scoresSet.add(scoreModel.getcScore());
                 System.out.println("max # " + j + " vs " + selectedMaxPeaksNumberOption + "   " + scoreModel);
                 if ((scoreModel.isAcceptedChange())) {
                     selectedScoreModel = scoreModel;
-                    selectedMax=j;
+                    selectedMax = j;
 //                    resultsMap.put(j + "", scoreModel);
                 }
 //                else if (j > selectedMaxPeaksNumberOption) {
@@ -1102,8 +1159,9 @@ public class SageSearchHandler extends CommonSearchHandler {
             }
             i += 10;
         }
-         optProtDataset.setActiveScoreModel(selectedScoreModel);
-         selectedMaxPeaksNumberOption=selectedMax;
+        optProtDataset.setActiveScoreModel(selectedScoreModel);
+        targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
+        selectedMaxPeaksNumberOption = selectedMax;
 
 //        if (!resultsMap.isEmpty()) {
 //            selectedMaxPeaksNumberOption = Integer.parseInt(SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true));
@@ -1113,6 +1171,7 @@ public class SageSearchHandler extends CommonSearchHandler {
         paramScore.setParamValue(selectedMinPeaksNumberOption + "-" + selectedMaxPeaksNumberOption + "");
         parameterScoreSet.add(paramScore);
         sageParameter.setMaxPeaks(selectedMaxPeaksNumberOption);
+        MainUtilities.addToParameterResults("NumberofPeaks", selectedMinPeaksNumberOption + "-" + selectedMaxPeaksNumberOption + "" + "", targtedScore, scoresSet);
         return new int[]{selectedMinPeaksNumberOption, selectedMaxPeaksNumberOption};
     }
 
@@ -1122,6 +1181,9 @@ public class SageSearchHandler extends CommonSearchHandler {
         int selectedOption = sageParameters.getMinMatchedPeaks();
         Map<String, RawScoreModel> resultsMap = Collections.synchronizedMap(new LinkedHashMap<>());
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 3; i <= 6; i++) {
             if (i == selectedOption) {
                 continue;
@@ -1136,6 +1198,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                 scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange() || (j < selectedOption && scoreModel.getcScore() >= 0)) {// && scoreModel.getIdPSMNumber() >= optProtDataset.getActiveIdentificationNum()) {
                     resultsMap.put(j + "", scoreModel);
                 } else if (j > selectedOption) {
@@ -1151,11 +1214,13 @@ public class SageSearchHandler extends CommonSearchHandler {
             String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), true, true);//  
             selectedOption = Integer.parseInt(bestOption);
             optProtDataset.setActiveScoreModel(resultsMap.get(bestOption));
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
         }
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
         sageParameters.setMinMatchedPeaks(selectedOption);
+        MainUtilities.addToParameterResults("MinMachedPeaks", selectedOption + "", targtedScore, scoresSet);
         return selectedOption;
     }
 
@@ -1163,6 +1228,9 @@ public class SageSearchHandler extends CommonSearchHandler {
         final ParameterScoreModel paramScore = new ParameterScoreModel();
         paramScore.setParamId("maxFragmentCharge");
         int selectedOption = 1;
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         if (sageParameters.getMaxFragmentCharge() != null) {
             selectedOption = sageParameters.getMaxFragmentCharge();
         }
@@ -1183,6 +1251,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                 scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.getcScore() > 0) {
                     resultsMap.put(j + "", scoreModel);
                 } else if (j > selectedOption) {
@@ -1198,11 +1267,13 @@ public class SageSearchHandler extends CommonSearchHandler {
             String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true);//  
             selectedOption = Integer.parseInt(bestOption);
             optProtDataset.setActiveScoreModel(resultsMap.get(bestOption));
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
         }
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
         sageParameters.setMaxFragmentCharge(selectedOption);
+        MainUtilities.addToParameterResults("MaxFragmentCharge", selectedOption + "", targtedScore, scoresSet);
         return selectedOption;
     }
 

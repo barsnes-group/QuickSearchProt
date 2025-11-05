@@ -227,12 +227,7 @@ public class Controller {
 
         if (generatedFile != null) {
 
-            ReportExporter.exportFullReport(
-                    generatedFile,
-                    optProtDataset,
-                    optProtDatasetHandler.getSearchInputSetting().getSelectedSearchEngine(),
-                    optProtDatasetHandler.getSearchInputSetting().getDatasetId(), totalTime, totalDsTime
-            );
+            ReportExporter.exportFullReport();
             ReportExporter.printFullReport(
                     generatedFile,
                     optProtDataset,

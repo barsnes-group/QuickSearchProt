@@ -119,6 +119,10 @@ public class XTandemSearchHandler extends CommonSearchHandler {
     private String enzymeSpecificityOpt = "specific";
     private int currentValue = 5;
     private int step = 0;
+    /**
+     * The score set is use to calculate score confidence
+     */
+    private final TreeSet<Double> scoresSet = new TreeSet<>();
 
     public void startProcess(List<String> paramOrder) throws IOException {
         currentValue = 0;
@@ -477,13 +481,13 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 
         if (!paramValue.trim().isEmpty()) {
             double fullDataIdent = optProtDataset.getSubsetSize() * 4;//(testData.length*4.0)+(referenceData.length*4);
-            double cScore= rawScore.getcScore();
+            double cScore = rawScore.getcScore();
             if (validatedMaches.isEmpty()) {
-                cScore= (-1.0 * fullDataIdent);
+                cScore = (-1.0 * fullDataIdent);
             }
 
-            double cScorePers = Math.round(( cScore* 100.0 / fullDataIdent) * 100.0) / 100.0;
-              System.out.println("cScore % "+cScorePers);
+            double cScorePers = Math.round((cScore * 100.0 / fullDataIdent) * 100.0) / 100.0;
+            System.out.println("cScore % " + cScorePers);
             String symbol;
             if (cScorePers > 0) {
                 symbol = "\u25B2";
@@ -531,10 +535,12 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         paramScore.setParamId("spectrumDR");
         Map<String, RawScoreModel> resultsMap = Collections.synchronizedMap(new LinkedHashMap<>());
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
-//        int spectraCounter = (int) Math.round(optProtDataset.getActiveIdentificationNum() * 1.01);
         int spectraCounter = optProtDataset.getCurrentScoreModel().getIdPSMNumber();
         XtandemParameters xtandemParameters = (XtandemParameters) oreginaltempIdParam.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
         double selectedOption = xtandemParameters.getDynamicRange();
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (double i = 60.0; i < 220;) {
             if (i == selectedOption) {
                 i += 20;
@@ -551,8 +557,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                System.out.println("---->>> DR " + j + "  " + spectraCounter + "  " + scoreModel);
-
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.getcScore() > 0 && (scoreModel.getSpectrumMatchResult().size() >= spectraCounter)) {
                     resultsMap.put(j + "", scoreModel);
                     if (scoreModel.getSpectrumMatchResult().size() <= spectraCounter) {
@@ -568,25 +573,20 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             i += 20;
         }
         xtandemParameters.setDynamicRange(selectedOption);
-//        TreeMap<RawScoreModel, Double> sortedResultsMap = new TreeMap<>(Collections.reverseOrder());
-
         if (!resultsMap.isEmpty()) {
-//            for (double option : resultsMap.keySet()) {
-//                sortedResultsMap.put(resultsMap.get(option), option);
-//            }
-//            selectedOption = sortedResultsMap.firstEntry().getValue();
+
             selectedOption = Double.parseDouble(SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, false));
             double impact = Math.round((double) (resultsMap.get(selectedOption + "").getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
             paramScore.setImpact(impact);
             optProtDataset.setActiveScoreModel(resultsMap.get(selectedOption + ""));
-//            optProtDataset.setActiveScoreModel(sortedResultsMap.firstEntry().getKey());
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
 
         }
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
+        MainUtilities.addToParameterResults("SpectrumDynamicRange", selectedOption + "", targtedScore, scoresSet);
 
-        System.out.println("selected " + selectedOption);
         return selectedOption;
     }
 
@@ -598,7 +598,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         XtandemParameters xtandemParameters = (XtandemParameters) oreginaltempIdParam.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
         Integer selectedOption = xtandemParameters.getnPeaks();
         Integer topSelection = selectedOption;
-
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 50; i <= 100;) {
             if (i == selectedOption) {
                 i += 10;
@@ -616,14 +618,10 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                System.out.println("#peacks is " + j + "   " + scoreModel);
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange()) {
                     topSelection = j;
-//                if (scoreModel.getFinalScore() > optProtDataset.getBasicComparisonThreshold()) {
                     resultsMap.put(j + "", scoreModel);
-//                    if (scoreModel.getFinalScore() <= topScore) {
-//                        break;
-//                    }
                 } else {// if (!scoreModel.isSensitiveChange() && !scoreModel.isSameData() && scoreModel.getImprovmentScore() != -100 && topScore > 0) {
                     break;
                 }
@@ -639,11 +637,12 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             double impact = Math.round((double) (resultsMap.get(selectedOption + "").getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
             paramScore.setImpact(impact);
             optProtDataset.setActiveScoreModel(resultsMap.get(selectedOption + ""));
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
         }
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
-
+        MainUtilities.addToParameterResults("NumberofPeaks", selectedOption + "", targtedScore, scoresSet);
         return selectedOption;
     }
 
@@ -656,6 +655,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         IdentificationParameters tempIdParam = oreginaltempIdParam;
         int spectraCounter = optProtDataset.getCurrentScoreModel().getIdPSMNumber();
         double selectedOption = xtandemParameters.getMinFragmentMz();
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (double i = 100; i <= 300;) {
             if (i == selectedOption) {
                 i += 50;
@@ -671,12 +673,8 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange()) {
-//                if (scoreModel.isSensitiveChange() && (scoreModel.getSpectrumMatchResult().size() >= spectraCounter)) {
-//                    if (scoreModel.getSpectrumMatchResult().size() <= spectraCounter) {
-//                        break;
-//                    }
-//                    spectraCounter = Math.max(spectraCounter, scoreModel.getSpectrumMatchResult().size());
                     resultsMap.put(j + "", scoreModel);
                 }
 
@@ -691,11 +689,13 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             double impact = Math.round((double) (resultsMap.get(selectedOption + "").getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
             paramScore.setImpact(impact);
             optProtDataset.setActiveScoreModel(resultsMap.get(selectedOption + ""));
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
         }
 
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
+        MainUtilities.addToParameterResults("MinimumFragmentMz", selectedOption + "", targtedScore, scoresSet);
 
         return selectedOption;
     }
@@ -704,12 +704,12 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         final ParameterScoreModel paramScore = new ParameterScoreModel();
         paramScore.setParamId("minpeaksNum");
         double lastScore = 0.0;
-//        IdentificationParameters oreginaltempIdParam = IdentificationParameters.getIdentificationParameters(identificationParametersFile);
-//         xtandemParameters = (XtandemParameters) oreginaltempIdParam.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
-
         Map<Integer, RawScoreModel> resultsMap = Collections.synchronizedMap(new LinkedHashMap<>());
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         Integer selectedOption = xtandemParameters.getMinPeaksPerSpectrum();
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = xtandemParameters.getMinPeaksPerSpectrum(); i <= xtandemParameters.getnPeaks(); i++) {
             if (i == selectedOption) {
                 i += 1;
@@ -724,13 +724,10 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange()) {
-//                    if (scoreModel.getFinalScore() <= lastScore) {
-//                        break;
-//                    }
-//                    lastScore = scoreModel.getFinalScore();
                     resultsMap.put(j, scoreModel);
-                } else {//if (!scoreModel.isSensitiveChange() && scoreModel.getImprovmentScore() != -100) {
+                } else {
                     break;
                 }
             } catch (ExecutionException | InterruptedException ex) {
@@ -743,11 +740,12 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             double impact = Math.round((double) (resultsMap.get(selectedOption).getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
             paramScore.setImpact(impact);
             optProtDataset.setActiveScoreModel(resultsMap.get(selectedOption));
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
         }
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
-
+        MainUtilities.addToParameterResults("MinimumPeaks", selectedOption + "", targtedScore, scoresSet);
         return selectedOption;
     }
 
@@ -755,7 +753,6 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         final ParameterScoreModel paramScore = new ParameterScoreModel();
         paramScore.setParamId("noiseSupression");
         Map<Double, RawScoreModel> resultsMap = Collections.synchronizedMap(new LinkedHashMap<>());
-//        IdentificationParameters oreginaltempIdParam = IdentificationParameters.getIdentificationParameters(identificationParametersFile);
         XtandemParameters xtandemParameters = (XtandemParameters) oreginaltempIdParam.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         boolean selectedOption1 = xtandemParameters.isUseNoiseSuppression();
@@ -763,7 +760,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         final String option = "noiseSupression_" + false;
         final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + option + "_" + msFileName;
         xtandemParameters.setUseNoiseSuppression(false);
-
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         if (selectedOption1 != false) {
             Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
 
@@ -772,6 +771,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
 
                 if (scoreModel.isAcceptedChange()) {
                     resultsMap.put(0.0, scoreModel);
@@ -795,6 +795,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 
             try {
                 RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange()) {
                     resultsMap.put(i, scoreModel);
                 }
@@ -814,10 +815,12 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             double impact = Math.round((double) (resultsMap.get(selectedOption2).getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
             paramScore.setImpact(impact);
             optProtDataset.setActiveScoreModel(sortedResultsMap.firstEntry().getKey());
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
         }
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption2 + "");
         parameterScoreSet.add(paramScore);
+        MainUtilities.addToParameterResults("NoiseSuppression", selectedOption2 + "", targtedScore, scoresSet);
 
         return selectedOption2;
     }
@@ -830,7 +833,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 //        IdentificationParameters oreginaltempIdParam = IdentificationParameters.getIdentificationParameters(identificationParametersFile);
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         boolean selectedOption = xtandemParameters.getParentMonoisotopicMassIsotopeError();
-
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 0; i < 2; i++) {
             if (((i == 1)) == selectedOption) {
                 continue;
@@ -847,6 +852,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             try {
 
                 RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isSensitiveChange()) {
                     resultsMap.put(j, scoreModel);
                 }
@@ -864,10 +870,12 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             double impact = Math.round((double) (resultsMap.get(1).getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
             paramScore.setImpact(impact);
             optProtDataset.setActiveScoreModel(sortedResultsMap.firstEntry().getKey());
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
         }
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
+         MainUtilities.addToParameterResults("Parentisotop", selectedOption + "", targtedScore, scoresSet);
         return selectedOption;
     }
 
@@ -878,7 +886,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         XtandemParameters xtandemParameters = (XtandemParameters) oreginaltempIdParam.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         boolean selectedOption = xtandemParameters.isProteinQuickAcetyl();
-
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 0; i < 2; i++) {
             boolean useQuickAcetyl = (i == 1);
             if (useQuickAcetyl == selectedOption) {
@@ -895,6 +905,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.getcScore() > 0 || scoreModel.isSameData() || scoreModel.isAcceptedChange()) {
                     resultsMap.put(j, scoreModel);
                 }
@@ -911,6 +922,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                 double impact = Math.round((double) (resultsMap.get(option).getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
                 paramScore.setImpact(impact);
                 optProtDataset.setActiveScoreModel(resultsMap.get(option));
+                targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
             }
             selectedOption = use;
 
@@ -919,6 +931,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
+        MainUtilities.addToParameterResults("QuickAcetyl", selectedOption + "", targtedScore, scoresSet);
         return selectedOption;
     }
 
@@ -929,6 +942,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         XtandemParameters xtandemParameters = (XtandemParameters) oreginaltempIdParam.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         boolean selectedOption = xtandemParameters.isQuickPyrolidone();
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 0; i < 2; i++) {
             boolean useQuickPyrolidone = (i == 1);
             if (useQuickPyrolidone == selectedOption) {
@@ -947,6 +963,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             try {
 
                 RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
 
                 if (scoreModel.isSensitiveChange()) {
                     resultsMap.put(j, scoreModel);
@@ -963,6 +980,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                 double impact = Math.round((double) (resultsMap.get(option).getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
                 paramScore.setImpact(impact);
                 optProtDataset.setActiveScoreModel(resultsMap.get(option));
+                targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
             }
             selectedOption = use;
 
@@ -971,6 +989,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
+         MainUtilities.addToParameterResults("QuickPyrolidone", selectedOption + "", targtedScore, scoresSet);
         return selectedOption;
     }
 
@@ -981,7 +1000,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         XtandemParameters xtandemParameters = (XtandemParameters) oreginaltempIdParam.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         boolean selectedOption = xtandemParameters.isStpBias();
-
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 0; i < 2; i++) {
             boolean useStpBias = (i == 1);
             if (useStpBias == selectedOption) {
@@ -999,6 +1020,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange()) {
                     resultsMap.put(j, scoreModel);
                 }
@@ -1014,6 +1036,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                 double impact = Math.round((double) (resultsMap.get(option).getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
                 paramScore.setImpact(impact);
                 optProtDataset.setActiveScoreModel(resultsMap.get(option));
+                targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
             }
             selectedOption = use;
 
@@ -1022,6 +1045,8 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
+        
+         MainUtilities.addToParameterResults("stPBias", selectedOption + "", targtedScore, scoresSet);
         return selectedOption;
     }
 
@@ -1037,19 +1062,25 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         final String option = "useRefine_" + useRefine;
         final String updatedName = Configurations.DEFAULT_RESULT_NAME + "_" + option + "_" + msFileName;
         xtandemParameters.setRefine(useRefine);
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         Future<RawScoreModel> f = MainUtilities.getExecutorService().submit(() -> {
             RawScoreModel scoreModel = excuteSearch(optProtDataset, updatedName, option, oreginaltempIdParam, true, optimisedSearchParameter, generatedIdentificationParametersFile, "Enable refinement stage: " + useRefine);
             return scoreModel;
         });
         try {
             RawScoreModel scoreModel = f.get();
+            scoresSet.add(scoreModel.getcScore());
             double impact = Math.round((double) (scoreModel.getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
             paramScore.setImpact(impact);
             optProtDataset.setActiveScoreModel(scoreModel);
+            targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
             selectedOption = true;
             paramScore.setScore(scoreModel.getSpectrumMatchResult().size());
             paramScore.setParamValue(selectedOption + "");
             parameterScoreSet.add(paramScore);
+            MainUtilities.addToParameterResults("Refinement", selectedOption + "", targtedScore, scoresSet);
         } catch (ExecutionException | InterruptedException ex) {
             ex.printStackTrace();
         }
@@ -1074,7 +1105,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 
         MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
         paramScore.setParamId("refineVariableModifications");//    
-
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         Set<String> potintialVariableMod = new LinkedHashSet<>(oreginaltempIdParam.getSearchParameters().getModificationParameters().getVariableModifications());
 //        }
         for (String vMod : potintialVariableMod) {
@@ -1093,6 +1126,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange()) {
                     resultsMap.put(option, scoreModel);
                 }
@@ -1120,6 +1154,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                     });
                     try {
                         RawScoreModel scoreModel = f.get();
+                        scoresSet.add(scoreModel.getcScore());
                         if (scoreModel.isAcceptedChange()) {
                             sorterSet.add(scoreModel);
                             sorterSet.add(resultsMap.get(selectedRef));
@@ -1155,6 +1190,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                     });
                     try {
                         RawScoreModel scoreModel = f.get();
+                        scoresSet.add(scoreModel.getcScore());
                         if (scoreModel.isAcceptedChange()) {
                             sorterSet.add(scoreModel);
                             sorterSet.add(resultsMap.get(selectedRef));
@@ -1193,6 +1229,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                     });
                     try {
                         RawScoreModel scoreModel = f.get();
+                        scoresSet.add(scoreModel.getcScore());
                         if (scoreModel.isAcceptedChange()) {
                             sorterSet.add(scoreModel);
                             sorterSet.add(resultsMap.get(selectedRef));
@@ -1232,6 +1269,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(refinementVarModMap.toString());
         parameterScoreSet.add(paramScore);
+//        MainUtilities.addToParameterResults("Refinement", selectedOption + "", targtedScore, scoresSet);
         return refinementVarModMap;
 
     }
@@ -1243,6 +1281,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         boolean selectedOption = xtandemParameters.isRefineUnanticipatedCleavages();
         MainUtilities.resetExecutorService();
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 0; i < 2; i++) {
             boolean useRefineUnanticipatedCleavages = (i == 1);
             if (useRefineUnanticipatedCleavages == selectedOption) {
@@ -1261,6 +1302,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             try {
 
                 RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isSensitiveChange()) {
                     resultsMap.put(j, scoreModel);
                 }
@@ -1275,6 +1317,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                 double impact = Math.round((double) (resultsMap.get(option).getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
                 paramScore.setImpact(impact);
                 optProtDataset.setActiveScoreModel(resultsMap.get(option));
+                targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
             }
             selectedOption = use;
 
@@ -1283,6 +1326,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
+        MainUtilities.addToParameterResults("UnanticipatedCleavage", selectedOption + "", targtedScore, scoresSet);
         return selectedOption;
     }
 
@@ -1293,6 +1337,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         boolean selectedOption = xtandemParameters.isRefineSemi();
         MainUtilities.resetExecutorService();
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 0; i < 2; i++) {
             boolean useRefineSimiEnzymaticCleavage = (i == 1);
             if (useRefineSimiEnzymaticCleavage == selectedOption) {
@@ -1310,6 +1357,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
                 boolean oversenstive = scoreModel.getcScore() > (0) && scoreModel.getIdPSMNumber() >= optProtDataset.getIdentifiedPSMsNumber();
 //                System.out.println("Simi enzymatic " + scoreModel.getRawFinalScore() + "    ----   " + oversenstive + "  " + scoreModel);
                 if (scoreModel.getcScore() >= 0 || (oversenstive)) {
@@ -1327,11 +1375,13 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             double impact = Math.round((double) (resultsMap.get(1).getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
             paramScore.setImpact(impact);
 //            optProtDataset.setActiveScoreModel(resultsMap.get(1));
+            targtedScore = resultsMap.get(1).getcScore();
 
         }
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
+        MainUtilities.addToParameterResults("SimiEnzymaticCleavage", selectedOption + "", targtedScore, scoresSet);
         return selectedOption;
 
     }
@@ -1344,6 +1394,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         xtandemParameters.setRefine(true);
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         boolean selectedOption = xtandemParameters.isPotentialModificationsForFullRefinment();
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         MainUtilities.resetExecutorService();
         for (int i = 0; i < 2; i++) {
             boolean usePotintialModification = (i == 1);
@@ -1362,6 +1415,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange()) {
                     resultsMap.put(j, scoreModel);
                 }
@@ -1379,6 +1433,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                 double impact = Math.round((double) (resultsMap.get(option).getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
                 paramScore.setImpact(impact);
                 optProtDataset.setActiveScoreModel(resultsMap.get(option));
+                targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
             }
             selectedOption = use;
 
@@ -1386,8 +1441,8 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
-
         parameterScoreSet.add(paramScore);
+        MainUtilities.addToParameterResults("PotintialModification", selectedOption + "", targtedScore, scoresSet);
         return selectedOption;
 
     }
@@ -1401,6 +1456,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         boolean selectedOption = xtandemParameters.isRefinePointMutations();
         MainUtilities.resetExecutorService();
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 0; i < 2; i++) {
             boolean useRefinePointMutations = (i == 1);
             if (useRefinePointMutations == selectedOption) {
@@ -1417,6 +1475,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
                 System.out.println(optProtDataset.getActiveIdentificationNum() + " - use point mutation " + scoreModel);
                 if (scoreModel.isSensitiveChange()) {
                     resultsMap.put(j, scoreModel);
@@ -1434,6 +1493,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                 double impact = Math.round((double) (resultsMap.get(option).getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
                 paramScore.setImpact(impact);
                 optProtDataset.setActiveScoreModel(resultsMap.get(option));
+                targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
             }
             selectedOption = use;
 
@@ -1441,7 +1501,8 @@ public class XTandemSearchHandler extends CommonSearchHandler {
 
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
-        parameterScoreSet.add(paramScore);
+        parameterScoreSet.add(paramScore);        
+        MainUtilities.addToParameterResults("PointMutations", selectedOption + "", targtedScore, scoresSet);
         return selectedOption;
     }
 
@@ -1452,7 +1513,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         XtandemParameters xtandemParameters = (XtandemParameters) oreginaltempIdParam.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         boolean selectedOption = xtandemParameters.isRefineSnaps();
-
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 0; i < 2; i++) {
             boolean useRefineSnAPs = (i == 1);
             if (useRefineSnAPs == selectedOption) {
@@ -1470,6 +1533,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange()) {
                     resultsMap.put(j, scoreModel);
                 }
@@ -1485,6 +1549,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                 double impact = Math.round((double) (resultsMap.get(option).getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
                 paramScore.setImpact(impact);
                 optProtDataset.setActiveScoreModel(resultsMap.get(option));
+                targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
             }
             selectedOption = use;
 
@@ -1493,6 +1558,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
+        MainUtilities.addToParameterResults("SnAPs", selectedOption + "", targtedScore, scoresSet);
         return selectedOption;
 
     }
@@ -1505,6 +1571,9 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         XtandemParameters xtandemParameters = (XtandemParameters) oreginaltempIdParam.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
         boolean selectedOption = xtandemParameters.isRefineSpectrumSynthesis();
+        scoresSet.clear();
+        scoresSet.add(0.0);
+        double targtedScore = 0;
         for (int i = 0; i < 2; i++) {
             boolean useRefineSpectrumSynthesis = (i == 1);
             if (useRefineSpectrumSynthesis == selectedOption) {
@@ -1522,6 +1591,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.getcScore() > 0 && scoreModel.getDiffrentInSize() > 0) {
                     resultsMap.put(j, scoreModel);
                 }
@@ -1539,6 +1609,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
                 double impact = Math.round((double) (resultsMap.get(option).getSpectrumMatchResult().size() - optProtDataset.getActiveIdentificationNum()) * 100.0 / (double) optProtDataset.getActiveIdentificationNum()) / 100.0;
                 paramScore.setImpact(impact);
                 optProtDataset.setActiveScoreModel(resultsMap.get(option));
+                targtedScore = optProtDataset.getCurrentScoreModel().getcScore();
             }
             selectedOption = use;
 
@@ -1547,6 +1618,7 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         paramScore.setScore(optProtDataset.getActiveIdentificationNum());
         paramScore.setParamValue(selectedOption + "");
         parameterScoreSet.add(paramScore);
+        MainUtilities.addToParameterResults("SpectrumSynthesis", selectedOption + "", targtedScore, scoresSet);
         return selectedOption;
 
     }

@@ -184,7 +184,7 @@ public class MainUtilities {
         result.setzScore(zScore);
         result.setPvalue(pvalue);
         result.setPercentage(percentage);
-        if (targtedScore == 0) {
+        if (targtedScore == 0 && scores.size()>1) {
             result.setDefaultParameterValue(true);
         }
         paramConfidentMap.put(parameterName, result);
