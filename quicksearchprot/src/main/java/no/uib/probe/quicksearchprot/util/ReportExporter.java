@@ -23,9 +23,8 @@ import no.uib.probe.quicksearchprot.model.ParameterScoreModel;
  * @author yfa041
  */
 public class ReportExporter {
-    
-    private static final String[] ions = new String[]{"a", "b", "c","x", "y", "z"};
-        
+
+    private static final String[] ions = new String[]{"a", "b", "c", "x", "y", "z"};
 
     public static void addElementToReport(String datasetId, String paramId, String paramOption, double idRate, double timeInSecond) {
         MainUtilities.QSProtWaitingHandler.addLogMassage("Report --->  datasetId: " + datasetId + "\tparamId:" + paramId + "\tparamOption:" + paramOption + "\tid_rate:" + idRate + "%\ttime:" + timeInSecond);
@@ -41,37 +40,45 @@ public class ReportExporter {
             ex.printStackTrace();
             return;
         }
-       MainUtilities.QSProtWaitingHandler.addOutputMassage("------------------------------- " + datasetId + " ( " + searchEngine.getName().toUpperCase() + " ) -----------------------------------------");
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("\t\u2605\u2605\u2605\u2605\u2605 " + datasetId.toUpperCase() + " ( " + searchEngine.getName().toUpperCase() + " ) \u2605\u2605\u2605\u2605\u2605");
         if (dataset != null) {
-       MainUtilities.QSProtWaitingHandler.addOutputMassage("Spectra size:\t\t" + dataset.getSubsetSize());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Spectra size:\t\t" + dataset.getSubsetSize() + "\n");
         }
-        MainUtilities.QSProtWaitingHandler.addOutputMassage("Digestion:\t\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getCleavageParameter().name());
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("""
+                                                             Parameter\t\tValue\t\tScore\tComments 
+                                                             """);
+
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Digestion:\t\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getCleavageParameter().name() + "\t" + MainUtilities.getConfidentAsString("Digestion"));
         if (optimisedSearchParameter.getSearchParameters().getDigestionParameters().getCleavageParameter().name().equals("enzyme")) {
 
-            MainUtilities.QSProtWaitingHandler.addOutputMassage("Enzyme:\t\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName());
-            MainUtilities.QSProtWaitingHandler.addOutputMassage("Specificity:\t\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getSpecificity(optimisedSearchParameter.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName()));
-            MainUtilities.QSProtWaitingHandler.addOutputMassage("Max Missed Cleavages:\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getnMissedCleavages(optimisedSearchParameter.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName()));
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Enzyme:\t\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName() + "\t" + MainUtilities.getConfidentAsString("Enzyme"));
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Specificity:\t\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getSpecificity(optimisedSearchParameter.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName()) + "\t" + MainUtilities.getConfidentAsString("Specificity"));
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Max Missed Cleavages:\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getnMissedCleavages(optimisedSearchParameter.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName()) + "\t" + MainUtilities.getConfidentAsString("MaxMissedCleavages"));
         }
-        MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragment Ion Types:\t" + ions[optimisedSearchParameter.getSearchParameters().getForwardIons().get(0)] + "-" + ions[optimisedSearchParameter.getSearchParameters().getRewindIons().get(0)]);
-        MainUtilities.QSProtWaitingHandler.addOutputMassage("Precursor Accuracy:\t" + optimisedSearchParameter.getSearchParameters().getPrecursorAccuracy() + " " + optimisedSearchParameter.getSearchParameters().getPrecursorAccuracyType().name());
-        MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragment Accuracy:\t" + optimisedSearchParameter.getSearchParameters().getFragmentIonAccuracy() + " " + optimisedSearchParameter.getSearchParameters().getFragmentAccuracyType().name());
-        MainUtilities.QSProtWaitingHandler.addOutputMassage("PrecursorCharge:\t" + optimisedSearchParameter.getSearchParameters().getMinChargeSearched() + " - " + optimisedSearchParameter.getSearchParameters().getMaxChargeSearched());
-        MainUtilities.QSProtWaitingHandler.addOutputMassage("Isotops:\t\t" + optimisedSearchParameter.getSearchParameters().getMinIsotopicCorrection() + " - " + optimisedSearchParameter.getSearchParameters().getMaxIsotopicCorrection());
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragment Ion Types:\t" + ions[optimisedSearchParameter.getSearchParameters().getForwardIons().get(0)] + "-" + ions[optimisedSearchParameter.getSearchParameters().getRewindIons().get(0)] + "\t" + MainUtilities.getConfidentAsString("FragmentIonTypes"));
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Precursor Accuracy:\t" + optimisedSearchParameter.getSearchParameters().getPrecursorAccuracy() + " " + optimisedSearchParameter.getSearchParameters().getPrecursorAccuracyType().name() + "\t" + MainUtilities.getConfidentAsString("PrecursorAccuracy"));
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragment Accuracy:\t" + optimisedSearchParameter.getSearchParameters().getFragmentIonAccuracy() + " " + optimisedSearchParameter.getSearchParameters().getFragmentAccuracyType().name() + "\t" + MainUtilities.getConfidentAsString("FragmentAccuracy"));
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Precursor Charge:\t" + optimisedSearchParameter.getSearchParameters().getMinChargeSearched() + " - " + optimisedSearchParameter.getSearchParameters().getMaxChargeSearched() + "\t" + MainUtilities.getConfidentAsString("PrecursorCharge"));
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Isotops:\t\t" + optimisedSearchParameter.getSearchParameters().getMinIsotopicCorrection() + " - " + optimisedSearchParameter.getSearchParameters().getMaxIsotopicCorrection() + "\t" + MainUtilities.getConfidentAsString("Isotops"));
 //            MainUtilities.QSProtWaitingHandler.addOutputMassage("default Variable mod:\t" + optimisedSearchParameter.getSearchParameters() + "  Factor " + referenceFactor);
         String fm = "";
         if (optimisedSearchParameter.getSearchParameters().getModificationParameters().getFixedModifications() != null) {
             for (String fixedMod : optimisedSearchParameter.getSearchParameters().getModificationParameters().getFixedModifications()) {
-                fm += ("\t\t" +fixedMod + "\n");
+                fm += ("\t" + fixedMod + "" + MainUtilities.getConfidentAsString(fixedMod) + "\n\t");
             }
         }
-        MainUtilities.QSProtWaitingHandler.addOutputMassage("Fixed Modifications:\n" + fm);
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("\nFixed Modifications:" + fm);
         fm = "";
         if (optimisedSearchParameter.getSearchParameters().getModificationParameters().getVariableModifications() != null) {
             for (String v : optimisedSearchParameter.getSearchParameters().getModificationParameters().getVariableModifications()) {
-                fm += ("\t\t" + v + "\n");
+                String t = "";
+                if (v.length() < 16) {
+                    t = "\t";
+                }
+                fm += ("\t" + v + t + MainUtilities.getConfidentAsString(v) + "\n\t");
             }
         }
-        MainUtilities.QSProtWaitingHandler.addOutputMassage("Variable Modifications:\n" + fm);
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("\nVariable Modifications:" + fm);
         if (searchEngine.getIndex() == Advocate.xtandem.getIndex()) {
             XtandemParameters xtandemParameters = (XtandemParameters) optimisedSearchParameter.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("--------------------------- X! Tandem advanced -----------------------------");
@@ -95,14 +102,14 @@ public class ReportExporter {
             String rfm = "";
             if (optimisedSearchParameter.getSearchParameters().getModificationParameters().getRefinementFixedModifications() != null) {
                 for (String fixedMod : optimisedSearchParameter.getSearchParameters().getModificationParameters().getRefinementFixedModifications()) {
-                    rfm += ("\t\t"+fixedMod + "\n");
+                    rfm += ("\t\t" + fixedMod + "\n");
                 }
             }
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Refined Fixed Modification:\n" + rfm);
             rfm = "";
             if (optimisedSearchParameter.getSearchParameters().getModificationParameters().getRefinementVariableModifications() != null) {
                 for (String v : optimisedSearchParameter.getSearchParameters().getModificationParameters().getRefinementVariableModifications()) {
-                    rfm += ("\t\t"+v + "\n");
+                    rfm += ("\t\t" + v + "\n");
                 }
             }
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Refined Variable Modification:\n" + rfm);
@@ -136,18 +143,18 @@ public class ReportExporter {
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Predect RT:\t\t" + sageParameters.getPredictRt());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Number of Peaks:\t" + sageParameters.getMinPeaks() + "-" + sageParameters.getMaxPeaks());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Min Mached Peaks:\t" + sageParameters.getMinMatchedPeaks());
-            MainUtilities.QSProtWaitingHandler.addOutputMassage(("Max Fragment Charge:\t" + sageParameters.getMaxFragmentCharge()).replace("null",""));
+            MainUtilities.QSProtWaitingHandler.addOutputMassage(("Max Fragment Charge:\t" + sageParameters.getMaxFragmentCharge()).replace("null", ""));
         }
 
     }
 
     public static void exportFullReport(File optimisedSearchParameterFile, SearchingSubDataset dataset, Advocate searchEngine, String datasetId, String timeInMin, String initDsTime) {
         if (dataset == null) {
-            MainUtilities.QSProtWaitingHandler.addLogMassage("can not export data (dataset " + datasetId+" not exist)");
+            MainUtilities.QSProtWaitingHandler.addLogMassage("can not export data (dataset " + datasetId + " not exist)");
             return;
         }
-        String pathToRemoteResults =Configurations.SUBSET_DATA_FOLDER;//dataset.getSubDataFolder()
-        File reportFile = new File(pathToRemoteResults,"QSProt_results_"+datasetId+"_"+searchEngine.getName() + "_.txt");
+        String pathToRemoteResults = Configurations.SUBSET_DATA_FOLDER;//dataset.getSubDataFolder()
+        File reportFile = new File(pathToRemoteResults, "QSProt_results_" + datasetId + "_" + searchEngine.getName() + "_.txt");
         IdentificationParameters optimisedSearchParameter;
         try {
             optimisedSearchParameter = IdentificationParameters.getIdentificationParameters(optimisedSearchParameterFile);
@@ -169,7 +176,7 @@ public class ReportExporter {
                 myWriter.write(
                         "Processing Time:\t\t" + timeInMin + "  Minutes\n");
                 myWriter.write(
-                        "Subset size:\t\t\t" + dataset.getSubsetSize()+ "\n");
+                        "Subset size:\t\t\t" + dataset.getSubsetSize() + "\n");
                 myWriter.write(
                         "Digestion:\t\t\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getCleavageParameter().name() + "\n");
                 if (optimisedSearchParameter.getSearchParameters().getDigestionParameters().getCleavageParameter().name().equals("enzyme")) {
@@ -187,7 +194,7 @@ public class ReportExporter {
                 myWriter.write(
                         "Fragment Accuracy:\t\t" + optimisedSearchParameter.getSearchParameters().getFragmentIonAccuracy() + " " + optimisedSearchParameter.getSearchParameters().getFragmentAccuracyType().name() + "\n");
                 myWriter.write(
-                        "PrecursorCharge:\t\t" + optimisedSearchParameter.getSearchParameters().getMinChargeSearched() + " - " + optimisedSearchParameter.getSearchParameters().getMaxChargeSearched() + "\n");
+                        "Precursor Charge:\t\t" + optimisedSearchParameter.getSearchParameters().getMinChargeSearched() + " - " + optimisedSearchParameter.getSearchParameters().getMaxChargeSearched() + "\n");
                 myWriter.write(
                         "Isotops:\t\t\t" + optimisedSearchParameter.getSearchParameters().getMinIsotopicCorrection() + " - " + optimisedSearchParameter.getSearchParameters().getMaxIsotopicCorrection() + "\n");
 //            myWriter.write("default Variable mod:\t" + optimisedSearchParameter.getSearchParameters() + "  Factor " + referenceFactor);
@@ -196,7 +203,7 @@ public class ReportExporter {
                 if (optimisedSearchParameter.getSearchParameters()
                         .getModificationParameters().getFixedModifications() != null) {
                     for (String fixedMod : optimisedSearchParameter.getSearchParameters().getModificationParameters().getFixedModifications()) {
-                        fm += ("\t\t\t\t"+fixedMod + "\n");
+                        fm += ("\t\t\t\t" + fixedMod + "\n");
                     }
                 }
 
@@ -207,7 +214,7 @@ public class ReportExporter {
                 if (optimisedSearchParameter.getSearchParameters()
                         .getModificationParameters().getVariableModifications() != null) {
                     for (String v : optimisedSearchParameter.getSearchParameters().getModificationParameters().getVariableModifications()) {
-                        fm += ("\t\t\t\t"+v + "\n");
+                        fm += ("\t\t\t\t" + v + "\n");
                     }
                 }
 
@@ -240,14 +247,14 @@ public class ReportExporter {
                     String rfm = "";
                     if (optimisedSearchParameter.getSearchParameters().getModificationParameters().getRefinementFixedModifications() != null) {
                         for (String fixedMod : optimisedSearchParameter.getSearchParameters().getModificationParameters().getRefinementFixedModifications()) {
-                            rfm += ("\t\t\t"+fixedMod + "\n");
+                            rfm += ("\t\t\t" + fixedMod + "\n");
                         }
                     }
                     myWriter.write("Refined Fixed Modifications:\n" + rfm);
                     rfm = "";
                     if (optimisedSearchParameter.getSearchParameters().getModificationParameters().getRefinementVariableModifications() != null) {
                         for (String v : optimisedSearchParameter.getSearchParameters().getModificationParameters().getRefinementVariableModifications()) {
-                            rfm += ("\t\t\t"+v + "\n");
+                            rfm += ("\t\t\t" + v + "\n");
                         }
                     }
                     myWriter.write("Refined Variable Modification:\n" + rfm + "\n");

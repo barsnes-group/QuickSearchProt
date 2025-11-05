@@ -130,32 +130,31 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         for (String param : paramOrder) {
             MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(currentValue);
             currentValue += step;
-            MainUtilities.QSProtWaitingHandler.addMainStepMassage("\u2605 Adjust " + param.replace("XtandemAdvancedParameter_A", "Advanced parameters (2)").replace("XtandemAdvancedParameter_B", "Advanced parameters (3)".replace("XtandemAdvancedParameter", "Advanced parameters (1)")).replace("Parameter", "").toLowerCase() + " \u2605");
-            //empty param score list
-            if (param.equalsIgnoreCase("DigestionParameter") && (searchInputSetting.isOptimizeDigestionParameter() || searchInputSetting.isOptimizeEnzymeParameter() || searchInputSetting.isOptimizeSpecificityParameter() || searchInputSetting.isOptimizeMaxMissCleavagesParameter())) {
-                String[] values = this.optimizeEnzymeParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("EnzymeParameter"));
+            MainUtilities.QSProtWaitingHandler.addMainStepMassage("\n\u2605 Adjust " + param.replace("XtandemAdvancedParameter_A", "Advanced parameters (2)").replace("XtandemAdvancedParameter_B", "Advanced parameters (3)".replace("XtandemAdvancedParameter", "Advanced parameters (1)")).replace("Parameter", "").toLowerCase() + " \u2605\n");
 
-                if (!values[0].equalsIgnoreCase("")) {
-                    identificationParameters.getSearchParameters().getDigestionParameters().clearEnzymes();
-                    optimisedSearchResults.setEnzymeName(values[0]);
-                    int nMissesCleavages = Integer.parseInt(values[2]);
-                    identificationParameters.getSearchParameters().getDigestionParameters().addEnzyme(EnzymeFactory.getInstance().getEnzyme(values[0]));
-                    enzymeSpecificityOpt = values[1];
-                    identificationParameters.getSearchParameters().getDigestionParameters().setnMissedCleavages(values[0], nMissesCleavages);
-                    IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
+            if (param.equalsIgnoreCase("DigestionParameter") && searchInputSetting.isOptimizeDigestionParameter()) {
+                if (searchInputSetting.isOptimizeCleavageParameter()) {
+                    digestionParameterOpt = this.optimizeDigestionCleavageParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("DigestionParameter"));
+                    searchInputSetting.setDigestionParameterOpt(digestionParameterOpt);
+                    MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
                 }
-                MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
 
-                System.out.println("Current #PSM " + optProtDataset.getIdentifiedPSMsNumber());
+                if ((searchInputSetting.isOptimizeEnzymeParameter() || searchInputSetting.isOptimizeSpecificityParameter() || searchInputSetting.isOptimizeMaxMissCleavagesParameter())) {
+                    String[] values = this.optimizeEnzymeParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("EnzymeParameter"));
 
-                continue;
-            }
-            if (param.equalsIgnoreCase("DigestionTypeParameter") && searchInputSetting.isOptimizeDigestionParameter() && searchInputSetting.isOptimizeCleavageParameter()) {
-                digestionParameterOpt = this.optimizeDigestionCleavageParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("DigestionParameter"));
-                searchInputSetting.setDigestionParameterOpt(digestionParameterOpt);
-                MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
+                    if (!values[0].equalsIgnoreCase("")) {
+                        identificationParameters.getSearchParameters().getDigestionParameters().clearEnzymes();
+                        optimisedSearchResults.setEnzymeName(values[0]);
+                        int nMissesCleavages = Integer.parseInt(values[2]);
+                        identificationParameters.getSearchParameters().getDigestionParameters().addEnzyme(EnzymeFactory.getInstance().getEnzyme(values[0]));
+                        enzymeSpecificityOpt = values[1];
+                        identificationParameters.getSearchParameters().getDigestionParameters().setnMissedCleavages(values[0], nMissesCleavages);
+                        IdentificationParameters.saveIdentificationParameters(identificationParameters, generatedIdentificationParametersFile);
+                    }
+                    MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
 
-                System.out.println("Current #PSM " + optProtDataset.getIdentifiedPSMsNumber());
+                }
+
                 continue;
             }
 
@@ -469,15 +468,22 @@ public class XTandemSearchHandler extends CommonSearchHandler {
         }
 
         final List<SpectrumMatch> validatedMaches = SpectraUtilities.getValidatedIdentificationResults(resultOutput, optProtDataset.getSubMsFile(), Advocate.xtandem, tempIdParam);
-        RawScoreModel rawScore = SpectraUtilities.getComparableRawScore(optProtDataset, validatedMaches, Advocate.xtandem, addSpectraList, paramOption, potintialFP,defaultOutputFileName.contains("qsprot_results2v_"));//(optProtDataset, resultOutput, optProtDataset.getSubMsFile(), Advocate.sage, tempIdParam, updateDataReference);
+        RawScoreModel rawScore = SpectraUtilities.getComparableRawScore(optProtDataset, validatedMaches, Advocate.xtandem, addSpectraList, paramOption, potintialFP, defaultOutputFileName.contains("qsprot_results2v_"));//(optProtDataset, resultOutput, optProtDataset.getSubMsFile(), Advocate.sage, tempIdParam, updateDataReference);
 
         if (addSpectraList && rawScore.isSensitiveChange()) {
             rawScore.setSpectrumMatchResult(validatedMaches);
         }
-        MainUtilities.QSProtWaitingHandler.addLogMassage("Parameter" + paramValue + "  " + validatedMaches.size());
+        MainUtilities.QSProtWaitingHandler.addLogMassage("\nParameter  " + paramValue + "  #Validated PSMs: " + validatedMaches.size());
+
         if (!paramValue.trim().isEmpty()) {
             double fullDataIdent = optProtDataset.getSubsetSize() * 4;//(testData.length*4.0)+(referenceData.length*4);
-            double cScorePers = Math.round((rawScore.getcScore() * 100.0 / fullDataIdent) * 100.0) / 100.0;
+            double cScore= rawScore.getcScore();
+            if (validatedMaches.isEmpty()) {
+                cScore= (-1.0 * fullDataIdent);
+            }
+
+            double cScorePers = Math.round(( cScore* 100.0 / fullDataIdent) * 100.0) / 100.0;
+              System.out.println("cScore % "+cScorePers);
             String symbol;
             if (cScorePers > 0) {
                 symbol = "\u25B2";

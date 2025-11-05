@@ -133,9 +133,10 @@ public class SageSearchHandler extends CommonSearchHandler {
         for (String param : paramOrder) {
             MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(currentValue);
             currentValue += step;
-            MainUtilities.QSProtWaitingHandler.addMainStepMassage("\u2605 Adjust " + param.replace("SageAdvancedParameter_B", "Advanced parameters (2)").replace("SageAdvancedParameter_A", "Advanced parameters (1)").replace("Parameter", "") + "\u2605");
+            MainUtilities.QSProtWaitingHandler.addMainStepMassage("\n\u2605\u2605\u2605\u2605\u2605 Adjust " + param.replace("SageAdvancedParameter_B", "Advanced parameters (2)").replace("SageAdvancedParameter_A", "Advanced parameters (1)").replace("Parameter", "") + "\u2605\u2605\u2605\u2605\u2605\n");
             MainUtilities.cleanFolder(Configurations.WORKING_FOLDER_PATH);
-            if (param.equalsIgnoreCase("DigestionParameter") && (searchInputSetting.isOptimizeDigestionParameter() || searchInputSetting.isOptimizeEnzymeParameter() || searchInputSetting.isOptimizeSpecificityParameter() || searchInputSetting.isOptimizeMaxMissCleavagesParameter())) {
+            System.out.println(param+"   searchInputSetting.isOptimizeDigestionParameter() "+searchInputSetting.isOptimizeDigestionParameter()+"  "+(searchInputSetting.isOptimizeEnzymeParameter() || searchInputSetting.isOptimizeSpecificityParameter() || searchInputSetting.isOptimizeMaxMissCleavagesParameter()) );
+            if (param.equalsIgnoreCase("DigestionParameter") && searchInputSetting.isOptimizeDigestionParameter() && (searchInputSetting.isOptimizeEnzymeParameter() || searchInputSetting.isOptimizeSpecificityParameter() || searchInputSetting.isOptimizeMaxMissCleavagesParameter())) {
                 String[] values = this.optimizeEnzymeParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("EnzymeParameter"));
                 if (!values[0].equalsIgnoreCase("")) {
                     identificationParameters.getSearchParameters().getDigestionParameters().clearEnzymes();
@@ -148,12 +149,7 @@ public class SageSearchHandler extends CommonSearchHandler {
                 }
 
                 continue;
-            }
-            if (param.equalsIgnoreCase("DigestionTypeParameter") && searchInputSetting.isOptimizeDigestionParameter()) {
-                digestionParameterOpt = this.optimizeDigestionCleavageParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("DigestionParameter"));
-                searchInputSetting.setDigestionParameterOpt(digestionParameterOpt);
-                continue;
-            }
+            }           
 
             if (param.equalsIgnoreCase("FragmentIonTypesParameter") && searchInputSetting.isOptimizeFragmentIonTypesParameter()) {
                 String value = this.optimizeFragmentIonTypesParameter(optProtDataset, generatedIdentificationParametersFile, searchInputSetting, parameterScoreMap.get("FragmentIonTypesParameter"));
@@ -355,6 +351,9 @@ public class SageSearchHandler extends CommonSearchHandler {
 
     @Override
     public synchronized RawScoreModel excuteSearch(SearchingSubDataset optProtDataset, String defaultOutputFileName, String paramOption, IdentificationParameters tempIdParam, boolean addSpectraList, SearchInputSetting optProtSearchSettings, File identificationParametersFile, String paramValue) {
+       
+        
+        System.out.println("excute search "+paramValue+"   "+paramOption);
         if (!optProtSearchSettings.getSageEnabledParameters().getParamsToOptimize().isEnabledParam(paramOption.split("_")[0])) {
             MainUtilities.QSProtWaitingHandler.addLogMassage("param " + paramOption + " is not supported " + paramValue);
 //             MainUtilities.QSProtWaitingHandler.addMainStepMassage("param " + paramOption + " is not supported " + paramOption);

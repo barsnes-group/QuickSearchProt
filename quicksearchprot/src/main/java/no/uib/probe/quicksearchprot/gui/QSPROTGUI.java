@@ -31,9 +31,9 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
      * Creates new form QSPROTGUI
      */
     // Tracks the last used directory in file dialogs.
-    private String lastSelectedDirectory = "D:\\QuickSearchProt\\testdata\\PXD028427\\";// "/";
+    private String lastSelectedDirectory = "D:\\QuickSearchProt\\testdata\\data\\PXD028427";// "/";
     // Holds user input parameters for processing.
-    private final QSProtInputsEntity inputEntity = new QSProtInputsEntity();
+    private  QSProtInputsEntity inputEntity = new QSProtInputsEntity();
     private final ImageProgressBar updatedProgressBar;
 
     /**
@@ -157,6 +157,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
                 default ->
                     throw new AssertionError("Invalid tab index");
             }
+           
             jTabbedPane1.repaint();
             System.out.println("updated view to "+viewIndex);
         });
@@ -560,10 +561,13 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
+        logTextArea.setBackground(new java.awt.Color(255, 255, 255));
         logTextArea.setColumns(20);
         logTextArea.setLineWrap(true);
         logTextArea.setRows(5);
         logTextArea.setWrapStyleWord(true);
+        logTextArea.setDisabledTextColor(new java.awt.Color(0, 0, 0));
+        logTextArea.setEnabled(false);
         logTextArea.setMaximumSize(new java.awt.Dimension(1000, 150));
         jScrollPane1.setViewportView(logTextArea);
 
@@ -589,8 +593,12 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         jScrollPane3.setName(""); // NOI18N
         jScrollPane3.setPreferredSize(new java.awt.Dimension(232, 84));
 
+        mainProcessTextArea.setBackground(new java.awt.Color(255, 255, 255));
         mainProcessTextArea.setColumns(20);
         mainProcessTextArea.setRows(5);
+        mainProcessTextArea.setWrapStyleWord(true);
+        mainProcessTextArea.setDisabledTextColor(new java.awt.Color(0, 0, 0));
+        mainProcessTextArea.setEnabled(false);
         jScrollPane3.setViewportView(mainProcessTextArea);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -606,8 +614,12 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Main steps", jPanel3);
 
+        outputTextArea.setBackground(new java.awt.Color(255, 255, 255));
         outputTextArea.setColumns(20);
         outputTextArea.setRows(5);
+        outputTextArea.setWrapStyleWord(true);
+        outputTextArea.setDisabledTextColor(new java.awt.Color(0, 0, 0));
+        outputTextArea.setEnabled(false);
         jScrollPane4.setViewportView(outputTextArea);
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
@@ -766,8 +778,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
                 });
 
                 t = new Thread(() -> {
-                    processData(inputEntity);
-
+                    processData(inputEntity);    
                 });
                 t.start();
 
@@ -954,6 +965,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         databaseLabel.setForeground(Color.BLACK);
         outputLabel.setForeground(Color.BLACK);
         searchEnginesLabel.setForeground(Color.BLACK);
+        refillProjectInfo();
 
         boolean valid = true;
 
@@ -1012,6 +1024,11 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
 
         MainUtilities.QSProtWaitingHandler.addLogMassage(" ");
         return valid;
+    }
+    private void refillProjectInfo(){
+//    jRadioButton1ActionPerformed(null);
+//    inputEntity.setInputSpectrumFilePath(lastSelectedDirectory);
+    
     }
 
     @Override

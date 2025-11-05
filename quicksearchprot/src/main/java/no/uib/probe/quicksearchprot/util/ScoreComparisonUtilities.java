@@ -2,7 +2,6 @@ package no.uib.probe.quicksearchprot.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -15,7 +14,7 @@ import org.apache.commons.math3.stat.inference.OneWayAnova;
 import org.apache.commons.math3.stat.inference.TTest;
 import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
 
-public class ScoreComparison {
+public class ScoreComparisonUtilities {
 
     public static double compareSameDistributionData(double[] reference, double[] test) {
         // Calculate skewness
@@ -33,6 +32,30 @@ public class ScoreComparison {
             return 0;
         }
 
+    }
+// Method to calculate confidence based on score differences
+
+    public static double calculateConfidence(TreeSet<Double> scores) {
+        if (scores == null || scores.size() < 2) {
+            return 0;
+        }
+        double z = StatisticsTests.calculateOneTailedZScore(scores.last(), scores.stream().mapToDouble(Double::doubleValue).toArray());
+        return  StatisticsTests.calculateOneTailedPValue(z);
+    }
+
+    // 1. Percentage Confidence
+    public static double calculatePercentageConfidence(TreeSet<Double> scores) {
+
+        double top = scores.last();
+        double second = scores.lower(top);
+        double delta = top - second;
+
+        // relative to top + second magnitude
+        double denom = Math.abs(top) + Math.abs(second);
+        if (denom == 0) {
+            return 100.0; // avoid division by zero
+        }
+        return (delta / denom) * 100.0;
     }
 
     public static double comparediffrentDistributionData(double[] reference, double[] test) {
@@ -583,52 +606,6 @@ public class ScoreComparison {
         return pValue;
     }
 
-    public static void main(String[] args) {
-        double[] scores1 = {24.181788868689083, 26.381088683588953, 26.932822348455282, 28.183098374208907, 26.502771452416063, 26.313842050319227, 23.30745235741934, 24.101928241008064, 25.981828068689527, 23.034502191750313, 23.16842976349253};
-        double[] scores2 = {23.85216786366755, 24.052747807215674, 22.680980745877108, 23.174512846898736, 31.306301299262387, 27.555997926642448, 23.74433648517002, 29.399078749253825, 26.16724952495946, 24.702858615186784};
-//        double[] scores3 = {91.0, 89.0, 95.0, 87.0, 93.5, 90.0, 95.0, 89.0, 95.0, 87.0, 93.5, 90.0, 89.0, 95.0, 87.0, 93.5, 90.0, 20, 05};
-//        double[] beforeWeights = {85, 78, 92, 70, 65, 90, 72, 88, 76, 82};
-//        double[] afterWeights = {80, 75, 88, 68, 63, 85, 70, 84, 73, 78};
-//
-        DescriptiveStatistics ds1 = new DescriptiveStatistics(scores1);
-        DescriptiveStatistics ds2 = new DescriptiveStatistics(scores2);
-        ScoreComparison sc = new ScoreComparison();
-        double cohenD = (sc.calculateCohensD(ds1, ds2));
-        double medianImpro = sc.percentageImprovementIndependenet(ds1.getPercentile(50), ds2.getPercentile(50));
-        double meanImpro = sc.percentageImprovementIndependenet(ds1.getGeometricMean(), ds2.getGeometricMean());
-        double mean2Impro = sc.percentageImprovementIndependenet(ds1.getMean(), ds2.getMean());
-        double normZ = StatisticsTests.independentZTest(ds1, ds2);
-        System.out.println("improvment " + medianImpro + "   mean " + meanImpro + "  " + cohenD + "  " + normZ + "  " + mean2Impro);
-//       
-//        double normImpro = sc.logScaleNormalize(;
-//        
-//        sc.calculateCohensD(ds1, ds2);
-//        double dMedian = (sc.medianBasedEffectSize(ds1, ds2));
-//        double finalScore = (cohenD + normZ + normImpro) / 3.0;
-//        double finalScore2 = (dMedian + normZ + normImpro) / 3.0;
-//
-
-    
-
-    ////        double normZ2 = sc.mannWhitneyTestIndependent(ds1.getValues(), ds2.getValues());
-//        double normZ3 = sc.wilcoxonSignedRankTestPair(scores3, scores2);
-//        double normZ4 = StatisticsTests.WilcoxonSignedRankTest(scores3, scores2);
-////        System.out.println("Final Score: " + normImpro + "  " + normZ + "  " + cohenD + "   " + dMedian + "------------>> " + finalScore + "  vs " + finalScore2);
-////        System.out.println("z Score: " + "  " + normZ3 + "  vs " + normZ4);
-//
-////         Interpretation
-//        if (finalScore > 0.75) {
-
-//        } else if (finalScore > 0.5) {
-//            System.out.println("Moderate positive enhancement in scores.");
-//        } else if (finalScore > 0.25) {
-//            System.out.println("Slight positive enhancement in scores.");
-//        } else {
-//            System.out.println("No significant enhancement or decline in scores.");
-//        }
-//
-    }
-
     public static double compareReferenceToTest1(double[] sample1, double[] sample2, boolean potintialFP) {
         boolean comparableSamples = isSamplesComparable(sample1, sample2);
         if (!comparableSamples && !potintialFP) {
@@ -769,12 +746,12 @@ public class ScoreComparison {
         return finalScore;
     }
 
-    private static double mapScoreToQuartil(double score, double q1, double median, double q3) {
+    private static int mapScoreToQuartil(double score, double q1, double median, double q3) {
 
         if (score < q1) {
-            return 0.5;
-        } else if (score >= q1 && score <= median) {
             return 1;
+        } else if (score >= q1 && score <= median) {
+            return 2;
         } else if (score > median && score <= q3) {
             return 3;
         } else {
@@ -784,60 +761,58 @@ public class ScoreComparison {
     }
 
     public static double compareReferenceToTest(double[] referenceData, double[] testData, Map<String, Double> sharedReferenceData, Map<String, Double> uniqueReferenceData, Map<String, Double> sharedTestData, Map<String, Double> uniqueTestData, boolean potintialFP, boolean fdrApplied) {
-        double cScore;
+        double finalScore = 0;
+//            potintialFP = false;
         if (potintialFP && (referenceData.length * 1.05 > testData.length)) {
-
             return testData.length - (referenceData.length * 1.05);
         }
-        potintialFP = potintialFP||fdrApplied;
 
-        System.out.println("Reference size " + referenceData.length + "    test size " + testData.length);
         DescriptiveStatistics refernceDescriptiveStatistics = new DescriptiveStatistics(referenceData);
+
         double referenceQ1 = refernceDescriptiveStatistics.getPercentile(25);
         double referenceMedian = refernceDescriptiveStatistics.getPercentile(50);
         double referenceQ3 = refernceDescriptiveStatistics.getPercentile(75);
         int sharedDataScore = 0;
-
         for (String sharedKey : sharedTestData.keySet()) {
             double refScore = sharedReferenceData.get(sharedKey);
-            double beforeCat = mapScoreToQuartil(refScore, referenceQ1, referenceMedian, referenceQ3);
+            int beforeCat = mapScoreToQuartil(refScore, referenceQ1, referenceMedian, referenceQ3);
             double testScore = sharedTestData.get(sharedKey);
-            double afterCat = mapScoreToQuartil(testScore, referenceQ1, referenceMedian, referenceQ3);
+            int afterCat = mapScoreToQuartil(testScore, referenceQ1, referenceMedian, referenceQ3);
             if ((afterCat - beforeCat > 1)) {
                 sharedDataScore += (afterCat - beforeCat);
             }
         }
-        System.out.println("shared score is " + sharedDataScore);
         double lostScoreData = 0;
         for (String uniqueReferenceKey : uniqueReferenceData.keySet()) {
             double refScore = uniqueReferenceData.get(uniqueReferenceKey);
-            double scoreRank = mapScoreToQuartil(refScore, referenceQ1, referenceMedian, referenceQ3);
-//             System.out.println("lost score rank" + scoreRank);
-//            if (potintialFP && scoreRank>2) {               
-//                lostScoreData -= scoreRank;
-//            } else {
+            int scoreRank = mapScoreToQuartil(refScore, referenceQ1, referenceMedian, referenceQ3);
+            if (scoreRank > 2) {
                 lostScoreData -= scoreRank;
-//            }
+            }
         }
-        System.out.println("lost score " + lostScoreData);
         double gainedScoreData = 0;
         for (String uniqueTestKey : uniqueTestData.keySet()) {
             double testScore = uniqueTestData.get(uniqueTestKey);
-            double scoreRank = mapScoreToQuartil(testScore, referenceQ1, referenceMedian, referenceQ3);
-//             System.out.println("gain score rank" + scoreRank);
-            if (scoreRank > 1&& potintialFP) {
-                gainedScoreData += scoreRank;
-            } else {
+            int scoreRank = mapScoreToQuartil(testScore, referenceQ1, referenceMedian, referenceQ3);
+            if (scoreRank > 1) {
                 gainedScoreData += scoreRank;
             }
         }
-        System.out.println("gained  score " + gainedScoreData);
-        cScore = sharedDataScore + gainedScoreData + lostScoreData;
-        if (potintialFP && cScore == 0.0) {
-            System.out.println(" potintialFP && cScore == 0 return -1");
+
+        finalScore = sharedDataScore + gainedScoreData + lostScoreData;
+        double updatedScore = testData.length - (referenceData.length);
+
+//            finalScore=finalScore/Math.max(updatedScore,1);
+//        System.out.println("------------------->>>" + finalScore + " VS " + updatedScore + " ---score shared " + sharedDataScore + "  reference lost " + lostScoreData + "   test gained " + gainedScoreData + "  ###  " + referenceData.length + " vs  " + testData.length);
+        if (potintialFP && finalScore == 0) {
             return -1;
         }
-        return cScore;
+        if ((finalScore > 0 && updatedScore == 0) || (finalScore < 0 && updatedScore == 0)) {
+            System.out.println("here is the case ");
+
+        }
+
+        return finalScore;
     }
 
     public static boolean isSegnificantDifferent(List<Double> reference, List<Double> test) {
@@ -996,6 +971,64 @@ public class ScoreComparison {
         System.out.println("Weight of Q3: " + weightQ3 + "  #  " + quartile3.length);
         System.out.println("Weight of Q4: " + weightQ4 + "  #  " + quartile4.length);
         return new double[]{weightQ1, weightQ2, weightQ3, weightQ4};
+    }
+
+    public static double[] softmax(double[] scores) {
+        double max = Arrays.stream(scores).max().orElse(0.0); // for numerical stability
+        double[] expScores = Arrays.stream(scores)
+                .map(s -> Math.exp(s - max))
+                .toArray();
+        double sumExp = Arrays.stream(expScores).sum();
+        return Arrays.stream(expScores)
+                .map(e -> e / sumExp)
+                .toArray();
+    }
+
+    public static double topConfidence(double[] scores) {
+        double[] probabilities = softmax(scores);
+        double maxProb = Arrays.stream(probabilities).max().orElse(0.0);
+
+        /**
+         * • Close to 1.0 → Very confident. The top score dominates the others.
+         * • Around 0.5 → Moderate confidence. The top score is not much higher
+         * than others. • Close to 0.25 or lower (in a 4-class example) → Low
+         * confidence. The scores are similar, and the model is uncertain.**
+         */
+        return maxProb;
+    }
+
+    public static void main(String[] args) {
+        TreeSet<Double> scores = new TreeSet<>(Arrays.asList(new Double[]{-2110.0, -2102.0, -2042.0, -1982.0, -1904.0, -1520.0, -303.0, -105.0, 0.0}));
+        TreeSet<Double> scores1 = new TreeSet<>(Arrays.asList(new Double[]{0.0, 11.0, 14.0, 27.0, 69.0, 543.0, 545.0, 687.0, 691.0, 2110.0}));
+        TreeSet<Double> scores2 = new TreeSet<>(Arrays.asList(new Double[]{0.0, 582.0, 691.0, 706.0}));
+        TreeSet<Double> scores3 = new TreeSet<>(Arrays.asList(new Double[]{0.0, 8.0, 68.0, 128.0, 206.0, 590.0, 1807.0, 2005.0, 2110.0}));
+        calculateConfidence(scores1);
+        calculateConfidence(scores2);
+        calculateConfidence(scores3);
+        double z = StatisticsTests.calculateOneTailedZScore(scores1.last(), scores1.stream().mapToDouble(Double::doubleValue).toArray());
+        System.out.println("z1 score " + z + "  pvalue " + StatisticsTests.calculateOneTailedPValue(z));
+        double z2 = StatisticsTests.calculateOneTailedZScore(scores2.last(), scores2.stream().mapToDouble(Double::doubleValue).toArray());
+        System.out.println("z2 score " + z2 + "  pvalue " + StatisticsTests.calculateOneTailedPValue(z2));
+
+        double z3 = StatisticsTests.calculateOneTailedZScore(scores3.last(), scores3.stream().mapToDouble(Double::doubleValue).toArray());
+        System.out.println("z3 score " + z3 + "  pvalue " + StatisticsTests.calculateOneTailedPValue(z3));
+//        double[] scoreArr = scores.stream().mapToDouble(Double::doubleValue).toArray();
+//        System.out.println("max probability: 1" + topConfidence(scoreArr) + "    " + marginConfidence(scoreArr));
+    }
+
+    public static double marginConfidence(double[] scores) {
+        if (scores.length < 2) {
+            throw new IllegalArgumentException("Need at least two scores to compute margin.");
+        }
+
+        // Sort scores in descending order
+        double[] sorted = Arrays.copyOf(scores, scores.length);
+        Arrays.sort(sorted);
+        double top = sorted[sorted.length - 1];
+        double second = sorted[sorted.length - 2];
+        double last = sorted[0];
+
+        return (top - second) * 100.0 / (top);
     }
 
 }

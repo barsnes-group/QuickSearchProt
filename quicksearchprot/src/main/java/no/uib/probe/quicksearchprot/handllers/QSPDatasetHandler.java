@@ -104,11 +104,9 @@ public class QSPDatasetHandler {
      * @param searchEngineToOptimise search engine to use
      * @param subDataFolder folder for subset data
      * @param identificationParametersFile search parameters file
-     * @param wholeDataTest use full dataset (true) or subset (false)
      * @param useOreginalInputs use original input files without subsetting
      * @param subsetSize size of subset (-1 to auto select)
      * @param fullFasta use full fasta file
-     * @param cleanIfExist
      * @return SearchingSubDataset with relevant information for further
      * analysis
      */
@@ -310,10 +308,11 @@ public class QSPDatasetHandler {
      */
     private int calculateSectionNums(int subsetsize) {
         //min section numbers is 4 and max section number is 20  //and max spectra number  per section 500
+     
         double sNum;
         double specPerSecNum = 500;
         double initialSecNumber = (double) subsetsize / specPerSecNum;
-        if (initialSecNumber < 4) {
+        if (initialSecNumber < 4|| true) {
             sNum = 4;
         } else if (initialSecNumber > 20) {
             sNum = 20;

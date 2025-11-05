@@ -10,6 +10,9 @@ import com.compomics.util.parameters.searchgui.OutputParameters;
 import com.compomics.util.parameters.tools.ProcessingParameters;
 import eu.isas.searchgui.SearchHandler;
 import java.io.File;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.TreeSet;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -18,6 +21,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import no.uib.probe.quicksearchprot.configurations.Configurations;
+import no.uib.probe.quicksearchprot.model.ResultScoreModel;
 
 /**
  *
@@ -25,12 +29,11 @@ import no.uib.probe.quicksearchprot.configurations.Configurations;
  */
 public class MainUtilities {
 
-     private static ExecutorService displayExecuter;// = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private static ExecutorService displayExecuter;// = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private static ExecutorService executor2;// = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors() / 2;
     private static ExecutorService executor;// = new ThreadPoolExecutor(AVAILABLE_PROCESSORS, AVAILABLE_PROCESSORS, 5, TimeUnit.SECONDS, new ArrayBlockingQueue<>(10));
 //    private static final TreeSet<Double> paramScoreSet = new TreeSet<>();
-
 
     static {
         System.out.println(" " + AVAILABLE_PROCESSORS + "  ");
@@ -65,10 +68,10 @@ public class MainUtilities {
     }
 
     public static ExecutorService getDisplayExecuter() {
-         if (displayExecuter != null) {
+        if (displayExecuter != null) {
             displayExecuter.shutdownNow();
         }
-        displayExecuter =Executors.newFixedThreadPool(2) ;
+        displayExecuter = Executors.newFixedThreadPool(2);
         return displayExecuter;
     }
 
@@ -116,8 +119,6 @@ public class MainUtilities {
         System.gc();
     }
 
-    
-
     public static void deleteFolder(File folder) {
         if (folder.exists() && folder.isDirectory()) {
             for (File f : folder.listFiles()) {
@@ -160,6 +161,45 @@ public class MainUtilities {
         H = H / 60;            // Convert total minutes to hours
         String time = (H + ":" + M + ":" + S);
         return time;
+
+    }
+    private static Map<String, ResultScoreModel> paramConfidentMap = new LinkedHashMap();
+
+    public static void resetParamMap() {
+        paramConfidentMap.clear();
+    }
+
+    public static void addToParameterResults(String parameterName, String parameterValue, double targtedScore, TreeSet<Double> scores) {
+        double zScore = 1;
+        double pvalue = 0.05;
+        int percentage = 100;
+        if (scores.size() >= 2) {
+            zScore = StatisticsTests.calculateOneTailedZScore(targtedScore, scores.stream().mapToDouble(Double::doubleValue).toArray());
+            pvalue = StatisticsTests.calculateOneTailedPValue(zScore);
+            percentage = (int) StatisticsTests.convertZToPercentile(zScore);
+        }
+        ResultScoreModel result = new ResultScoreModel();
+        result.setParamName(parameterName);
+        result.setParamValue(parameterValue);
+        result.setzScore(zScore);
+        result.setPvalue(pvalue);
+        result.setPercentage(percentage);
+        if (targtedScore == 0) {
+            result.setDefaultParameterValue(true);
+        }
+        paramConfidentMap.put(parameterName, result);
+//        System.out.println(parameterName + ":   " + parameterValue + "   " + zScore + "   " + pvalue + "  " + percentage+"   targted "+targtedScore+"   "+scores);
+//        System.exit(0);
+
+    }
+
+    public static String getConfidentAsString(String paramName) {
+
+        if (paramConfidentMap.containsKey(paramName)) {
+            return paramConfidentMap.get(paramName).toString();
+        } else {
+            return "\t\tPre-Selected";
+        }
 
     }
 

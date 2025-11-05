@@ -14,7 +14,7 @@ import java.util.List;
 public class SelectedSearchParametersEntity {
 
     private boolean modifications = true;
-
+    private boolean digestionType = false;
     private boolean digestion = false;
     private boolean enzyme = true;
     private boolean specificity = false;
@@ -28,10 +28,6 @@ public class SelectedSearchParametersEntity {
 
     private boolean sageAdvanced = true;
     private boolean xtandemAdvanced = true;
-   
-    
-    
-    
 
     public boolean isModifications() {
         return modifications;
@@ -128,9 +124,18 @@ public class SelectedSearchParametersEntity {
     public void setXtandemAdvanced(boolean xtandemAdvanced) {
         this.xtandemAdvanced = xtandemAdvanced;
     }
-    public boolean isAtleastOneSelection(){
-    return (modifications||digestion||enzyme||specificity||maxMissCleavages||fragmentIonTypes||precursorTolerance||fragmentTolerance||precursorCharge||isotops||xtandemAdvanced||sageAdvanced);
-    
+
+    public boolean isAtleastOneSelection() {
+        return (modifications || digestion || enzyme || specificity || maxMissCleavages || fragmentIonTypes || precursorTolerance || fragmentTolerance || precursorCharge || isotops || xtandemAdvanced || sageAdvanced);
+
+    }
+
+    public boolean isDigestionType() {
+        return digestionType;
+    }
+
+    public void setDigestionType(boolean digestionType) {
+        this.digestionType = digestionType;
     }
 
 }

@@ -82,7 +82,7 @@ public class QuickSearchProtApp {
                         MainUtilities.getDisplayExecuter().submit(() -> {
                             MainUtilities.QSProtWaitingHandler.startProgress();                            
                             MainUtilities.QSProtWaitingHandler.addMainStepMassage(
-                                    "----------  Start data processing  ----------"
+                                    "\n\u2605\u2605\u2605\u2605\u2605 Start data processing \u2605\u2605\u2605\u2605\u2605\n"
                             );
                         });
                         // Process data in the background

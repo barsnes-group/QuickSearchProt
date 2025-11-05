@@ -108,7 +108,7 @@ public class Controller {
                 this.optProtDatasetHandler = new QSPDatasetHandler(searchInputSetting);
                 MainUtilities.QSProtWaitingHandler.setCurrentProgressValue(5);
                 MainUtilities.QSProtWaitingHandler.addMainStepMassage(
-                        "---------- Start the process for ( " + searchEngine.getName() + " ) ----------");
+                        "\n\u2605\u2605\u2605\u2605\u2605 Start the process for ( " + searchEngine.getName().toUpperCase() + " ) \u2605\u2605\u2605\u2605\u2605\n");
 
                 processDataset(
                         projectEntity,
@@ -195,7 +195,7 @@ public class Controller {
         long endDsInit = System.currentTimeMillis();
         String totalDsTime = MainUtilities.msToTime(endDsInit - startDsInit);
         MainUtilities.QSProtWaitingHandler.addMainStepMassage(
-                " ---------- Done generating sub-set files and initial reference search (" + totalDsTime + ") ----------");
+                "\n\u2605\u2605\u2605\u2605\u2605 Done generating sub-set files and initial reference search (" + totalDsTime + ") \u2605\u2605\u2605\u2605\u2605\n");
         optProtDataset.setSubDataFolder(subDataFolder);
         optProtDataset.setFullDataSpectaInput(wholeDataTest);
         searchInputSetting.setRunDirecTag(false);

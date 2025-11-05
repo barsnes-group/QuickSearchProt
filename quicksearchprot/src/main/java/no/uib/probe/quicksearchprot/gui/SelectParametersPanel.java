@@ -330,6 +330,7 @@ public class SelectParametersPanel extends javax.swing.JFrame {
     private void adjustDigestionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adjustDigestionActionPerformed
         boolean selected = adjustDigestion.isSelected();
         parametersToAdjust.setDigestion(selected);
+        parametersToAdjust.setDigestionType(selected);
         jCheckBox2.setSelected(selected);
         jCheckBox3.setSelected(selected);
         jCheckBox4.setSelected(selected);
@@ -337,6 +338,9 @@ public class SelectParametersPanel extends javax.swing.JFrame {
         jCheckBox2.setEnabled(!selected);
         jCheckBox3.setEnabled(!selected);
         jCheckBox4.setEnabled(!selected);
+        jCheckBox2ActionPerformed(null);
+        jCheckBox3ActionPerformed(null);
+        jCheckBox4ActionPerformed(null);
 
     }//GEN-LAST:event_adjustDigestionActionPerformed
     /**
@@ -355,19 +359,22 @@ public class SelectParametersPanel extends javax.swing.JFrame {
      * Handles Enzyme checkbox selection.
      */
     private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox2ActionPerformed
-        parametersToAdjust.setEnzyme(jCheckBox2.isSelected());           // TODO add your handling code here:
+        parametersToAdjust.setEnzyme(jCheckBox2.isSelected());
+        parametersToAdjust.setDigestion(jCheckBox2.isSelected());
     }//GEN-LAST:event_jCheckBox2ActionPerformed
     /**
      * Handles Specificity checkbox selection.
      */
     private void jCheckBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox3ActionPerformed
-        parametersToAdjust.setSpecificity(jCheckBox3.isSelected());  
+        parametersToAdjust.setSpecificity(jCheckBox3.isSelected());
+         parametersToAdjust.setDigestion(jCheckBox3.isSelected());
     }//GEN-LAST:event_jCheckBox3ActionPerformed
     /**
      * Handles Max missed cleavages checkbox selection.
      */
     private void jCheckBox4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox4ActionPerformed
-        parametersToAdjust.setMaxMissCleavages(jCheckBox4.isSelected());          // TODO add your handling code here:
+        parametersToAdjust.setMaxMissCleavages(jCheckBox4.isSelected());  
+         parametersToAdjust.setDigestion(jCheckBox4.isSelected());        // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBox4ActionPerformed
     /**
      * Handles Precursor tolerance checkbox selection.
@@ -433,7 +440,9 @@ public class SelectParametersPanel extends javax.swing.JFrame {
         jCheckBox4ActionPerformed(null);
 
     }//GEN-LAST:event_jButton4ActionPerformed
-  /** Handles OK button: closes the window. */
+    /**
+     * Handles OK button: closes the window.
+     */
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 
@@ -475,6 +484,7 @@ public class SelectParametersPanel extends javax.swing.JFrame {
 
     /**
      * Main method for running the panel standalone.
+     *
      * @param args the command line arguments
      */
     public static void main(String args[]) {
@@ -529,5 +539,4 @@ public class SelectParametersPanel extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     // End of variables declaration//GEN-END:variables
 
-  
 }

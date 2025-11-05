@@ -494,9 +494,9 @@ public class StatisticsTests {
     }
 
     public static List<SpectrumMatch> filterByFDR(List<PSM> psms, double targetFDR) { // Sort PSMs by descending score           
-                
+
         Collections.sort(psms);
-          List<SpectrumMatch> accepted = new ArrayList<>();
+        List<SpectrumMatch> accepted = new ArrayList<>();
         int targetCount = 0;
         int decoyCount = 0;
         for (PSM psm : psms) {
@@ -516,4 +516,23 @@ public class StatisticsTests {
         }
         return accepted;
     }
+
+    public static double calculateOneTailedZScore(double targetScore, double[] scores) {
+        double mean = Arrays.stream(scores).average().orElse(0.0);
+        double stdDev = Math.sqrt(Arrays.stream(scores)
+                .map(score -> Math.pow(score - mean, 2))
+                .average().orElse(0.0));
+        return (targetScore - mean) / stdDev;
+    }
+
+    public static double calculateOneTailedPValue(double zScore) {
+        NormalDistribution normalDist = new NormalDistribution();
+        return 1 - normalDist.cumulativeProbability(zScore); // one-tailed p-value
+    }
+
+    public static double convertZToPercentile(double zScore) {
+        NormalDistribution normalDist = new NormalDistribution();
+        return normalDist.cumulativeProbability(zScore) * 100;
+    }
+
 }

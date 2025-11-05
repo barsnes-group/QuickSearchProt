@@ -697,7 +697,7 @@ public class SpectraUtilities {
         double score = compareDataScores(optProtDataset.getVaildatedPsmMaches(), matches, optProtDataset.getSubsetSize(), potintialFP,senstiveMeasurment );
         rawScore.setIdPSMNumber(matches.size());
         rawScore.setcScore(score);
-        System.out.println("score : "+score+"  potintial fb "+potintialFP);
+//        System.out.println("score : "+score+"  potintial fb "+potintialFP);
 
         rawScore.setSameData(rawScore.getcScore() == 0.0 && matches.size() == (optProtDataset.getVaildatedPsmMaches().size()));
         if (!rawScore.isSameData()) {
@@ -799,7 +799,7 @@ public class SpectraUtilities {
         double yallaScore;
 //        if (pValue < 0.05) {
         System.out.println("The samples do not belong to the same distribution.");
-        yallaScore = ScoreComparison.comparediffrentDistributionData(referenceFullData, testFullData);
+        yallaScore = ScoreComparisonUtilities.comparediffrentDistributionData(referenceFullData, testFullData);
 //            if (potintialFP) {
 //                System.out.println("pot FP in not same dist");
 //                System.exit(0);
@@ -807,10 +807,10 @@ public class SpectraUtilities {
 //        } else {
 //        if (potintialFP) {
 //            System.out.println("The samples belong to the same distribution.");
-//            ScoreComparison.compareSameDistributionData(referenceFullData, testFullData);
-//            yallaScore = ScoreComparison.comparediffrentDistributionData(referenceFullData, testFullData);
+//            ScoreComparisonUtilities.compareSameDistributionData(referenceFullData, testFullData);
+//            yallaScore = ScoreComparisonUtilities.comparediffrentDistributionData(referenceFullData, testFullData);
 //        } else {
-//            yallaScore = ScoreComparison.comparediffrentDistributionData(referenceFullData, testFullData);
+//            yallaScore = ScoreComparisonUtilities.comparediffrentDistributionData(referenceFullData, testFullData);
 //        }
 //        }
         if (potintialFP && yallaScore == 0) {
@@ -1008,7 +1008,7 @@ public class SpectraUtilities {
 
         double[] referenceFullData = referencePsmScores.values().stream().mapToDouble(Double::doubleValue).toArray();
         double[] testFullData = testPsmScores.values().stream().mapToDouble(Double::doubleValue).toArray();
-        double updatedScore = ScoreComparison.compareReferenceToTest(referenceFullData, testFullData, sharedReferenceData, uniqueReferenceData, sharedTestData, uniqueTestData, potintialFP, appliedFDR);
+        double updatedScore = ScoreComparisonUtilities.compareReferenceToTest(referenceFullData, testFullData, sharedReferenceData, uniqueReferenceData, sharedTestData, uniqueTestData, potintialFP, appliedFDR);
         return updatedScore;
 
     }
@@ -1059,7 +1059,7 @@ public class SpectraUtilities {
 ////        double[] testUniqueData = uniqueTestData.stream().mapToDouble(Double::doubleValue).toArray();
 //        double[] referenceFullData = referencePsmScores.values().stream().mapToDouble(Double::doubleValue).toArray();
 //        double[] testFullData = testPsmScores.values().stream().mapToDouble(Double::doubleValue).toArray();
-//        double updatedScore = ScoreComparison.compareReferenceToTest(referenceFullData, testFullData,potintialFP);
+//        double updatedScore = ScoreComparisonUtilities.compareReferenceToTest(referenceFullData, testFullData,potintialFP);
 ////        double refIndRatio = (double) referenceUniqueData.length / (double) referencePsmList.size();
 ////        double testIndRatio = (double) testUniqueData.length / (double) testPsmList.size();
 ////        double pairedRatio = (double) (testSharedData.length * 2.0) / (double) (testPsmList.size() + referencePsmScores.size());
@@ -2131,7 +2131,7 @@ public class SpectraUtilities {
 //    }
 
     public static double performcomparison(double[] referenceData, double[] testData, boolean pairData) {
-        ScoreComparison sc = new ScoreComparison();
+        ScoreComparisonUtilities sc = new ScoreComparisonUtilities();
         double finalScores = sc.calculateScore(referenceData, testData, pairData);
         return finalScores;
 
@@ -2144,9 +2144,9 @@ public class SpectraUtilities {
         double idToFullFactor = oreginalDataSize / (idNumber * 100.0);
 
 //        System.out.println("at level one " + comparisonsThreshold + "   identificationRate " + identificationRate + "  " + idToFullFactor);
-        comparisonsThreshold = ScoreComparison.logScaleNormalize(comparisonsThreshold, Math.E);
-        idToFullFactor = ScoreComparison.logScaleNormalize(idToFullFactor, Math.E);
-        identificationRate = ScoreComparison.logScaleNormalize(identificationRate, Math.E);
+        comparisonsThreshold = ScoreComparisonUtilities.logScaleNormalize(comparisonsThreshold, Math.E);
+        idToFullFactor = ScoreComparisonUtilities.logScaleNormalize(idToFullFactor, Math.E);
+        identificationRate = ScoreComparisonUtilities.logScaleNormalize(identificationRate, Math.E);
 //        System.out.println("at level one normalised " + comparisonsThreshold + "   identificationRate " + identificationRate + "  " + idToFullFactor);
         comparisonsThreshold = (comparisonsThreshold + identificationRate + idToFullFactor) / 3.0;
 //        System.out.println("at level two normalised " + comparisonsThreshold);
