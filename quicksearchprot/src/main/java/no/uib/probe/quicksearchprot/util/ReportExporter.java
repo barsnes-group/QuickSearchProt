@@ -12,11 +12,8 @@ import com.compomics.util.parameters.identification.tool_specific.XtandemParamet
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Map;
-import java.util.TreeSet;
 import no.uib.probe.quicksearchprot.configurations.Configurations;
 import no.uib.probe.quicksearchprot.model.SearchingSubDataset;
-import no.uib.probe.quicksearchprot.model.ParameterScoreModel;
 
 /**
  *
@@ -81,7 +78,7 @@ public class ReportExporter {
         MainUtilities.QSProtWaitingHandler.addOutputMassage("\nVariable Modifications:" + fm);
         if (searchEngine.getIndex() == Advocate.xtandem.getIndex()) {
             XtandemParameters xtandemParameters = (XtandemParameters) optimisedSearchParameter.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.xtandem.getIndex());
-            MainUtilities.QSProtWaitingHandler.addOutputMassage("--------------------------- X! Tandem advanced -----------------------------");
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("\n\t\u2605\u2605\u2605\u2605\u2605 X! Tandem Advanced Parameters \u2605\u2605\u2605\u2605\u2605 \n");
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Spectrum Dynamic Range:\t" + xtandemParameters.getDynamicRange());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Number of Peaks:\t" + xtandemParameters.getnPeaks());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Minimum FragmentMz:\t" + xtandemParameters.getMinFragmentMz());
@@ -130,7 +127,7 @@ public class ReportExporter {
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Max Peak Count          :\t" + myriMatchParameters.getMaxPeakCount());
         } else if (searchEngine.getIndex() == Advocate.sage.getIndex()) {
             SageParameters sageParameters = (SageParameters) optimisedSearchParameter.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.sage.getIndex());
-            MainUtilities.QSProtWaitingHandler.addOutputMassage("--------------------------- Sage advanced -----------------------------");
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("\n\t\u2605\u2605\u2605\u2605\u2605 Sage Advanced Parameters \u2605\u2605\u2605\u2605\u2605 \n");
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Peptide Length (min-max):\t" + sageParameters.getMinPeptideLength() + "-" + sageParameters.getMaxPeptideLength());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragment MZ    (min-max):\t" + sageParameters.getMinFragmentMz() + "-" + sageParameters.getMaxFragmentMz());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Peptide Mass:\t\t" + sageParameters.getMinPeptideMass() + "-" + sageParameters.getMaxPeptideMass());
