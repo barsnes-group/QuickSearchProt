@@ -158,10 +158,11 @@ public class ReportExporter {
 
         try {
             String pathToRemoteResults = Configurations.SUBSET_DATA_FOLDER;//dataset.getSubDataFolder()
-            File reportFile = new File(pathToRemoteResults, "QuickSearchProt_results.txt");
+            File reportFile = new File(pathToRemoteResults, "QuickSearchProt_results.csv");
             reportFile.createNewFile();
+            String text = MainUtilities.QSProtWaitingHandler.getMainOutputTextPanel().getText().replaceAll("\t", ",");
             try (FileWriter myWriter = new FileWriter(reportFile)) {
-                myWriter.write(MainUtilities.QSProtWaitingHandler.getMainOutputTextPanel().getText());
+                myWriter.write(text);
             }
             MainUtilities.QSProtWaitingHandler.addLogMassage("Successfully wrote to the file.");
         } catch (IOException e) {

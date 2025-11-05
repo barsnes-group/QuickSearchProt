@@ -227,13 +227,14 @@ public class Controller {
 
         if (generatedFile != null) {
 
-            ReportExporter.exportFullReport();
+           
             ReportExporter.printFullReport(
                     generatedFile,
                     optProtDataset,
                     optProtDatasetHandler.getSearchInputSetting().getSelectedSearchEngine(),
                     optProtDatasetHandler.getSearchInputSetting().getDatasetId()
-            );
+            ); 
+            ReportExporter.exportFullReport();
         }
 
         MainUtilities.QSProtWaitingHandler.addLogMassage(
