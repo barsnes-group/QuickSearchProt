@@ -71,7 +71,7 @@ public class ImageProgressBar extends JProgressBar {
         }
 
         // Draw progress text if enabled (centered, default string).
-        if (isStringPainted()) {
+//        if (isStringPainted()) {
             String text = getString();
             int strWidth = g.getFontMetrics().stringWidth(text);
             int strHeight = g.getFontMetrics().getAscent();
@@ -79,6 +79,6 @@ public class ImageProgressBar extends JProgressBar {
             int y = (getHeight() + strHeight) / 2 - 2;
             g.setColor(Color.BLACK);
             g.drawString(text, x, y);
-        }
+//        }
     }
 }

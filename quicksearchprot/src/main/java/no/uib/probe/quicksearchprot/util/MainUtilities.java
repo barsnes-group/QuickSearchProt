@@ -4,11 +4,13 @@
  */
 package no.uib.probe.quicksearchprot.util;
 
+import com.compomics.util.gui.UtilitiesGUIDefaults;
 import com.compomics.util.parameters.UtilitiesUserParameters;
 import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.compomics.util.parameters.searchgui.OutputParameters;
 import com.compomics.util.parameters.tools.ProcessingParameters;
 import eu.isas.searchgui.SearchHandler;
+import java.awt.Dimension;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -20,6 +22,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import javax.swing.JOptionPane;
+import javax.swing.LookAndFeel;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import no.uib.probe.quicksearchprot.configurations.Configurations;
 import no.uib.probe.quicksearchprot.model.ResultScoreModel;
 
@@ -31,6 +37,7 @@ public class MainUtilities {
 
     private static ExecutorService displayExecuter;// = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private static ExecutorService executor2;// = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private static ExecutorService mainExecuter;
     private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors() / 2;
     private static ExecutorService executor;// = new ThreadPoolExecutor(AVAILABLE_PROCESSORS, AVAILABLE_PROCESSORS, 5, TimeUnit.SECONDS, new ArrayBlockingQueue<>(10));
 //    private static final TreeSet<Double> paramScoreSet = new TreeSet<>();
@@ -67,12 +74,21 @@ public class MainUtilities {
         return Processing_Parameters;
     }
 
-    public static ExecutorService getDisplayExecuter() {
-        if (displayExecuter != null) {
-            displayExecuter.shutdownNow();
+    public static void getDisplayExecuter() {
+//        if (displayExecuter != null) {
+//            displayExecuter.shutdownNow();
+//        }
+//        displayExecuter = Executors.newFixedThreadPool(2);
+//        return displayExecuter;
+     
+    }
+
+    public static ExecutorService getMainExecuter() {
+        if (mainExecuter != null) {
+            mainExecuter.shutdownNow();
         }
-        displayExecuter = Executors.newFixedThreadPool(2);
-        return displayExecuter;
+        mainExecuter = Executors.newSingleThreadExecutor();
+        return mainExecuter;
     }
 
     public static void resetLongExecutorService() {
@@ -91,6 +107,12 @@ public class MainUtilities {
 //        executor = Executors.newFixedThreadPool(AVAILABLE_PROCESSORS);
     }
 
+    public static void resetAllExecutorService() {
+        displayExecuter.shutdownNow();
+        executor.shutdownNow();
+        executor2.shutdownNow();
+
+    }
     private static int executorServiceCounter = 0;
     private static int executorServiceCounter2 = 0;
 
@@ -184,7 +206,7 @@ public class MainUtilities {
         result.setzScore(zScore);
         result.setPvalue(pvalue);
         result.setPercentage(percentage);
-        if (targtedScore == 0 && scores.size()>1) {
+        if (targtedScore == 0 && scores.size() > 1) {
             result.setDefaultParameterValue(true);
         }
         paramConfidentMap.put(parameterName, result);

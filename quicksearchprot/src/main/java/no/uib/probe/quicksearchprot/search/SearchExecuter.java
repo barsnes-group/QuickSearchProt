@@ -68,9 +68,14 @@ public class SearchExecuter {
 
         File resultOutput = new File(Configurations.WORKING_FOLDER_PATH, processId);
         resultOutput.mkdir();
+        MainUtilities.cleanFolder(resultOutput.getAbsolutePath());                 
+        
         File tempSearchEngineFolder = new File(Configurations.WORKING_FOLDER_PATH, processId + "_temp");
         tempSearchEngineFolder.mkdir();
 
+          MainUtilities.cleanFolder(tempSearchEngineFolder.getAbsolutePath());
+        
+        
         ArrayList<File> msFileInList = new ArrayList<>();
         msFileInList.add(msFile);
         SearchHandler.setTempSearchEngineFolderPath(tempSearchEngineFolder.getAbsolutePath());

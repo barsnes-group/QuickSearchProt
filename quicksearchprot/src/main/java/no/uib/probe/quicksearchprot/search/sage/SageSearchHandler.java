@@ -22,6 +22,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import no.uib.probe.quicksearchprot.configurations.Configurations;
 import no.uib.probe.quicksearchprot.model.SearchingSubDataset;
 import no.uib.probe.quicksearchprot.model.OptimisedSearchResults;
@@ -372,7 +374,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             while (!f.isDone()) {
             }
             resultOutput = f.get();
-        } catch (InterruptedException | ExecutionException ex) {
+        } catch (InterruptedException | ExecutionException | RuntimeException ex) {
             ex.printStackTrace();
             throw new RuntimeException();
         }
@@ -940,7 +942,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                 scoresSet.add(scoreModel.getcScore());
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange()) {
                     resultsMap.put(j + "", scoreModel);
                 }
@@ -988,7 +990,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                 scoresSet.add(scoreModel.getcScore());
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange()) {
                     resultsMap.put(j + "", scoreModel);
 
@@ -1001,7 +1003,7 @@ public class SageSearchHandler extends CommonSearchHandler {
         if (!resultsMap.isEmpty()) {
             String bestOption = SpectraUtilities.compareScoresSet(resultsMap, optProtDataset.getSubsetSize(), false, true);//  
             selectedOption = Integer.parseInt(bestOption) == 1;
-            targtedScore= resultsMap.get(bestOption).getcScore();
+            targtedScore = resultsMap.get(bestOption).getcScore();
 //            optProtDataset.setActiveScoreModel(resultsMap.get(bestOption));
             paramScore.setComments("Slow processing");
         }
@@ -1039,7 +1041,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                 scoresSet.add(scoreModel.getcScore());
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange()) {
                     resultsMap.put(j + "", scoreModel);
                 }
@@ -1091,7 +1093,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                 scoresSet.add(scoreModel.getcScore());
+                scoresSet.add(scoreModel.getcScore());
 //                if (scoreModel.isSensitiveChange() && scoreModel.getSpectrumMatchResult().size() >= optProtDataset.getCurrentScoreModel().getSpectrumMatchResult().size()) {
                 System.out.println("add as min peaks  score " + j + "   " + scoreModel + "   ts " + topScore);
                 if (scoreModel.isAcceptedChange() && scoreModel.getIdPSMNumber() > topScore) {
@@ -1144,7 +1146,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                 scoresSet.add(scoreModel.getcScore());
+                scoresSet.add(scoreModel.getcScore());
                 System.out.println("max # " + j + " vs " + selectedMaxPeaksNumberOption + "   " + scoreModel);
                 if ((scoreModel.isAcceptedChange())) {
                     selectedScoreModel = scoreModel;
@@ -1198,7 +1200,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                 scoresSet.add(scoreModel.getcScore());
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.isAcceptedChange() || (j < selectedOption && scoreModel.getcScore() >= 0)) {// && scoreModel.getIdPSMNumber() >= optProtDataset.getActiveIdentificationNum()) {
                     resultsMap.put(j + "", scoreModel);
                 } else if (j > selectedOption) {
@@ -1251,7 +1253,7 @@ public class SageSearchHandler extends CommonSearchHandler {
             });
             try {
                 RawScoreModel scoreModel = f.get();
-                 scoresSet.add(scoreModel.getcScore());
+                scoresSet.add(scoreModel.getcScore());
                 if (scoreModel.getcScore() > 0) {
                     resultsMap.put(j + "", scoreModel);
                 } else if (j > selectedOption) {
@@ -1277,6 +1279,8 @@ public class SageSearchHandler extends CommonSearchHandler {
         return selectedOption;
     }
 
+    int refCounter = 0;
+
     public void runReferenceRun(SearchingSubDataset optProtDataset, IdentificationParameters oreginaltempIdParam, SearchInputSetting optimisedSearchParameter) throws IOException {
 
         String msFileName = IoUtil.removeExtension(optProtDataset.getSubMsFile().getName());
@@ -1291,9 +1295,17 @@ public class SageSearchHandler extends CommonSearchHandler {
             optProtDataset.setActiveScoreModel(scoreModel);
             optProtDataset.setDefaultSettingIdentificationNum(scoreModel.getIdPSMNumber());
             optProtDataset.updateValidatedIdRefrenceData(scoreModel.getSpectrumMatchResult());
-        } catch (ExecutionException | InterruptedException ex) {
+            refCounter=0;
+        } catch (ExecutionException ex) {
             ex.printStackTrace();
             throw new RuntimeException();
+
+        } catch (InterruptedException ex) {
+            if (refCounter == 0) {
+                refCounter++;
+                runReferenceRun(optProtDataset, oreginaltempIdParam, optimisedSearchParameter);
+            }else
+                 throw new RuntimeException();
         }
     }
 

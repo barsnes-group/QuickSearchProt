@@ -51,7 +51,7 @@ public class QuickSearchProtApp {
         // Create and display the UI in the Event Dispatch Thread
         java.awt.EventQueue.invokeLater(() -> {
             boolean nimbusLookAndFeelSet = false;
-            
+
             try {
                 // Try to set the default look and feel via the utility method
                 nimbusLookAndFeelSet = UtilitiesGUIDefaults.setLookAndFeel();
@@ -79,36 +79,44 @@ public class QuickSearchProtApp {
                     @Override
                     public void processData(QSProtInputsEntity projectEntity) {
                         // Update UI to show processing started
-                        MainUtilities.getDisplayExecuter().submit(() -> {
-                            MainUtilities.QSProtWaitingHandler.startProgress();                            
+//                        MainUtilities.getDisplayExecuter().submit(() -> {
+                        java.awt.EventQueue.invokeLater(() -> {
+                            MainUtilities.QSProtWaitingHandler.startProgress();
                             MainUtilities.QSProtWaitingHandler.addMainStepMassage(
                                     "\n\u2605\u2605\u2605\u2605\u2605 Start data processing \u2605\u2605\u2605\u2605\u2605\n"
                             );
                         });
-                        // Process data in the background
-                        Future f = MainUtilities.getLongExecutorService().submit(() -> {
-                            updatePanelView(1);                            
-                            mainController.initializedController(projectEntity);                            
-                            mainController.startDataProcessing();
-                            
-                        });
                         try {
+                            // Process data in the background
+                            Future f = MainUtilities.getLongExecutorService().submit(() -> {
+                                updatePanelView(1);
+                                mainController.initializedController(projectEntity);
+                                mainController.startDataProcessing();
+
+                            });
+
                             f.get();
                             System.out.println("done processing");
                         } catch (InterruptedException | ExecutionException ex) {
                             MainUtilities.QSProtWaitingHandler.addLogMassage(ex.getMessage());
+
+                        } catch (RuntimeException ex) {
+                            throw new RuntimeException(ex.getMessage());
                         } finally {
+                            System.out.println("<<<---- reach here ---->>>");
                             reactivateProcessingBtn();
                             updatePanelView(2);
+                            MainUtilities.resetAllExecutorService();
+                        
                         }
                     }
                 };
                 qsProtView.setVisible(true);
-                
+
             } catch (HeadlessException | IOException e) {
                 // Log exception if any unexpected error occurs
-                  MainUtilities.QSProtWaitingHandler.addLogMassage(e.getMessage());
-                 
+                MainUtilities.QSProtWaitingHandler.addLogMassage(e.getMessage());
+
             }
         });
     }

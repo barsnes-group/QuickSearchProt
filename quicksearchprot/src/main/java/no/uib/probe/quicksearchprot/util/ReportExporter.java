@@ -151,6 +151,7 @@ public class ReportExporter {
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Min Mached Peaks:\t" + sageParameters.getMinMatchedPeaks() + "\t" + MainUtilities.getConfidentAsString("MinMachedPeaks"));
             MainUtilities.QSProtWaitingHandler.addOutputMassage(("Max Fragment Charge:\t" + sageParameters.getMaxFragmentCharge()).replace("null", "") + "\t" + MainUtilities.getConfidentAsString("MaxFragmentCharge"));
         }
+        MainUtilities.resetParamMap();
 
     }
 
