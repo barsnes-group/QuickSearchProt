@@ -485,7 +485,7 @@ public abstract class CommonSearchHandler {
                         resultsMap.put(option, scoreModel);
                     }
                 } catch (ExecutionException | InterruptedException ex) {
-                    ex.printStackTrace();
+//                    ex.printStackTrace();
                 }
             }
         }

@@ -1,0 +1,70 @@
+;????? TEST_DATASET_1 ( SAGE ) ?????
+
+
+Subset Size:;3000
+
+
+Parameter;Value;Score;Comments
+
+
+Digestion:;enzyme;;Pre-Selected
+
+Enzyme:;Trypsin;99 %;Default
+
+Specificity:;Specific;;Pre-Selected
+
+Max Missed Cleavages:;2;100 %;
+
+Fragment Ion Types:;b-y;;Pre-Selected
+
+Precursor Accuracy:;10.0 PPM;;Pre-Selected
+
+Fragment Accuracy:;0.02 DA;;Pre-Selected
+
+Precursor Charge:;2 - 4;;Pre-Selected
+
+Isotops:;0 - 1;;Pre-Selected
+
+
+Fixed Modifications:;Carbamidomethylation of C;Pre-Selected
+;
+
+
+Variable Modifications:;Oxidation of M;;Pre-Selected
+;Phosphorylation of S;Pre-Selected
+;Phosphorylation of T;Pre-Selected
+;Phosphorylation of Y;Pre-Selected
+;
+
+
+;????? Sage Advanced Parameters ????? 
+
+
+Parameter;Value;Score;Comments
+
+
+Peptide Length (min-max):;8-30;;Pre-Selected
+
+Fragment MZ    (min-max):;200.0-2000.0;;Pre-Selected
+
+Peptide Mass:;600.0-5000.0;;Pre-Selected
+
+Min Ion Index:;2;;Pre-Selected
+
+Max Variable Modification:;2;;Pre-Selected
+
+Generate Decoy:;No;;Pre-Selected
+
+Deisotope:;No;;Pre-Selected
+
+Chimeric Spectra:;No;;Pre-Selected
+
+Wide Window:;No;;Pre-Selected
+
+Predect RT:;Yes;;Pre-Selected
+
+Number of Peaks:;15-150;;Pre-Selected
+
+Min Mached Peaks:;4;;Pre-Selected
+
+Max Fragment Charge:;;Pre-Selected

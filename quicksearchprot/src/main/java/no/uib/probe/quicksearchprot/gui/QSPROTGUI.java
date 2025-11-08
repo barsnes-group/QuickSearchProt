@@ -8,7 +8,12 @@ import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -28,13 +33,17 @@ import no.uib.probe.quicksearchprot.util.MainUtilities;
 public abstract class QSPROTGUI extends javax.swing.JFrame {
 
     // Tracks the last used directory in file dialogs.
-    private String lastSelectedDirectory = "/";// "/";
+    private String lastSelectedDirectory = "";// "/";
+    // The sample set directory .
+    private String lsampleSetDirectory = "";// "/";
     // Holds user input parameters for processing.
     private final QSProtInputsEntity inputEntity = new QSProtInputsEntity();
     // Progress bar instance for feedback.
     private final ImageProgressBar updatedProgressBar;
     // Parameter selection panel
     private SelectParametersPanel selectPanel;
+    //Sample data map
+    private final Map<String, File> sampleDataMap = new HashMap();
 
     /**
      * Constructs the main application GUI and initializes UI components.
@@ -48,14 +57,13 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         updatedProgressBar.setOpaque(true);
         progressBarContainer.add(updatedProgressBar);
 
-        jTextField1.setText("Test Dataset ");
-
-        // Pre-load component actions
-        jButton1ActionPerformed(null);
-        jButton2ActionPerformed(null);
-        jButton3ActionPerformed(null);
-        jButton4ActionPerformed(null);
-
+//        jTextField1.setText("Test Dataset ");
+//         Pre-load component actions
+//        jButton1ActionPerformed(null);
+//        jButton2ActionPerformed(null);
+//        jButton3ActionPerformed(null);
+//        jButton4ActionPerformed(null);
+        jButton6.setEnabled(testDataAvailable());
         setupUI();
 
         // Demo button, overlay on frame (can be removed)
@@ -244,6 +252,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         projectNameLabel_ = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
+        jButton6 = new javax.swing.JButton();
         progressBarContainer = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -401,10 +410,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
                     .addComponent(jButton4)
                     .addComponent(outputFolderLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
-            .addGroup(inputOutputPanelLayout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addComponent(searchSettingsFileLabel)
-                .addGap(0, 0, 0))
+            .addComponent(searchSettingsFileLabel)
         );
 
         inputOutputPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -684,6 +690,13 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
             }
         });
 
+        jButton6.setText("Sample data");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -692,7 +705,9 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
                 .addGap(20, 20, 20)
                 .addComponent(projectNameLabel_, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 653, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -701,7 +716,8 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(projectNameLabel_, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton6))
                 .addContainerGap())
         );
 
@@ -739,9 +755,9 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
                         .addComponent(inputOutputPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                    .addComponent(inputOutputPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(inputOutputPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 799, Short.MAX_VALUE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(progressBarContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(progressBarContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 799, Short.MAX_VALUE)
                     .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addGap(10, 10, 10))
         );
@@ -994,6 +1010,59 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
+    private boolean testDataAvailable() {
+
+        try {
+            sampleDataMap.clear();
+            File jarFile = new File(QSPROTGUI.class.getProtectionDomain()
+                    .getCodeSource()
+                    .getLocation()
+                    .toURI());
+            // Get the parent directory
+            File jarDir = jarFile.getParentFile();
+            File testSample = new File(jarDir.getAbsolutePath(), "testdata\\PXD028427");
+            if (testSample.exists()) {
+                lsampleSetDirectory = testSample.getAbsolutePath();
+                for (File f : testSample.listFiles()) {
+                    String fileName = f.getName();
+                    if (fileName.equalsIgnoreCase("qExactive01819.mgf")) {
+                        sampleDataMap.put("MGF", f);
+                    } else if (fileName.equalsIgnoreCase("PRIDE_Search.par")) {
+                        sampleDataMap.put("PAR", f);
+                    } else if (fileName.equalsIgnoreCase("uniprot-human-reviewed-trypsin-june-2021_concatenated_target_decoy.fasta")) {
+                        sampleDataMap.put("FASTA", f);
+                    }
+
+                }
+            }
+            File outputFolder = new File(testSample.getParent(), "output");
+            outputFolder.mkdir();
+            if (outputFolder.exists()) {
+                sampleDataMap.put("OUTPUT", outputFolder);
+            }
+
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+        }
+        return sampleDataMap.size() == 4;
+    }
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        jButton6.setEnabled(testDataAvailable());
+        if (jButton6.isEnabled()) {
+            jTextField1.setText("Sample dataset ");
+            searchSettingsParFileLabel.setText("     " + sampleDataMap.get("PAR").getName());
+            inputEntity.setSearchParameterFilePath(sampleDataMap.get("PAR").getAbsolutePath());
+            mgfFileLable.setText("     " + sampleDataMap.get("MGF").getName());
+            inputEntity.setInputSpectrumFilePath(sampleDataMap.get("MGF").getAbsolutePath());
+            fastaLabel.setText("     " + sampleDataMap.get("FASTA").getName());
+            inputEntity.setInputFastaFilePath(sampleDataMap.get("FASTA").getAbsolutePath());
+            outputFolderLabel.setText("     " + sampleDataMap.get("OUTPUT").getAbsolutePath());
+            inputEntity.setOutputFolderPath(sampleDataMap.get("OUTPUT").getAbsolutePath());
+        }
+
+
+    }//GEN-LAST:event_jButton6ActionPerformed
+
     /**
      * Validates user input fields, sets error highlighting/logs error messages.
      *
@@ -1111,6 +1180,7 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox3;
     private javax.swing.JCheckBox jCheckBox4;

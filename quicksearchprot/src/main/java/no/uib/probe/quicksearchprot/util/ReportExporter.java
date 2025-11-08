@@ -8,6 +8,8 @@ import com.compomics.util.parameters.identification.tool_specific.XtandemParamet
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import no.uib.probe.quicksearchprot.configurations.Configurations;
 import no.uib.probe.quicksearchprot.model.SearchingSubDataset;
 
@@ -48,11 +50,11 @@ public class ReportExporter {
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Specificity:\t\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getSpecificity(optimisedSearchParameter.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName()) + "\t" + MainUtilities.getConfidentAsString("Specificity"));
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Max Missed Cleavages:\t" + optimisedSearchParameter.getSearchParameters().getDigestionParameters().getnMissedCleavages(optimisedSearchParameter.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName()) + "\t" + MainUtilities.getConfidentAsString("MaxMissedCleavages"));
         }
-        MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragment Ion Types:\t" + ions[optimisedSearchParameter.getSearchParameters().getForwardIons().get(0)] + "-" + ions[optimisedSearchParameter.getSearchParameters().getRewindIons().get(0)] + "\t" + MainUtilities.getConfidentAsString("FragmentIonTypes"));
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragment Ion Types:\t" + ions[optimisedSearchParameter.getSearchParameters().getForwardIons().get(0)] + " and " + ions[optimisedSearchParameter.getSearchParameters().getRewindIons().get(0)] + "\t" + MainUtilities.getConfidentAsString("FragmentIonTypes"));
         MainUtilities.QSProtWaitingHandler.addOutputMassage("Precursor Accuracy:\t" + optimisedSearchParameter.getSearchParameters().getPrecursorAccuracy() + " " + optimisedSearchParameter.getSearchParameters().getPrecursorAccuracyType().name() + "\t" + MainUtilities.getConfidentAsString("PrecursorAccuracy"));
         MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragment Accuracy:\t" + optimisedSearchParameter.getSearchParameters().getFragmentIonAccuracy() + " " + optimisedSearchParameter.getSearchParameters().getFragmentAccuracyType().name() + "\t" + MainUtilities.getConfidentAsString("FragmentAccuracy"));
-        MainUtilities.QSProtWaitingHandler.addOutputMassage("Precursor Charge:\t" + optimisedSearchParameter.getSearchParameters().getMinChargeSearched() + " - " + optimisedSearchParameter.getSearchParameters().getMaxChargeSearched() + "\t" + MainUtilities.getConfidentAsString("PrecursorCharge"));
-        MainUtilities.QSProtWaitingHandler.addOutputMassage("Isotops:\t\t" + optimisedSearchParameter.getSearchParameters().getMinIsotopicCorrection() + " - " + optimisedSearchParameter.getSearchParameters().getMaxIsotopicCorrection() + "\t" + MainUtilities.getConfidentAsString("Isotops"));
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Precursor Charge:\t" + optimisedSearchParameter.getSearchParameters().getMinChargeSearched() + " to " + optimisedSearchParameter.getSearchParameters().getMaxChargeSearched() + "\t" + MainUtilities.getConfidentAsString("PrecursorCharge"));
+        MainUtilities.QSProtWaitingHandler.addOutputMassage("Isotops:\t\t" + optimisedSearchParameter.getSearchParameters().getMinIsotopicCorrection() + " to " + optimisedSearchParameter.getSearchParameters().getMaxIsotopicCorrection() + "\t" + MainUtilities.getConfidentAsString("Isotops"));
 //            MainUtilities.QSProtWaitingHandler.addOutputMassage("default Variable mod:\t" + optimisedSearchParameter.getSearchParameters() + "  Factor " + referenceFactor);
         String fm = "";
         if (optimisedSearchParameter.getSearchParameters().getModificationParameters().getFixedModifications() != null) {
@@ -117,8 +119,8 @@ public class ReportExporter {
         } else if (searchEngine.getIndex() == Advocate.myriMatch.getIndex()) {
             MyriMatchParameters myriMatchParameters = (MyriMatchParameters) optimisedSearchParameter.getSearchParameters().getAlgorithmSpecificParameters().get(Advocate.myriMatch.getIndex());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("--------------------------- MyriMatch advanced -----------------------------");
-            MainUtilities.QSProtWaitingHandler.addOutputMassage("Peptide Length (min-max):\t" + myriMatchParameters.getMinPeptideLength() + "-" + myriMatchParameters.getMaxPeptideLength());
-            MainUtilities.QSProtWaitingHandler.addOutputMassage("Precursor Mass (min-max):\t" + myriMatchParameters.getMinPrecursorMass() + "-" + myriMatchParameters.getMaxPrecursorMass());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Peptide Length (min-max):\t" + myriMatchParameters.getMinPeptideLength() + " to " + myriMatchParameters.getMaxPeptideLength());
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Precursor Mass (min-max):\t" + myriMatchParameters.getMinPrecursorMass() + " to " + myriMatchParameters.getMaxPrecursorMass());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Max Variable PTM        :\t" + myriMatchParameters.getMaxDynamicMods());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragmentaion Methods    :\t" + myriMatchParameters.getFragmentationRule());
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Enzymatic Terminals     :\t" + myriMatchParameters.getMinTerminiCleavages());
@@ -137,9 +139,9 @@ public class ReportExporter {
                                                              Parameter\t\tValue\t\tScore\tComments 
                                                              """);
 
-            MainUtilities.QSProtWaitingHandler.addOutputMassage("Peptide Length (min-max):\t" + sageParameters.getMinPeptideLength() + "-" + sageParameters.getMaxPeptideLength() + "\t" + MainUtilities.getConfidentAsString("PeptideLength"));
-            MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragment MZ    (min-max):\t" + sageParameters.getMinFragmentMz() + "-" + sageParameters.getMaxFragmentMz() + "\t" + MainUtilities.getConfidentAsString("FragmentMZ"));
-            MainUtilities.QSProtWaitingHandler.addOutputMassage("Peptide Mass:\t\t" + sageParameters.getMinPeptideMass() + "-" + sageParameters.getMaxPeptideMass() + "\t" + MainUtilities.getConfidentAsString("PeptideMass"));
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Peptide Length (min-max):\t" + sageParameters.getMinPeptideLength() + " to " + sageParameters.getMaxPeptideLength() + "\t" + MainUtilities.getConfidentAsString("PeptideLength"));
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Fragment MZ    (min-max):\t" + sageParameters.getMinFragmentMz() + " to " + sageParameters.getMaxFragmentMz() + "\t" + MainUtilities.getConfidentAsString("FragmentMZ"));
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Peptide Mass:\t\t" + sageParameters.getMinPeptideMass() + " to " + sageParameters.getMaxPeptideMass() + "\t" + MainUtilities.getConfidentAsString("PeptideMass"));
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Min Ion Index:\t\t" + sageParameters.getMinIonIndex() + "\t" + MainUtilities.getConfidentAsString("MinIonIndex"));
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Max Variable Modification:\t" + sageParameters.getMaxVariableMods() + "\t" + MainUtilities.getConfidentAsString("MaxVariableModification"));
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Generate Decoy:\t" + sageParameters.getGenerateDecoys() + "\t" + MainUtilities.getConfidentAsString("GenerateDecoy"));
@@ -147,28 +149,130 @@ public class ReportExporter {
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Chimeric Spectra:\t" + sageParameters.getChimera() + "\t" + MainUtilities.getConfidentAsString("ChimericSpectra"));
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Wide Window:\t\t" + sageParameters.getWideWindow() + "\t" + MainUtilities.getConfidentAsString("WideWindow"));
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Predect RT:\t\t" + sageParameters.getPredictRt() + "\t" + MainUtilities.getConfidentAsString("PredectRT"));
-            MainUtilities.QSProtWaitingHandler.addOutputMassage("Number of Peaks:\t" + sageParameters.getMinPeaks() + "-" + sageParameters.getMaxPeaks() + "\t" + MainUtilities.getConfidentAsString("NumberofPeaks"));
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("Number of Peaks:\t" + sageParameters.getMinPeaks() + " to " + sageParameters.getMaxPeaks() + "\t" + MainUtilities.getConfidentAsString("NumberofPeaks"));
             MainUtilities.QSProtWaitingHandler.addOutputMassage("Min Mached Peaks:\t" + sageParameters.getMinMatchedPeaks() + "\t" + MainUtilities.getConfidentAsString("MinMachedPeaks"));
             MainUtilities.QSProtWaitingHandler.addOutputMassage(("Max Fragment Charge:\t" + sageParameters.getMaxFragmentCharge()).replace("null", "") + "\t" + MainUtilities.getConfidentAsString("MaxFragmentCharge"));
+            MainUtilities.QSProtWaitingHandler.addOutputMassage("----------------------------------------------------------------------------------------------------------");
         }
         MainUtilities.resetParamMap();
 
     }
 
     public static void exportFullReport() {
-
+        String separting = ",";
         try {
             String pathToRemoteResults = Configurations.SUBSET_DATA_FOLDER;//dataset.getSubDataFolder()
-            File reportFile = new File(pathToRemoteResults, "QuickSearchProt_results.csv");
-            reportFile.createNewFile();
-            String text = MainUtilities.QSProtWaitingHandler.getMainOutputTextPanel().getText().replaceAll("\t", ",");
-            try (FileWriter myWriter = new FileWriter(reportFile)) {
-                myWriter.write(text);
+//            pathToRemoteResults = "D:\\QuickSearchProt\\testdata\\data\\PXD028427\\Test_Dataset_1\\subsetFiles";
+
+            String[] inttextArr = MainUtilities.QSProtWaitingHandler.getMainOutputTextPanel().getText().replace("\t\t", separting).replace("\t", separting).split("----------------------------------------------------------------------------------------------------------");
+            for (String inttext : inttextArr) {
+                String se = "XTANDEM";
+                if (inttext.contains("SAGE")) {
+                    se = "SAGE";
+                }
+                File reportFile = new File(pathToRemoteResults, "QuickSearchProt_results_" + se + "_.csv");
+                if (reportFile.exists()) {
+                    reportFile.delete();
+                }
+                reportFile.createNewFile();
+                String[] textArr = inttext.split("\n");
+//              //  System.out.println(text);
+                try (FileWriter myWriter = new FileWriter(reportFile)) {
+                    for (String text : textArr) {
+                        if (text.trim().isEmpty() || text.equalsIgnoreCase(separting) || text.contains("???") || text.contains("\u2605")) {
+                            continue;
+                        }
+                        if (text.startsWith(separting) && text.split(separting).length == 3) {
+                            text = text.replace(separting, separting + separting);
+                            text = text.replaceFirst(separting + separting, separting);
+                            myWriter.append(text + "\n");
+                        } else {
+                            myWriter.append(text + "\n");
+                        }
+                    }
+                }
+                MainUtilities.QSProtWaitingHandler.addLogMassage("Successfully wrote to the file.");
             }
-            MainUtilities.QSProtWaitingHandler.addLogMassage("Successfully wrote to the file.");
         } catch (IOException e) {
             MainUtilities.QSProtWaitingHandler.addLogMassage("An error occurred.");
             e.printStackTrace();
         }
+
+    }
+
+    public static void main(String[] args) {
+        String text = "	????? TEST_DATASET_1 ( SAGE ) ?????\n"
+                + "\n"
+                + "\n"
+                + "Subset Size:		3000\n"
+                + "\n"
+                + "\n"
+                + "Parameter		Value		Score	Comments\n"
+                + "\n"
+                + "\n"
+                + "Digestion:		enzyme			Pre-Selected\n"
+                + "\n"
+                + "Enzyme:		Trypsin		99 %	Default\n"
+                + "\n"
+                + "Specificity:		Specific			Pre-Selected\n"
+                + "\n"
+                + "Max Missed Cleavages:	2		100 %	\n"
+                + "\n"
+                + "Fragment Ion Types:	b-y			Pre-Selected\n"
+                + "\n"
+                + "Precursor Accuracy:	10.0 PPM			Pre-Selected\n"
+                + "\n"
+                + "Fragment Accuracy:	0.02 DA			Pre-Selected\n"
+                + "\n"
+                + "Precursor Charge:	2 - 4			Pre-Selected\n"
+                + "\n"
+                + "Isotops:		0 - 1			Pre-Selected\n"
+                + "\n"
+                + "\n"
+                + "Fixed Modifications:	Carbamidomethylation of C		Pre-Selected\n"
+                + "	\n"
+                + "\n"
+                + "\n"
+                + "Variable Modifications:	Oxidation of M			Pre-Selected\n"
+                + "		Phosphorylation of S		Pre-Selected\n"
+                + "		Phosphorylation of T		Pre-Selected\n"
+                + "		Phosphorylation of Y		Pre-Selected\n"
+                + "	\n"
+                + "\n"
+                + "\n"
+                + "	????? Sage Advanced Parameters ????? \n"
+                + "\n"
+                + "\n"
+                + "Parameter		Value		Score	Comments\n"
+                + "\n"
+                + "\n"
+                + "Peptide Length (min-max):	8-30			Pre-Selected\n"
+                + "\n"
+                + "Fragment MZ    (min-max):	200.0-2000.0			Pre-Selected\n"
+                + "\n"
+                + "Peptide Mass:		600.0-5000.0			Pre-Selected\n"
+                + "\n"
+                + "Min Ion Index:		2			Pre-Selected\n"
+                + "\n"
+                + "Max Variable Modification:	2			Pre-Selected\n"
+                + "\n"
+                + "Generate Decoy:	No			Pre-Selected\n"
+                + "\n"
+                + "Deisotope:		No			Pre-Selected\n"
+                + "\n"
+                + "Chimeric Spectra:	No			Pre-Selected\n"
+                + "\n"
+                + "Wide Window:		No			Pre-Selected\n"
+                + "\n"
+                + "Predect RT:		Yes			Pre-Selected\n"
+                + "\n"
+                + "Number of Peaks:	15-150			Pre-Selected\n"
+                + "\n"
+                + "Min Mached Peaks:	4			Pre-Selected\n"
+                + "\n"
+                + "Max Fragment Charge:				Pre-Selected\n"
+                + "";
+        MainUtilities.QSProtWaitingHandler.getMainOutputTextPanel().setText(text);
+        exportFullReport();
     }
 }
