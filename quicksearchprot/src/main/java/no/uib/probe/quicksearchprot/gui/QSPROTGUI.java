@@ -12,8 +12,6 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -34,8 +32,6 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
 
     // Tracks the last used directory in file dialogs.
     private String lastSelectedDirectory = "";// "/";
-    // The sample set directory .
-    private String lsampleSetDirectory = "";// "/";
     // Holds user input parameters for processing.
     private final QSProtInputsEntity inputEntity = new QSProtInputsEntity();
     // Progress bar instance for feedback.
@@ -1022,7 +1018,6 @@ public abstract class QSPROTGUI extends javax.swing.JFrame {
             File jarDir = jarFile.getParentFile();
             File testSample = new File(jarDir.getAbsolutePath(), "testdata\\PXD028427");
             if (testSample.exists()) {
-                lsampleSetDirectory = testSample.getAbsolutePath();
                 for (File f : testSample.listFiles()) {
                     String fileName = f.getName();
                     if (fileName.equalsIgnoreCase("qExactive01819.mgf")) {
