@@ -1,4 +1,4 @@
-![](https://github.com/barsnes-group/QuickSearchProt/wiki/images/QSProt_header.png)
+[![](https://github.com/barsnes-group/QuickSearchProt/wiki/images/QSProt_header.png)](https://github.com/barsnes-group/QuickSearchProt/wiki/images/full_screen_shot.png)
 ## 🔍 Supported Search Engines & Input Format
 
 QuickSearchProt currently supports the following search engines:
